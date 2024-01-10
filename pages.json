@@ -1,0 +1,69 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页"
+			}
+		},
+		{
+			"path": "pages/sort-view/sort-view",
+			"style": {
+				"navigationBarTitleText": "分类"
+			}
+		},
+		{
+			"path": "pages/shopping-cart/shopping-cart",
+			"style": {
+				"navigationBarTitleText": "购物车"
+			}
+		},
+		{
+			"path": "pages/my-page/my-page",
+			"style": {
+				"navigationBarTitleText": "我的"
+			}
+		}
+		
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+		"color": "#7A7E83",
+		"selectedColor": "#3cc51f",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"iconPath": "static/tab-list/shouye-001.png",
+				"selectedIconPath": "static/tab-list/shouye-002.png",
+				"text": "首页"
+			},
+			{
+				"pagePath": "pages/sort-view/sort-view",
+				"iconPath": "static/tab-list/fenlei-001.png",
+				"selectedIconPath": "static/tab-list/fenlei-002.png",
+				"text": "分类"
+			},
+			{
+				"pagePath": "pages/shopping-cart/shopping-cart",
+				"iconPath": "static/tab-list/gouwuche-001.png",
+				"selectedIconPath": "static/tab-list/gouwuche-002.png",
+				"text": "购物车"
+			},
+			{
+				"pagePath": "pages/my-page/my-page",
+				"iconPath": "static/tab-list/wode-001.png",
+				"selectedIconPath": "static/tab-list/wode-002.png",
+				"text": "我的"
+			}
+		
+		]
+	},
+	"uniIdRouter": {}
+}
