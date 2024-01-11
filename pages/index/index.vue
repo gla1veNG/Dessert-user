@@ -9,10 +9,13 @@
 	</view>
 	<!-- 轮播图 -->
 	<view :style="'height:' + Custom_height + 'px;' "></view>
+	<Swiper :banner = "banner"/>
 </template>
 
 <script setup>
 	import {onMounted,reactive,toRefs} from 'vue'
+	import Swiper from './component/swiper.vue'
+	const db = wx.cloud.database()
 	
 	//获取胶囊按钮坐标数据
 	const search_data = reactive({
@@ -29,7 +32,25 @@
 		search_data.S_top = but_data.top;
 		search_data.S_left = but_data.left - 30;
 		search_data.Custom_height = but_data.height + but_data.top + 10;
+		goods();
 	})
+	//请求数据
+	const result = reactive({
+		banner:[]
+	})
+	const {banner} = toRefs(result);
+	async function goods(){
+		//轮播
+		const banner = await db.collection('banner').get();
+		Promise.all([banner])
+		.then(res=>{
+			console.log(res);
+			result.banner = res[0].data;
+		})
+		.catch(err=>{
+			console.log(err);
+		})
+	}
 </script>
 
 <style>

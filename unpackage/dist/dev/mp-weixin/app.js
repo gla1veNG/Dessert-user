@@ -9,7 +9,10 @@ if (!Math) {
 }
 const _sfc_main = {
   onLaunch: function() {
-    console.log("App Launch");
+    common_vendor.wx$1.cloud.init({
+      env: "dessert-user-2gv61nata72c4681",
+      traceUser: true
+    });
   },
   onShow: function() {
     console.log("App Show");

@@ -1,7 +1,10 @@
 <script>
 	export default {
 		onLaunch: function() {
-			console.log('App Launch')
+			wx.cloud.init({
+				env:'dessert-user-2gv61nata72c4681',
+				traceUser:true
+			})
 		},
 		onShow: function() {
 			console.log('App Show')
