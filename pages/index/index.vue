@@ -12,12 +12,19 @@
 	<Swiper style="height: 340rpx;" :banner = "banner"/>
 	<!-- 秒杀 -->
 	<Flash :seckill="seckill"/>
+	<!-- 商品列表 -->
+	<Card :card="card"/>
+	<view class="loading-hei">
+		<Loading v-if="loading"/>
+	</view>
 </template>
 
 <script setup>
-	import {onMounted,reactive,toRefs} from 'vue'
+	import {onMounted,reactive,toRefs,ref} from 'vue'
 	import Swiper from './component/swiper.vue'
 	import Flash from './component/flash-sale.vue'
+	import Card from '@/pages/common-component/Card-goods.vue'
+	import Loading from '@/pages/public-view/loading.vue'
 	const db = wx.cloud.database()
 	
 	//获取胶囊按钮坐标数据
@@ -40,24 +47,40 @@
 	//请求数据
 	const result = reactive({
 		banner:[],
-		seckill:[]
+		seckill:[],
+		card:[]
 	})
-	const {banner,seckill} = toRefs(result);
+	const {banner,seckill,card} = toRefs(result);
 	async function goods(){
 		//轮播
 		const banner = await db.collection('banner').get();
 		//秒杀
 		const seckill = await db.collection('seckill').field({seckill_time:false}).get();
-		Promise.all([banner,seckill])
+		//商品数据
+		const card = await db.collection('goods').where({shelves:true}).limit(10).field({goods_cover:true,goods_price:true,goods_title:true,sold:true,video_url:true}).orderBy('sold','desc').get(); 
+		Promise.all([banner,seckill,card])
 		.then(res=>{
 			console.log(res);
 			result.banner = res[0].data;
 			result.seckill = res[1].data;
+			result.card = res[2].data;
 		})
 		.catch(err=>{
 			console.log(err);
 		})
 	}
+	//上拉加载
+	import {onReachBottom} from '@dcloudio/uni-app'
+	let page_n = ref(0);
+	let loading = ref(false);
+	onReachBottom(async()=>{
+	loading.value = true;
+	page_n.value++;
+	let sk = page_n.value *10;
+	const res_goods = await db.collection('goods').where({shelves:true}).limit(10).skip(sk).field({goods_cover:true,goods_price:true,goods_title:true,sold:true,video_url:true}).orderBy('sold','desc').get(); 
+	result.card = [...result.card,...res_goods.data];
+	loading.value = false;
+	})
 </script>
 
 <style>

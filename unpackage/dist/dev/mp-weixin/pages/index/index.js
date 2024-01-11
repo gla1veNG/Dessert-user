@@ -1,10 +1,12 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 if (!Math) {
-  (Swiper + Flash)();
+  (Swiper + Flash + Card + Loading)();
 }
 const Swiper = () => "./component/swiper.js";
 const Flash = () => "./component/flash-sale.js";
+const Card = () => "../common-component/Card-goods.js";
+const Loading = () => "../public-view/loading.js";
 const _sfc_main = {
   __name: "index",
   setup(__props) {
@@ -26,22 +28,35 @@ const _sfc_main = {
     });
     const result = common_vendor.reactive({
       banner: [],
-      seckill: []
+      seckill: [],
+      card: []
     });
-    const { banner, seckill } = common_vendor.toRefs(result);
+    const { banner, seckill, card } = common_vendor.toRefs(result);
     async function goods() {
       const banner2 = await db.collection("banner").get();
       const seckill2 = await db.collection("seckill").field({ seckill_time: false }).get();
-      Promise.all([banner2, seckill2]).then((res) => {
+      const card2 = await db.collection("goods").where({ shelves: true }).limit(10).field({ goods_cover: true, goods_price: true, goods_title: true, sold: true, video_url: true }).orderBy("sold", "desc").get();
+      Promise.all([banner2, seckill2, card2]).then((res) => {
         console.log(res);
         result.banner = res[0].data;
         result.seckill = res[1].data;
+        result.card = res[2].data;
       }).catch((err) => {
         console.log(err);
       });
     }
+    let page_n = common_vendor.ref(0);
+    let loading = common_vendor.ref(false);
+    common_vendor.onReachBottom(async () => {
+      loading.value = true;
+      page_n.value++;
+      let sk = page_n.value * 10;
+      const res_goods = await db.collection("goods").where({ shelves: true }).limit(10).skip(sk).field({ goods_cover: true, goods_price: true, goods_title: true, sold: true, video_url: true }).orderBy("sold", "desc").get();
+      result.card = [...result.card, ...res_goods.data];
+      loading.value = false;
+    });
     return (_ctx, _cache) => {
-      return {
+      return common_vendor.e({
         a: common_vendor.s("height:" + common_vendor.unref(S_top) + "px;"),
         b: common_vendor.s("height:" + common_vendor.unref(S_height) + "px;"),
         c: common_vendor.s("height:" + common_vendor.unref(S_height) + "px;"),
@@ -53,8 +68,12 @@ const _sfc_main = {
         }),
         h: common_vendor.p({
           seckill: common_vendor.unref(seckill)
-        })
-      };
+        }),
+        i: common_vendor.p({
+          card: common_vendor.unref(card)
+        }),
+        j: common_vendor.unref(loading)
+      }, common_vendor.unref(loading) ? {} : {});
     };
   }
 };

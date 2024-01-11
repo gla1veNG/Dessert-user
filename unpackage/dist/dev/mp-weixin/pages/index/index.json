@@ -3,6 +3,8 @@
   "navigationStyle": "custom",
   "usingComponents": {
     "swiper": "./component/swiper",
-    "flash": "./component/flash-sale"
+    "flash": "./component/flash-sale",
+    "card": "../common-component/Card-goods",
+    "loading": "../public-view/loading"
   }
 }
