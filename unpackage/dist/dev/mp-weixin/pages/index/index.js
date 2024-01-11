@@ -1,9 +1,10 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 if (!Math) {
-  Swiper();
+  (Swiper + Flash)();
 }
 const Swiper = () => "./component/swiper.js";
+const Flash = () => "./component/flash-sale.js";
 const _sfc_main = {
   __name: "index",
   setup(__props) {
@@ -24,14 +25,17 @@ const _sfc_main = {
       goods();
     });
     const result = common_vendor.reactive({
-      banner: []
+      banner: [],
+      seckill: []
     });
-    const { banner } = common_vendor.toRefs(result);
+    const { banner, seckill } = common_vendor.toRefs(result);
     async function goods() {
       const banner2 = await db.collection("banner").get();
-      Promise.all([banner2]).then((res) => {
+      const seckill2 = await db.collection("seckill").field({ seckill_time: false }).get();
+      Promise.all([banner2, seckill2]).then((res) => {
         console.log(res);
         result.banner = res[0].data;
+        result.seckill = res[1].data;
       }).catch((err) => {
         console.log(err);
       });
@@ -46,6 +50,9 @@ const _sfc_main = {
         f: common_vendor.s("height:" + common_vendor.unref(Custom_height) + "px;"),
         g: common_vendor.p({
           banner: common_vendor.unref(banner)
+        }),
+        h: common_vendor.p({
+          seckill: common_vendor.unref(seckill)
         })
       };
     };

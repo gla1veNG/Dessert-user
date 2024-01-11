@@ -9,12 +9,15 @@
 	</view>
 	<!-- 轮播图 -->
 	<view :style="'height:' + Custom_height + 'px;' "></view>
-	<Swiper :banner = "banner"/>
+	<Swiper style="height: 340rpx;" :banner = "banner"/>
+	<!-- 秒杀 -->
+	<Flash :seckill="seckill"/>
 </template>
 
 <script setup>
 	import {onMounted,reactive,toRefs} from 'vue'
 	import Swiper from './component/swiper.vue'
+	import Flash from './component/flash-sale.vue'
 	const db = wx.cloud.database()
 	
 	//获取胶囊按钮坐标数据
@@ -36,16 +39,20 @@
 	})
 	//请求数据
 	const result = reactive({
-		banner:[]
+		banner:[],
+		seckill:[]
 	})
-	const {banner} = toRefs(result);
+	const {banner,seckill} = toRefs(result);
 	async function goods(){
 		//轮播
 		const banner = await db.collection('banner').get();
-		Promise.all([banner])
+		//秒杀
+		const seckill = await db.collection('seckill').field({seckill_time:false}).get();
+		Promise.all([banner,seckill])
 		.then(res=>{
 			console.log(res);
 			result.banner = res[0].data;
+			result.seckill = res[1].data;
 		})
 		.catch(err=>{
 			console.log(err);
