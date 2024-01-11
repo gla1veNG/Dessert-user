@@ -1,1 +1,1 @@
-<view> 111 </view>
+<view class="search-back" style="{{e}}"><view style="{{a}}"></view><view class="search-input" style="{{c + ';' + d}}"><image src="/static/sousuo.png" mode="widthFix"></image><input type="text" style="{{b}}" placeholder="请输入搜索的商品" disabled/></view></view><view style="{{f}}"></view>
