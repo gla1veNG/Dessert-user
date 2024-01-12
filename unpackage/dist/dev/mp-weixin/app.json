@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/Short-video/video",
     "pages/Search-view/search",
     "pages/index/index",
     "pages/sort-view/sort-view",
