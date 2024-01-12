@@ -4,7 +4,7 @@
 			<image src="/static/sousuo.png" mode="widthFix"></image>
 			<input type="text" v-model="keyword" :focus="true" confirm-type="搜索" @confirm="seArch"/>
 		</view>
-		<view @confirm="seArch">搜索</view>
+		<view @click="seArch">搜索</view>
 	</view>
 	<!-- 搜索历史 -->
 	<view class="history">
@@ -21,7 +21,14 @@
 	
 	const keyword = ref('');
 	
-
+	//触发搜索
+	function seArch(){
+		console.log(keyword.value);
+		//本地缓存搜索历史
+		let sear_array = wx.getStorageSync('search_key') || [];//存储之前先取
+		sear_array.unshift(keyword.value);
+		wx.setStorageSync('search_key',sear_array);
+	}
 </script>
 
 <style scoped>

@@ -4,12 +4,18 @@ const _sfc_main = {
   __name: "search",
   setup(__props) {
     const keyword = common_vendor.ref("");
+    function seArch() {
+      console.log(keyword.value);
+      let sear_array = common_vendor.wx$1.getStorageSync("search_key") || [];
+      sear_array.unshift(keyword.value);
+      common_vendor.wx$1.setStorageSync("search_key", sear_array);
+    }
     return (_ctx, _cache) => {
       return {
-        a: common_vendor.o((...args) => _ctx.seArch && _ctx.seArch(...args)),
+        a: common_vendor.o(seArch),
         b: keyword.value,
         c: common_vendor.o(($event) => keyword.value = $event.detail.value),
-        d: common_vendor.o((...args) => _ctx.seArch && _ctx.seArch(...args))
+        d: common_vendor.o(seArch)
       };
     };
   }
