@@ -14,20 +14,46 @@
 	<view class="history-text">
 		<text>零食</text>
 	</view>
+	<!-- 商品展示 -->
+	<Card :card="card"/>
 </template>
 
 <script setup>
 	import {ref} from 'vue'
+	import Card from '@/pages/common-component/Card-goods.vue'
 	
 	const keyword = ref('');
 	
 	//触发搜索
 	function seArch(){
-		console.log(keyword.value);
 		//本地缓存搜索历史
 		let sear_array = wx.getStorageSync('search_key') || [];//存储之前先取
 		sear_array.unshift(keyword.value);
 		wx.setStorageSync('search_key',sear_array);
+		searchQuery();
+	}
+	//数据库的模糊查询
+	const db = wx.cloud.database();
+	const _ = db.command;
+	const card = ref([])
+	async function searchQuery(sk=0){
+		//模糊字段匹配
+		let query = _.or([
+			{
+					category:db.RegExp({
+					regexp:keyword.value,
+					options: 'i',
+				})
+			},
+			{
+					goods_title:db.RegExp({
+					regexp:keyword.value,
+					options: 'i',
+				})
+			}
+		])
+		const res = await db.collection('goods').where(query).limit(10).skip(sk).get();
+		card.value = [...card.value,...res.data];
 	}
 </script>
 
