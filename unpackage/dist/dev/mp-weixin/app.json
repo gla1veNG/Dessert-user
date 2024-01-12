@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/Search-view/search",
     "pages/index/index",
     "pages/sort-view/sort-view",
     "pages/shopping-cart/shopping-cart",
