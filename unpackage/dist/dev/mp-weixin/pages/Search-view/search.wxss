@@ -55,4 +55,8 @@
 	padding: 10rpx 20rpx;
 	font-size: 28rpx;
 }
-
+.Tips.data-v-547c4fd1{
+	text-align: center;
+	padding-top: 100rpx;
+	color: #cccccc;
+}

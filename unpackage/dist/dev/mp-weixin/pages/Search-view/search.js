@@ -10,12 +10,14 @@ const _sfc_main = {
   setup(__props) {
     const keyword = common_vendor.ref("");
     function seArch() {
-      let sear_array = common_vendor.wx$1.getStorageSync("search_key") || [];
-      sear_array.unshift(keyword.value);
-      common_vendor.wx$1.setStorageSync("search_key", sear_array);
-      card.value = [];
-      page_n.value = 0;
-      searchQuery();
+      if (keyword.value.split(" ").join("").length != 0) {
+        let sear_array = common_vendor.wx$1.getStorageSync("search_key") || [];
+        sear_array.unshift(keyword.value);
+        common_vendor.wx$1.setStorageSync("search_key", sear_array);
+        card.value = [];
+        page_n.value = 0;
+        searchQuery();
+      }
     }
     const db = common_vendor.wx$1.cloud.database();
     const _ = db.command;
@@ -61,6 +63,10 @@ const _sfc_main = {
       page_n.value = 0;
       searchQuery();
     }
+    function deLete() {
+      common_vendor.wx$1.removeStorageSync("search_key");
+      history.value = [];
+    }
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: common_vendor.o(seArch),
@@ -69,7 +75,8 @@ const _sfc_main = {
         d: common_vendor.o(seArch),
         e: history.value.length > 0 && show.value
       }, history.value.length > 0 && show.value ? {
-        f: common_vendor.f(history.value, (item, index, i0) => {
+        f: common_vendor.o(deLete),
+        g: common_vendor.f(history.value, (item, index, i0) => {
           return {
             a: common_vendor.t(item),
             b: index,
@@ -77,11 +84,13 @@ const _sfc_main = {
           };
         })
       } : {}, {
-        g: common_vendor.p({
+        h: common_vendor.p({
           card: card.value
         }),
-        h: common_vendor.unref(loading)
-      }, common_vendor.unref(loading) ? {} : {});
+        i: common_vendor.unref(loading)
+      }, common_vendor.unref(loading) ? {} : {}, {
+        j: card.value.length === 0 && show.value === false
+      }, card.value.length === 0 && show.value === false ? {} : {});
     };
   }
 };

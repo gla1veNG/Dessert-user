@@ -10,7 +10,7 @@
 	<block v-if="history.length > 0 && show">
 		<view class="history">
 			<text>历史记录</text>
-			<image src="/static/detail/shanchu.svg" mode="aspectFit"></image>
+			<image src="/static/detail/shanchu.svg" mode="aspectFit" @click="deLete"></image>
 		</view>
 		<view class="history-text">
 			<text v-for="(item,index) in history" :key="index" @click="hiSearch(item)">{{item}}</text>
@@ -22,6 +22,8 @@
 	<view class="loading-hei">
 		<Loading v-if="loading"/>
 	</view>
+	<!-- 没有数据提示 -->
+	<view class="Tips" v-if="card.length === 0 && show === false">没有此类商品</view>
 </template>
 
 <script setup>
@@ -34,12 +36,14 @@
 	//触发搜索
 	function seArch(){
 		//本地缓存搜索历史
-		let sear_array = wx.getStorageSync('search_key') || [];//存储之前先取
-		sear_array.unshift(keyword.value);
-		wx.setStorageSync('search_key',sear_array);
-		card.value = [];
-		page_n.value = 0;
-		searchQuery();
+		if(keyword.value.split(" ").join("").length != 0){
+			let sear_array = wx.getStorageSync('search_key') || [];//存储之前先取
+			sear_array.unshift(keyword.value);
+			wx.setStorageSync('search_key',sear_array);
+			card.value = [];
+			page_n.value = 0;
+			searchQuery();
+		}
 	}
 	//数据库的模糊查询
 	const db = wx.cloud.database();
@@ -91,6 +95,11 @@
 		card.value = [];
 		page_n.value = 0;
 		searchQuery();
+	}
+	//清空搜索历史
+	function deLete(){
+		wx.removeStorageSync('search_key');
+		history.value = [];
 	}
 </script>
 
@@ -151,5 +160,9 @@
 	padding: 10rpx 20rpx;
 	font-size: 28rpx;
 }
-
+.Tips{
+	text-align: center;
+	padding-top: 100rpx;
+	color: #cccccc;
+}
 </style>

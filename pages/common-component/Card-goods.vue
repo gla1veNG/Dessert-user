@@ -60,4 +60,11 @@
 	color: #b0b1b4;
 	font-size: 25rpx;
 }
+.overflow{
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+}
 </style>

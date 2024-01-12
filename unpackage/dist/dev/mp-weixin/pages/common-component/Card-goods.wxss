@@ -39,3 +39,10 @@
 	color: #b0b1b4;
 	font-size: 25rpx;
 }
+.overflow.data-v-f37602a7{
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+}
