@@ -2,6 +2,7 @@
   "navigationBarTitleText": "",
   "navigationBarBackgroundColor": "#fefefe",
   "usingComponents": {
-    "card": "../common-component/Card-goods"
+    "card": "../common-component/Card-goods",
+    "loading": "../public-view/loading"
   }
 }

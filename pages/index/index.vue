@@ -14,6 +14,7 @@
 	<Flash :seckill="seckill"/>
 	<!-- 商品列表 -->
 	<Card :card="card"/>
+	<!-- 上拉加载 -->
 	<view class="loading-hei">
 		<Loading v-if="loading"/>
 	</view>

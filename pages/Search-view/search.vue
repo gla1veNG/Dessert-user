@@ -7,20 +7,27 @@
 		<view @click="seArch">搜索</view>
 	</view>
 	<!-- 搜索历史 -->
-	<view class="history">
-		<text>历史记录</text>
-		<image src="/static/detail/shanchu.svg" mode="aspectFit"></image>
-	</view>
-	<view class="history-text">
-		<text>零食</text>
-	</view>
+	<block v-if="history.length > 0 && show">
+		<view class="history">
+			<text>历史记录</text>
+			<image src="/static/detail/shanchu.svg" mode="aspectFit"></image>
+		</view>
+		<view class="history-text">
+			<text v-for="(item,index) in history" :key="index" @click="hiSearch(item)">{{item}}</text>
+		</view>
+	</block>
 	<!-- 商品展示 -->
 	<Card :card="card"/>
+	<!-- 上拉加载 -->
+	<view class="loading-hei">
+		<Loading v-if="loading"/>
+	</view>
 </template>
 
 <script setup>
-	import {ref} from 'vue'
+	import {ref,onMounted} from 'vue'
 	import Card from '@/pages/common-component/Card-goods.vue'
+	import Loading from '@/pages/public-view/loading.vue'
 	
 	const keyword = ref('');
 	
@@ -30,12 +37,15 @@
 		let sear_array = wx.getStorageSync('search_key') || [];//存储之前先取
 		sear_array.unshift(keyword.value);
 		wx.setStorageSync('search_key',sear_array);
+		card.value = [];
+		page_n.value = 0;
 		searchQuery();
 	}
 	//数据库的模糊查询
 	const db = wx.cloud.database();
 	const _ = db.command;
-	const card = ref([])
+	const card = ref([]);
+	const show = ref(true);
 	async function searchQuery(sk=0){
 		//模糊字段匹配
 		let query = _.or([
@@ -53,7 +63,34 @@
 			}
 		])
 		const res = await db.collection('goods').where(query).limit(10).skip(sk).get();
+		show.value = false;
 		card.value = [...card.value,...res.data];
+	}
+	//上拉加载
+	import {onReachBottom} from '@dcloudio/uni-app'
+	let page_n = ref(0);
+	let loading = ref(false);
+	onReachBottom(async()=>{
+	loading.value = true;
+	page_n.value++;
+	let sk = page_n.value *10;
+	await searchQuery(sk);
+	loading.value = false;
+	})
+	//取出本地搜索历史缓存
+	const history = ref([]);
+	onMounted(()=>{
+		let key = wx.getStorageSync('search_key');
+		//去重
+		let res = Array.from(new Set(key));
+		history.value = res;
+	})
+	//搜索历史触发搜索
+	function hiSearch(item){
+		keyword.value = item;
+		card.value = [];
+		page_n.value = 0;
+		searchQuery();
 	}
 </script>
 
