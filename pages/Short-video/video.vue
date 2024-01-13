@@ -40,12 +40,12 @@
 		<view class="user-right">
 			<view class="give-thethu">
 				<view><image src="/static/detail/video-pinglun.svg" mode="aspectFit"></image></view>
-				<view>评论</view>
+				<view>{{total === 0 ? '评论' : total}}</view>
 			</view>
 			<view class="give-thethu comment">
-				<view><image src="/static/detail/video-shoucang.svg" mode="aspectFit"></image></view>
-				<!-- <view><image src="/static/detail/video-yishoucang.svg" mode="aspectFit"></image></view> -->
-				<view>收藏</view>
+				<view v-if="collection <= 0" @click="toCollect"><image src="/static/detail/video-shoucang.svg" mode="aspectFit"></image></view>
+				<view v-else @click="canCollect"><image src="/static/detail/video-yishoucang.svg" mode="aspectFit"></image></view>
+				<view>{{collection >0 ? '已收藏' : '收藏'}}</view>
 			</view>
 			<view class="give-thethu">
 				<button open-type="share" plain="true">
@@ -57,12 +57,14 @@
 	</view>
 	<!-- 评论组件 -->
 	<Comment/>
+	<!-- 登录界面 -->
+	<Login/>
 </template>
 
 <script setup>
 	import {onMounted,reactive,toRefs} from 'vue'
 	import Comment from '@/pages/Short-video/component/comment.vue'
-	
+	import Login from '@/pages/components/login-view.vue'
 	function bindenter(){}
 	
 	//获取胶囊按钮坐标数据
@@ -110,10 +112,11 @@
 	}
 	import {onLoad} from '@dcloudio/uni-app'
 	// 请求短视频数据
-	const result = reactive({goods_id:'',video_data:{}});
+	const result = reactive({goods_id:'',video_data:{},total:0,collection:0});
 	const db = wx.cloud.database();
-	const {video_data} = toRefs(result);
+	const {video_data,total,collection} = toRefs(result);
 	onLoad(async(event)=>{
+		const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
 		result.goods_id = event.goods_id;
 		const card = await db.collection('goods').doc(event.goods_id).field({video_url:true,goods_cover:true,goods_title:true,goods_price:true,seckill:true}).get()
 		// 获取评论条数
@@ -122,6 +125,8 @@
 		Promise.all([card,count,collect])
 		.then(async res=>{
 			result.video_data = res[0].data//短视频数据
+			result.total = res[1].total//评论数量
+			result.collection = user ? res[2].data.length : 0;//收藏的数据
 			// 该商品是否参与秒杀,如果有就展示秒杀价
 			if(res[0].data.seckill){
 				const seckill = await db.collection('seckill').where({goods_id:event.goods_id}).field({price_spike:true}).get();
@@ -132,6 +137,22 @@
 			console.log(err)
 		})
 	})
+	import {login_user} from '@/Acc-config/answer.js'
+ 	//收藏
+	function toCollect(){
+		const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
+		if(!user){
+			login_user.show = true;
+			return false;
+		}
+	}
+	//取消收藏
+	function canCollect(){
+		if(!user){
+			login_user.show = true;
+			return false;
+		}
+	}
 </script>
 
 <style scoped>

@@ -2,6 +2,7 @@
   "navigationBarTitleText": "短视频",
   "navigationStyle": "custom",
   "usingComponents": {
-    "comment": "./component/comment"
+    "comment": "./component/comment",
+    "login": "../components/login-view"
   }
 }

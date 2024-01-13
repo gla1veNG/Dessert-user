@@ -21,7 +21,24 @@
   "libVersion": "3.3.1",
   "appid": "wxd3af48f8163d0a51",
   "projectname": "Dessert-user",
-  "condition": {},
+  "condition": {
+    "search": {
+      "current": -1,
+      "list": []
+    },
+    "conversation": {
+      "current": -1,
+      "list": []
+    },
+    "game": {
+      "current": -1,
+      "list": []
+    },
+    "miniprogram": {
+      "current": -1,
+      "list": []
+    }
+  },
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
