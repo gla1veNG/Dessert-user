@@ -1,5 +1,5 @@
 <template>
-	<page-container :show="true" position="bottom" bindenter="onEnter">
+	<page-container :show="false" position="bottom" bindenter="onEnter">
 		<view class="space-view">
 			<view class="chacha">
 				<image src="/static/detail/guanbi.svg" mode="aspectFit"></image>

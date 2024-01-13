@@ -9,16 +9,19 @@
 	</view>
 	<view :style=" 'height:' + winheight + 'px;'" class="trim-video">
 		<!-- 短视频 -->
-		<video :style=" 'height:' + winheight + 'px;'" src="#" 
+		<video id="myVideo" :style=" 'height:' + winheight + 'px;'" src="#" 
 		:controls="false" 
 		:loop="true" 
 		:show-center-play-btn="false" 
-		:autoplay="false" object-fit="cover" 
+		:autoplay="true" object-fit="cover" 
 		picture-in-picture-mode="{{['push', 'pop']}}"
 		bindenterpictureinpicture="bindenter"
+		@play="playFun"
+		@oause="pauseFun"
 		></video>
+		<view class="all-round" @click="allRound"></view>
 		<!-- 自定义播放按钮 -->
-		<view class="video-img">
+		<view class="video-img" @click="videoPlay" v-show="startVideo">
 			<image src="/static/detail/video-bofang.svg" mode="aspectFit"></image>
 		</view>
 		<!-- 底部操作按钮 -->
@@ -65,17 +68,45 @@
 	const search_data = reactive({
 		S_height:0,
 		S_top:0,
-		winheight:0
+		winheight:0,
+		videoplay:{},
+		startVideo:true
 	})
 	
-	const {S_height,S_top,winheight} = toRefs(search_data);
+	const {S_height,S_top,winheight,startVideo} = toRefs(search_data);
 	onMounted(()=>{
 		const but_data = wx.getMenuButtonBoundingClientRect();
 		search_data.S_height = but_data.height;
 		search_data.S_top = but_data.top;
 		//获取手机屏幕宽高
 		search_data.winheight = wx.getSystemInfoSync().screenHeight;
+		//获取视频的上下文
+		search_data.videoplay = wx.createVideoContext('myVideo');
 	})
+	// 继续播放触发
+	function playFun(){
+		startVideo.value = false;
+	}
+	// 暂停播放时触发
+	function pauseFun(){
+		startVideo.value = true;
+	}
+	//触发播放
+	function videoPlay(){
+		search_data.videoplay.play();
+		startVideo.value = false;
+	}
+	//暂停播放或者继续播放
+	function allRound(){
+		startVideo.value = search_data.startVideo ? false  : true ;
+		if(startVideo.value){
+			// 暂停播放
+			search_data.videoplay.pause();	
+		}else{
+			// 继续播放
+			search_data.videoplay.play();
+		}
+	}
 </script>
 
 <style scoped>
