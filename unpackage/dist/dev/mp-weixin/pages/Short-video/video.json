@@ -1,5 +1,7 @@
 {
   "navigationBarTitleText": "短视频",
   "navigationStyle": "custom",
-  "usingComponents": {}
+  "usingComponents": {
+    "comment": "./component/comment"
+  }
 }

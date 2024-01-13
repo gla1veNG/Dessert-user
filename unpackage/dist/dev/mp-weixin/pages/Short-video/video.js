@@ -1,5 +1,9 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
+if (!Math) {
+  Comment();
+}
+const Comment = () => "./component/comment.js";
 const _sfc_main = {
   __name: "video",
   setup(__props) {

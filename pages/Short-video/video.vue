@@ -51,10 +51,13 @@
 			</view>
 		</view>
 	</view>
+	<!-- 评论组件 -->
+	<Comment/>
 </template>
 
 <script setup>
 	import {onMounted,reactive,toRefs} from 'vue'
+	import Comment from '@/pages/Short-video/component/comment.vue'
 	
 	function bindenter(){}
 	
