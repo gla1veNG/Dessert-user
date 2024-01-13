@@ -9,7 +9,7 @@
 	</view>
 	<view :style=" 'height:' + winheight + 'px;'" class="trim-video">
 		<!-- 短视频 -->
-		<video id="myVideo" :style=" 'height:' + winheight + 'px;'" src="#" 
+		<video id="myVideo" :style=" 'height:' + winheight + 'px;'" :src="video_data.video_url" 
 		:controls="false" 
 		:loop="true" 
 		:show-center-play-btn="false" 
@@ -27,13 +27,13 @@
 		<!-- 底部操作按钮 -->
 		<view class="advert-left">
 			<view class="goods-det">
-				<image src="/static/detail/shuxing-img.png" mode="aspectFill"></image>
+				<image :src="video_data.goods_cover" mode="aspectFill"></image>
 				<view class="goods-price">
-					<text>1.2</text>
+					<text>{{video_data.goods_price}}￥</text>
 					<text>抢</text>
 				</view>
 			</view>
-			<view class="goods-title overflow">标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题</view>
+			<view class="goods-title overflow">{{video_data.goods_title}}</view>
 		</view>
 		<!-- 右边的评论等等 -->
 		<view class="user-right">
@@ -107,6 +107,25 @@
 			search_data.videoplay.play();
 		}
 	}
+	import {onLoad} from '@dcloudio/uni-app'
+	// 请求短视频数据
+	const result = reactive({goods_id:'',video_data:{}});
+	const db = wx.cloud.database();
+	const {video_data} = toRefs(result);
+	onLoad(async(event)=>{
+		result.goods_id = event.goods_id;
+		const card = await db.collection('goods').doc(event.goods_id).field({video_url:true,goods_cover:true,goods_title:true,goods_price:true,seckill:true}).get()
+		// 获取评论条数
+		const count = await db.collection('video_comment').where({goods_id:event.goods_id}).count()
+		const collect = await db.collection('collect_goods').where({goods_id:event.goods_id}).get()
+		Promise.all([card,count,collect])
+		.then(res=>{
+			result.video_data = res[0].data//短视频数据
+		})
+		.catch(err=>{
+			console.log(err)
+		})
+	})
 </script>
 
 <style scoped>
