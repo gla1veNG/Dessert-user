@@ -48,8 +48,12 @@ const _sfc_main = {
       const card = await db.collection("goods").doc(event.goods_id).field({ video_url: true, goods_cover: true, goods_title: true, goods_price: true, seckill: true }).get();
       const count = await db.collection("video_comment").where({ goods_id: event.goods_id }).count();
       const collect = await db.collection("collect_goods").where({ goods_id: event.goods_id }).get();
-      Promise.all([card, count, collect]).then((res) => {
+      Promise.all([card, count, collect]).then(async (res) => {
         result.video_data = res[0].data;
+        if (res[0].data.seckill) {
+          const seckill = await db.collection("seckill").where({ goods_id: event.goods_id }).field({ price_spike: true }).get();
+          result.video_data.goods_price = seckill.data[0].price_spike;
+        }
       }).catch((err) => {
         console.log(err);
       });
@@ -59,16 +63,15 @@ const _sfc_main = {
         a: common_vendor.s("height:" + common_vendor.unref(S_top) + "px;"),
         b: common_vendor.s("height:" + common_vendor.unref(S_height) + "px;"),
         c: common_vendor.s("height:" + common_vendor.unref(winheight) + "px;"),
-        d: common_vendor.unref(video_data).video_url,
-        e: common_vendor.o(playFun),
-        f: common_vendor.o(pauseFun),
-        g: common_vendor.o(allRound),
-        h: common_vendor.o(videoPlay),
-        i: common_vendor.unref(startVideo),
-        j: common_vendor.unref(video_data).goods_cover,
-        k: common_vendor.t(common_vendor.unref(video_data).goods_price),
-        l: common_vendor.t(common_vendor.unref(video_data).goods_title),
-        m: common_vendor.s("height:" + common_vendor.unref(winheight) + "px;")
+        d: common_vendor.o(playFun),
+        e: common_vendor.o(pauseFun),
+        f: common_vendor.o(allRound),
+        g: common_vendor.o(videoPlay),
+        h: common_vendor.unref(startVideo),
+        i: common_vendor.unref(video_data).goods_cover,
+        j: common_vendor.t(common_vendor.unref(video_data).goods_price),
+        k: common_vendor.t(common_vendor.unref(video_data).goods_title),
+        l: common_vendor.s("height:" + common_vendor.unref(winheight) + "px;")
       };
     };
   }

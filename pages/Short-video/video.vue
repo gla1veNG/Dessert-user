@@ -9,11 +9,12 @@
 	</view>
 	<view :style=" 'height:' + winheight + 'px;'" class="trim-video">
 		<!-- 短视频 -->
-		<video id="myVideo" :style=" 'height:' + winheight + 'px;'" :src="video_data.video_url" 
+		<!-- :src="video_data.video_url" -->
+		<video id="myVideo" :style=" 'height:' + winheight + 'px;'" src="#"
 		:controls="false" 
 		:loop="true" 
 		:show-center-play-btn="false" 
-		:autoplay="true" object-fit="cover" 
+		:autoplay="false" object-fit="cover" 
 		picture-in-picture-mode="{{['push', 'pop']}}"
 		bindenterpictureinpicture="bindenter"
 		@play="playFun"
@@ -119,8 +120,13 @@
 		const count = await db.collection('video_comment').where({goods_id:event.goods_id}).count()
 		const collect = await db.collection('collect_goods').where({goods_id:event.goods_id}).get()
 		Promise.all([card,count,collect])
-		.then(res=>{
+		.then(async res=>{
 			result.video_data = res[0].data//短视频数据
+			// 该商品是否参与秒杀,如果有就展示秒杀价
+			if(res[0].data.seckill){
+				const seckill = await db.collection('seckill').where({goods_id:event.goods_id}).field({price_spike:true}).get();
+				result.video_data.goods_price = seckill.data[0].price_spike;
+			}
 		})
 		.catch(err=>{
 			console.log(err)
