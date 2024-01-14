@@ -1,0 +1,1 @@
+<view class="search-back"><view style="{{a}}"></view><view class="search-input" style="{{d + ';' + e}}"><view class="tab-jiantou"><image src="/static/detail/fanhuijiantou.svg" mode="aspectFit"></image></view><view wx:for="{{b}}" wx:for-item="item" wx:key="b" class="tab-view" style="{{c}}"><text>{{item.a}}</text><text></text></view></view></view>
