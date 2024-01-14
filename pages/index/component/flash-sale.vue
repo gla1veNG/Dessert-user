@@ -32,7 +32,7 @@
 
 <style scoped>
 .flash-view{
-	background: linear-gradient(to bottom, #ed7d79 25%, #fceeed 70%);
+	background: linear-gradient(to bottom, #e98e0f 25%, #ffe0aa 100%);
 	border-radius: 20rpx;
 	padding: 20rpx 0;
 	margin: 30rpx 20rpx 0 20rpx;
@@ -72,7 +72,7 @@
 .commodity view text:nth-child(3){
 	text-decoration: line-through;
 	font-size: 25rpx;
-	color: #bfbfbf;
+	color: #9c9c9c;
 	padding-left: 10rpx;
 }
 .overflow{

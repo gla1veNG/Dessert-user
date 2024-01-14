@@ -2,8 +2,7 @@
 page{background-color: #f4f4f4;}
 /* 首页自定义搜索框 */
 .search-back{
-	/* background-color: #4CD964; */
-	background-color: #e94b37;
+	background-color: #e98e0f;
 	position: fixed;
 	top: 0;
 	left: 0;

@@ -46,8 +46,7 @@
 /* 轮播区域 */
 .Rotation-view {
 	height: 320rpx;
-	/* background: linear-gradient(to bottom, #4CD964 25%, #c0f2c8 100%); */
-	background: linear-gradient(to bottom, #e94b37 25%, #e59f95 100%);
+	background: linear-gradient(to bottom, #e98e0f 25%, #ffe0aa 100%);
 	padding: 20rpx 20rpx 0 20rpx;
 }
 
@@ -79,7 +78,7 @@
 }
 
 .instruct {
-	background: #999999;
+	background: #c9c9c9;
 	height: 10rpx;
 	width: 30rpx;
 	border-radius: 50rpx;
@@ -87,6 +86,6 @@
 }
 
 .active {
-	background: #FFFFFF !important;
+	background: #ff915a !important;
 }
 </style>
