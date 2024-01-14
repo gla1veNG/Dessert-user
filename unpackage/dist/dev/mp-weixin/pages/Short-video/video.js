@@ -1,7 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const AccConfig_answer = require("../../Acc-config/answer.js");
-const AccConfig_public = require("../../Acc-config/public.js");
+require("../../Acc-config/public.js");
 if (!Math) {
   (Comment + Login)();
 }
@@ -26,25 +26,30 @@ const _sfc_main = {
       search_data.videoplay = common_vendor.wx$1.createVideoContext("myVideo");
     });
     function playFun() {
-      startVideo.value = false;
+      search_data.startVideo = false;
     }
     function pauseFun() {
-      startVideo.value = true;
+      search_data.startVideo = true;
     }
     function videoPlay() {
       search_data.videoplay.play();
-      startVideo.value = false;
     }
     function allRound() {
-      startVideo.value = search_data.startVideo ? false : true;
-      if (startVideo.value) {
+      search_data.startVideo = search_data.startVideo ? false : true;
+      if (search_data.startVideo) {
         search_data.videoplay.pause();
       } else {
         search_data.videoplay.play();
       }
     }
-    const result = common_vendor.reactive({ goods_id: "", video_data: {}, total: 0, collection: 0, succ_login: 0 });
     const db = common_vendor.wx$1.cloud.database();
+    const result = common_vendor.reactive({
+      goods_id: "",
+      video_data: {},
+      total: 0,
+      collection: 0,
+      succ_login: 0
+    });
     const { video_data, total, collection } = common_vendor.toRefs(result);
     common_vendor.onLoad(async (event) => {
       const user = common_vendor.wx$1.getStorageSync("user_infor");
@@ -75,7 +80,7 @@ const _sfc_main = {
         await db.collection("collect_goods").add({ data: { goods_id: result.goods_id } });
         result.collection++;
       } catch (e) {
-        new AccConfig_public.Public().toast("收藏失败");
+        new Plublic().toast("收藏失败");
       }
     }
     async function canCollect() {
@@ -88,7 +93,7 @@ const _sfc_main = {
         await db.collection("collect_goods").where({ goods_id: result.goods_id }).remove();
         result.collection = 0;
       } catch (e) {
-        new AccConfig_public.Public().toast("取消收藏失败");
+        new Plublic().toast("取消收藏失败");
       }
     }
     common_vendor.watch(() => AccConfig_answer.login_user.response, (newVal, oldVal) => {
@@ -127,4 +132,5 @@ const _sfc_main = {
   }
 };
 const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-ce84d55c"], ["__file", "E:/Dessert/Dessert-user/pages/Short-video/video.vue"]]);
+_sfc_main.__runtimeHooks = 2;
 wx.createPage(MiniProgramPage);

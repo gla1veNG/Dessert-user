@@ -62,12 +62,12 @@
 </template>
 
 <script setup>
-	import {onMounted,reactive,toRefs, watch} from 'vue'
-	import Comment from '@/pages/Short-video/component/comment.vue'
+	import {onMounted,reactive,toRefs,watch} from 'vue'
+	import Comment from './component/comment.vue'
 	import Login from '@/pages/components/login-view.vue'
+	
 	function bindenter(){}
 	
-	//获取胶囊按钮坐标数据
 	const search_data = reactive({
 		S_height:0,
 		S_top:0,
@@ -75,49 +75,52 @@
 		videoplay:{},
 		startVideo:true
 	})
-	
-	const {S_height,S_top,winheight,startVideo} = toRefs(search_data);
+	const {S_height,S_top,winheight,startVideo} = toRefs(search_data)
 	onMounted(()=>{
-		const but_data = wx.getMenuButtonBoundingClientRect();
-		search_data.S_height = but_data.height;
-		search_data.S_top = but_data.top;
-		//获取手机屏幕宽高
-		search_data.winheight = wx.getSystemInfoSync().screenHeight;
-		//获取视频的上下文
-		search_data.videoplay = wx.createVideoContext('myVideo');
+		const but_data = wx.getMenuButtonBoundingClientRect()
+		search_data.S_height = but_data.height
+		search_data.S_top = but_data.top
+		// 获取屏幕宽高
+		search_data.winheight = wx.getSystemInfoSync().screenHeight
+		// 获取视频的上下文
+		search_data.videoplay = wx.createVideoContext('myVideo')
 	})
+	
 	// 继续播放触发
 	function playFun(){
-		startVideo.value = false;
+		search_data.startVideo = false
 	}
-	// 暂停播放时触发
+	// 暂停播放触发
 	function pauseFun(){
-		startVideo.value = true;
+		search_data.startVideo = true
 	}
-	//触发播放
+	
+	// 触发播放
 	function videoPlay(){
-		search_data.videoplay.play();
-		startVideo.value = false;
+		search_data.videoplay.play()
 	}
-	//暂停播放或者继续播放
+	// 暂停播放或者继续播放
 	function allRound(){
-		startVideo.value = search_data.startVideo ? false  : true ;
-		if(startVideo.value){
+		search_data.startVideo = search_data.startVideo ? false : true
+		if(search_data.startVideo){
 			// 暂停播放
-			search_data.videoplay.pause();	
+			search_data.videoplay.pause()
 		}else{
 			// 继续播放
-			search_data.videoplay.play();
+			search_data.videoplay.play()
 		}
 	}
-	import {onLoad} from '@dcloudio/uni-app'
-	// 请求短视频数据
-	const result = reactive({goods_id:'',video_data:{},total:0,collection:0,succ_login:0});
-	const db = wx.cloud.database();
-	const {video_data,total,collection} = toRefs(result);
+	
+	import {onLoad,onShareAppMessage} from '@dcloudio/uni-app'
+	const db = wx.cloud.database()
+	// 请求短视频的数据
+	const result = reactive({goods_id:'',video_data:{},total:0,collection:0,
+	succ_login:0
+	})
+	const {video_data,total,collection} = toRefs(result)
 	onLoad(async(event)=>{
 		const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
-		result.goods_id = event.goods_id;
+		result.goods_id = event.goods_id
 		const card = await db.collection('goods').doc(event.goods_id).field({video_url:true,goods_cover:true,goods_title:true,goods_price:true,seckill:true}).get()
 		// 获取评论条数
 		const count = await db.collection('video_comment').where({goods_id:event.goods_id}).count()
@@ -125,60 +128,57 @@
 		Promise.all([card,count,collect])
 		.then(async res=>{
 			result.video_data = res[0].data//短视频数据
-			result.total = res[1].total//评论数量
-			result.collection = user ? res[2].data.length : 0;//收藏的数据
-			result.succ_login = res[2].data.length;//如果登录成功就取这里的收藏数据 
-			// 该商品是否参与秒杀,如果有就展示秒杀价
+			result.total = res[1].total//评论的条数
+			result.collection = user ? res[2].data.length : 0//收藏的数据
+			result.succ_login = res[2].data.length//如果登陆成功就取这里的收藏数据
+			// 该商品是否参与秒杀，如果有，就展示秒杀的价格
 			if(res[0].data.seckill){
-				const seckill = await db.collection('seckill').where({goods_id:event.goods_id}).field({price_spike:true}).get();
-				result.video_data.goods_price = seckill.data[0].price_spike;
+				const seckill = await db.collection('seckill').where({goods_id:event.goods_id}).field({price_spike:true}).get()
+				result.video_data.goods_price = seckill.data[0].price_spike
 			}
 		})
 		.catch(err=>{
 			console.log(err)
 		})
 	})
+	
 	import {login_user} from '@/Acc-config/answer.js'
 	import {Public} from '@/Acc-config/public.js'
- 	//收藏
+	// 收藏
 	async function toCollect(){
 		const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
-		if(!user){
-			login_user.show = true;
-			return false;
-		}
+		if(!user){login_user.show = true;return false}
 		try{
-			await db.collection('collect_goods').add({data:{goods_id:result.goods_id}});
-			result.collection++;
+			await db.collection('collect_goods').add({data:{goods_id:result.goods_id}})
+			result.collection++
 		}catch(e){
-			new Public().toast('收藏失败');
+			new Plublic().toast('收藏失败')
 		}
 	}
-	//取消收藏
+	// 取消收藏
 	async function canCollect(){
 		const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
-		if(!user){
-			login_user.show = true;
-			return false;
-		}
+		if(!user){login_user.show = true;return false}
 		try{
-			await db.collection('collect_goods').where({goods_id:result.goods_id}).remove();
-			result.collection = 0;
+			await db.collection('collect_goods').where({goods_id:result.goods_id}).remove()
+			result.collection = 0
 		}catch(e){
-			new Public().toast('取消收藏失败');
+			new Plublic().toast('取消收藏失败')
 		}
+		
 	}
-	//监听用户登录成功
+	
+	// 监听用户登陆成功
 	watch(()=>login_user.response,(newVal,oldVal)=>{
-		result.collection = result.succ_login;
+		result.collection = result.succ_login
 	})
 	
-	//拉出评论框
-	import {comment_show} from '@/Acc-config/answer.js'
+	// 拉出评论框
+	import {comment_show} from '../../Acc-config/answer.js'
 	function pull(){
-		comment_show.show = true;
-		comment_show.num++;
-		comment_show.goods_id = result.goods_id;
+		comment_show.show = true
+		comment_show.num++
+		comment_show.goods_id = result.goods_id
 	}
 </script>
 

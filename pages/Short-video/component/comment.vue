@@ -1,83 +1,113 @@
 <template>
-	<page-container :show="comment_show.show" position="bottom" bindenter="onEnter">
+	<page-container :show="comment_show.show" @clickoverlay="comment_show.show = false">
 		<view class="space-view">
 			<view class="chacha" @click="comment_show.show = false">
 				<image src="/static/detail/guanbi.svg" mode="aspectFit"></image>
 			</view>
-			<scroll-view :scroll-y="true" :show-scrollbar="false" :enhanced="true">
-				<view class="messages-views" v-for="(item,index) in comment" :key="index">
-					<view class="messages-name">
-						<image :src="item.avatarurl" mode="aspectFill"></image>
-						<view class="nickname">{{item.nickname}}</view>
-						<view class="times">{{item.time}}</view>
+			<scroll-view :scroll-y="true" :show-scrollbar="false" class="scroll-hi" :enhanced='true' @scrolltolower="tolower">
+				<block v-for="(item,index) in comment" :key="index">
+					<view class="messages-views">
+						<view class="messages-name">
+							<image :src="item.avatarurl" mode="aspectFill"></image>
+							<view class="nickname">{{item.nickname}}</view>
+							<view class="times">{{item.time}}</view>
+						</view>
+						<view class="messages-title">{{item.content}}</view>
 					</view>
-					<view class="messages-title">{{item.content}}</view>
-				</view>
+				</block>
 				<!-- 没有评论的提示 -->
-				<view class="Tips" v-if="comment.length === 0">暂无评论</view>
+				<view class="Tips" v-if="comment.length == 0">暂无评论</view>
+				<!-- 上拉加载的提示 -->
+				<view class="loading-hei">
+					<Loading v-show="loading"></Loading>
+				</view>
+				<view style="height: 200rpx;"></view>
 			</scroll-view>
 			<!-- 评论框 -->
 			<view class="Comment-box">
 				<view class="Comment-box-input">
-					<input type="text" v-model="content" placeholder="留下你的评论" confirm-type="send" cursor-spacing="50"/>
+					<input type="text" placeholder="留下你的评论"
+						confirm-type="send"
+						cursor-spacing="50"
+						v-model="content"
+					/>
 				</view>
 				<view class="send-out" @click="sEnd">发送</view>
 			</view>
-		</view>	
+		</view>
 	</page-container>
 </template>
 
 <script setup>
-	import {watch,reactive,toRefs} from 'vue';
 	function onEnter(){}
 	import {comment_show} from '@/Acc-config/answer.js'
+	import Loading from '@/pages/public-view/loading.vue'
+	import {watch,reactive,toRefs,ref} from 'vue'
 	import moment from 'moment'
 	moment.locale('zh-cn');
-	const db = wx.cloud.database();
+	const db = wx.cloud.database()
 	
-	//监听父组件传值拉起评论框，请求数据
+	// 监听父组件传值拉起评论框，请求数据
 	watch(comment_show,(newVal,oldVal)=>{
-		if(newVal.show && comment_show.num === 2){
-			relation.goods_id = comm_data.goods_id;
-			called();
+		if(newVal.show && comment_show.num == 2){
+			relation.goods_id = comment_show.goods_id
+			called(comment_show.goods_id)
 		}
 	})
-	//请求评论数据
-	function called(){
-		console.log('9999');
+	
+	// 请求评论数据
+	async function called(goods_id,sk=0){
+		const comment = await db.collection('video_comment').where({goods_id}).field({_openid:false}).limit(10).skip(sk).get()
+		if(sk === 0){
+			comm_data.comment = comment.data;
+		}else{
+			comm_data.comment = [...comm_data.comment,...comment.data];
+			loading.value = false;
+		}
+
 	}
-	//评论的数据
+	
+	// 评论数据
 	const comm_data = reactive({
-		content:'',
-		comment:[]
+		content:'',//input输入框的值
+		comment:[],//接收评论数据
 	})
-	const {content,comment} = toRefs(comm_data);
+	const {content,comment} = toRefs(comm_data)
+	
 	// 提交评论
+	const relation = reactive({goods_id:''})//商品id
 	import {login_user} from '@/Acc-config/answer.js'
 	import {Public} from '@/Acc-config/public.js'
-	
-	const relation = reactive({goods_id:''});
 	async function sEnd(){
-		if(comm_data.content.split(" ").join("").length === 0){return false}
+		if(comm_data.content.split(" ").join("").length == 0){return false}
 		const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
-		if(!user){login_user.show = true;return false;}
-		let time = moment().utcOffset(8).format('YYYY-MM-DD');
-		const obj = 
-			{
-				avatarurl:user.avatarurl,
-				nickname:user.nickname,
-				time,
-				content:comm_data.content,
-				goods_id:relation.goods_id
-			}
-			try{
-				await db.collection('video_comment').add({data:obj});
-				comm_data.content = '';
-				comm_data.comment.unshift(obj);
-			}catch(e){
-				new Public().toast('评论失败');
-			}
+		if(!user){login_user.show = true;return false}
+		let time = moment().utcOffset(8).format('YYYY-MM-DD')
+		const obj = {
+			avatarurl:user.avatarUrl,
+			nickname:user.nickName,
+			time,
+			content:comm_data.content,
+			goods_id:relation.goods_id,
+		}
+		try{
+			await db.collection('video_comment').add({data:obj})
+			comm_data.content = ''
+			comm_data.comment.unshift(obj)
+		}catch(e){
+			new Plublic().toast('评论失败')
+		}
 	}
+	// 上拉加载
+		const loading = ref(false)
+		let page_n = ref(0)
+		function tolower(e){
+			if(comm_data.comment.length < 10)return false
+			loading.value = true
+			page_n.value++
+			let sk = page_n.value * 10
+			called(relation.goods_id,sk)
+		}		
 </script>
 
 <style scoped>
@@ -86,11 +116,11 @@
 	display: flex;
 	justify-content: flex-end;
 }
-.chacha image{width: 30rpx; height: 30rpx;}
+.chacha image{width: 30rpx; height: 30rpx;margin: 15rpx 15rpx;}
 .scroll-hi{height: 1000rpx;}
 /* 评论内容 */
 .messages-views{
-	margin: 20rpx 0;
+	margin: 20rpx 20rpx;
 }
 .messages-name image{
 	width: 60rpx; height: 60rpx;
@@ -161,21 +191,15 @@
 	left: 50%;
 	transform: translate(-50%, -50%);
 }
-.space-view{
-	height: 1050rpx;
-	padding-bottom: 30rpx;
-	background: #fefefe;
-	/* z-index: 999;
-	position: fixed;
-	bottom: 0;
-	left: 0;
-	right: 0; */
-	overflow-y:auto;
-	padding: 20rpx;
-}
 .Tips{
 	text-align: center;
 	padding-top: 100rpx;
 	color: #cccccc;
+}
+.loading-hei{
+	height: 90px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 </style>
