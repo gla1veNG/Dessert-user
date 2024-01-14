@@ -2,18 +2,18 @@
 	<view class="Rotation-view">
 		<view class="swiper-top">
 			<view>
-				<swiper class="swiper" :autoplay="true" :circular="true" interval="2000" duration="1000" @change="swiperFun">
+				<swiper class="swiper" :autoplay='true' :circular="true" interval="2000" duration="1000" @change="swiperFun">
 					<block v-for="(item,index) in banner" :key="index">
-						<swiper-item class="swiper-item">
+						<swiper-item class="swiper-item" @click="juMp(item.goods_id,item.video_url)">
 							<image :src="item.banner_cover" mode="aspectFill"></image>
 						</swiper-item>
 					</block>
 				</swiper>
 			</view>
-			<!-- 自定义指示点 -->
+			<!-- 自定义的指示点 -->
 			<view class="instruct-view">
 				<block v-for="(item,index) in banner" :key="index">
-					<view class="instruct" :class="{active : index === num}"></view>
+					<view class="instruct" :class="{active:index == num}"></view>
 				</block>
 			</view>
 		</view>
@@ -28,6 +28,17 @@
 	const num = ref(0);
 	function swiperFun(e){
 		num.value = e.detail.current;
+	}
+	
+	//跳转详情页
+	function juMp(goods_id,video_url){
+		if(video_url === ''){
+			console.log('跳转详情页');
+		}else{
+			wx.navigateTo({
+				url:`/pages/Short-video/video?goods_id=${goods_id}`
+			})
+		}
 	}
 </script>
 

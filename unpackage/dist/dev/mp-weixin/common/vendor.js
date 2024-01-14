@@ -10816,6 +10816,7 @@ exports.f = f;
 exports.hooks = hooks;
 exports.isRef = isRef;
 exports.o = o;
+exports.onBeforeUnmount = onBeforeUnmount;
 exports.onLoad = onLoad;
 exports.onMounted = onMounted;
 exports.onReachBottom = onReachBottom;

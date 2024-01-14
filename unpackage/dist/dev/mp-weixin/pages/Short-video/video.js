@@ -99,6 +99,9 @@ const _sfc_main = {
     common_vendor.watch(() => AccConfig_answer.login_user.response, (newVal, oldVal) => {
       result.collection = result.succ_login;
     });
+    common_vendor.onBeforeUnmount(() => {
+      AccConfig_answer.comment_show.num = 1;
+    });
     function pull() {
       AccConfig_answer.comment_show.show = true;
       AccConfig_answer.comment_show.num++;
@@ -111,29 +114,35 @@ const _sfc_main = {
         imageUrl: result.video_data.goods_cover
       };
     });
+    function getInfo() {
+      common_vendor.wx$1.navigateBack({
+        delta: 1
+      });
+    }
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: common_vendor.s("height:" + common_vendor.unref(S_top) + "px;"),
-        b: common_vendor.s("height:" + common_vendor.unref(S_height) + "px;"),
-        c: common_vendor.s("height:" + common_vendor.unref(winheight) + "px;"),
-        d: common_vendor.o(playFun),
-        e: common_vendor.o(pauseFun),
-        f: common_vendor.o(allRound),
-        g: common_vendor.o(videoPlay),
-        h: common_vendor.unref(startVideo),
-        i: common_vendor.unref(video_data).goods_cover,
-        j: common_vendor.t(common_vendor.unref(video_data).goods_price),
-        k: common_vendor.t(common_vendor.unref(video_data).goods_title),
-        l: common_vendor.t(common_vendor.unref(total) === 0 ? "评论" : common_vendor.unref(total)),
-        m: common_vendor.o(pull),
-        n: common_vendor.unref(collection) <= 0
+        b: common_vendor.o(getInfo),
+        c: common_vendor.s("height:" + common_vendor.unref(S_height) + "px;"),
+        d: common_vendor.s("height:" + common_vendor.unref(winheight) + "px;"),
+        e: common_vendor.o(playFun),
+        f: common_vendor.o(pauseFun),
+        g: common_vendor.o(allRound),
+        h: common_vendor.o(videoPlay),
+        i: common_vendor.unref(startVideo),
+        j: common_vendor.unref(video_data).goods_cover,
+        k: common_vendor.t(common_vendor.unref(video_data).goods_price),
+        l: common_vendor.t(common_vendor.unref(video_data).goods_title),
+        m: common_vendor.t(common_vendor.unref(total) === 0 ? "评论" : common_vendor.unref(total)),
+        n: common_vendor.o(pull),
+        o: common_vendor.unref(collection) <= 0
       }, common_vendor.unref(collection) <= 0 ? {
-        o: common_vendor.o(toCollect)
+        p: common_vendor.o(toCollect)
       } : {
-        p: common_vendor.o(canCollect)
+        q: common_vendor.o(canCollect)
       }, {
-        q: common_vendor.t(common_vendor.unref(collection) > 0 ? "已收藏" : "收藏"),
-        r: common_vendor.s("height:" + common_vendor.unref(winheight) + "px;")
+        r: common_vendor.t(common_vendor.unref(collection) > 0 ? "已收藏" : "收藏"),
+        s: common_vendor.s("height:" + common_vendor.unref(winheight) + "px;")
       });
     };
   }

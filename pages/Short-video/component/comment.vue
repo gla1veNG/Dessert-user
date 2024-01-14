@@ -49,7 +49,7 @@
 	
 	// 监听父组件传值拉起评论框，请求数据
 	watch(comment_show,(newVal,oldVal)=>{
-		if(newVal.show && comment_show.num == 2){
+		if(newVal.show && comment_show.num === 2){
 			relation.goods_id = comment_show.goods_id
 			called(comment_show.goods_id)
 		}

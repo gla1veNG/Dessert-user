@@ -3,7 +3,7 @@
 		<view :style="'height:' + S_top + 'px;'"></view>
 		<view class="video-return-img" :style=" 'height:' + S_height + 'px;' ">
 			<view>
-				<image src="/static/detail/video-fanhui.svg" mode="aspectFit"></image>
+				<image src="/static/detail/video-fanhui.svg" mode="aspectFit" @click="getInfo"></image>
 			</view>
 		</view>
 	</view>
@@ -62,7 +62,7 @@
 </template>
 
 <script setup>
-	import {onMounted,reactive,toRefs,watch} from 'vue'
+	import {onMounted,reactive,toRefs,watch,onBeforeUnmount} from 'vue'
 	import Comment from './component/comment.vue'
 	import Login from '@/pages/components/login-view.vue'
 	
@@ -175,6 +175,10 @@
 	
 	// 拉出评论框
 	import {comment_show} from '@/Acc-config/answer.js'
+	//卸载组件
+	onBeforeUnmount(()=>{
+		comment_show.num = 1
+	})
 	function pull(){
 		comment_show.show = true
 		comment_show.num++
@@ -188,6 +192,12 @@
 			imageUrl:result.video_data.goods_cover
 		}
 	})
+	//返回上一页
+	function getInfo(){
+		wx.navigateBack({
+			delta:1
+		});
+	}
 </script>
 
 <style scoped>

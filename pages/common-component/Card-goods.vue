@@ -1,8 +1,8 @@
 <template>
 	<!-- 公用的商品列表组件 -->
 	<view class="card-view">
-		<view class="Card-stream" v-for="(item,index) in card" :key="index">
-			<view class="Card-image">
+		<view class="Card-stream" v-for="(item,index) in card" :key="index" @click="juMp(item._id,item.video_url)">
+			<view class="Card-image" >
 				<image :src="item.goods_cover" mode="aspectFill"></image>
 			</view>
 				<view class="Card-title overflow">{{item.goods_title}}</view>
@@ -17,6 +17,17 @@
 <script setup>
 	import {defineProps} from 'vue'
 	defineProps({card:Array});
+	
+	//跳转详情页
+	function juMp(goods_id,video_url){
+		if(video_url === ''){
+			console.log('跳转详情页');
+		}else{
+			wx.navigateTo({
+				url:`/pages/Short-video/video?goods_id=${goods_id}`
+			})
+		}
+	}
 </script>
 
 <style scoped>

@@ -12,7 +12,7 @@ const _sfc_main = {
     common_vendor.hooks.locale("zh-cn");
     const db = common_vendor.wx$1.cloud.database();
     common_vendor.watch(AccConfig_answer.comment_show, (newVal, oldVal) => {
-      if (newVal.show && AccConfig_answer.comment_show.num == 2) {
+      if (newVal.show && AccConfig_answer.comment_show.num === 2) {
         relation.goods_id = AccConfig_answer.comment_show.goods_id;
         called(AccConfig_answer.comment_show.goods_id);
       }

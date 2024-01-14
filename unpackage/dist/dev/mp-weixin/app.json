@@ -1,8 +1,8 @@
 {
   "pages": [
+    "pages/index/index",
     "pages/Short-video/video",
     "pages/Search-view/search",
-    "pages/index/index",
     "pages/sort-view/sort-view",
     "pages/shopping-cart/shopping-cart",
     "pages/my-page/my-page"

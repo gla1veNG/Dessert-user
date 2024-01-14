@@ -2,7 +2,7 @@
 	<view class="flash-view">
 		<view class="count-down">每日秒杀</view>
 		<view class="flex-view">
-			<view class="commodity" v-for="(item,index) in seckill" :key="index">
+			<view class="commodity" v-for="(item,index) in seckill" :key="index" @click="juMp(item.goods_id,item.video_url)">
 				<image :src="item.cover" mode="aspectFill"></image>
 				<view>
 					<text class="overflow">{{item.title}}</text>
@@ -17,6 +17,17 @@
 <script setup>
 	import {defineProps} from 'vue'
 	defineProps({seckill:Array});
+	
+	//跳转详情页
+	function juMp(goods_id,video_url){
+		if(video_url === ''){
+			console.log('跳转详情页');
+		}else{
+			wx.navigateTo({
+				url:`/pages/Short-video/video?goods_id=${goods_id}`
+			})
+		}
+	}
 </script>
 
 <style scoped>
