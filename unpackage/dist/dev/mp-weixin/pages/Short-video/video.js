@@ -104,6 +104,13 @@ const _sfc_main = {
       AccConfig_answer.comment_show.num++;
       AccConfig_answer.comment_show.goods_id = result.goods_id;
     }
+    common_vendor.onShareAppMessage(() => {
+      return {
+        title: result.video_data.goods_title,
+        path: `pages/Short-video/video?goods_id=${result.goods_id}`,
+        imageUrl: result.video_data.goods_cover
+      };
+    });
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: common_vendor.s("height:" + common_vendor.unref(S_top) + "px;"),

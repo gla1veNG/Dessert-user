@@ -174,12 +174,20 @@
 	})
 	
 	// 拉出评论框
-	import {comment_show} from '../../Acc-config/answer.js'
+	import {comment_show} from '@/Acc-config/answer.js'
 	function pull(){
 		comment_show.show = true
 		comment_show.num++
 		comment_show.goods_id = result.goods_id
 	}
+	//分享
+	onShareAppMessage(()=>{
+		return{
+			title:result.video_data.goods_title,
+			path:`pages/Short-video/video?goods_id=${result.goods_id}`,
+			imageUrl:result.video_data.goods_cover
+		}
+	})
 </script>
 
 <style scoped>

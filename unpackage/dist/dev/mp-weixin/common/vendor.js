@@ -6825,6 +6825,7 @@ const createHook = (lifecycle) => (hook, target = getCurrentInstance()) => {
 };
 const onLoad = /* @__PURE__ */ createHook(ON_LOAD);
 const onReachBottom = /* @__PURE__ */ createHook(ON_REACH_BOTTOM);
+const onShareAppMessage = /* @__PURE__ */ createHook(ON_SHARE_APP_MESSAGE);
 //! moment.js
 //! version : 2.30.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -10818,6 +10819,7 @@ exports.o = o;
 exports.onLoad = onLoad;
 exports.onMounted = onMounted;
 exports.onReachBottom = onReachBottom;
+exports.onShareAppMessage = onShareAppMessage;
 exports.p = p;
 exports.reactive = reactive;
 exports.ref = ref;
