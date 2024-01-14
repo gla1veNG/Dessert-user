@@ -94,6 +94,11 @@ const _sfc_main = {
     common_vendor.watch(() => AccConfig_answer.login_user.response, (newVal, oldVal) => {
       result.collection = result.succ_login;
     });
+    function pull() {
+      AccConfig_answer.comment_show.show = true;
+      AccConfig_answer.comment_show.num++;
+      AccConfig_answer.comment_show.goods_id = result.goods_id;
+    }
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: common_vendor.s("height:" + common_vendor.unref(S_top) + "px;"),
@@ -108,14 +113,15 @@ const _sfc_main = {
         j: common_vendor.t(common_vendor.unref(video_data).goods_price),
         k: common_vendor.t(common_vendor.unref(video_data).goods_title),
         l: common_vendor.t(common_vendor.unref(total) === 0 ? "评论" : common_vendor.unref(total)),
-        m: common_vendor.unref(collection) <= 0
+        m: common_vendor.o(pull),
+        n: common_vendor.unref(collection) <= 0
       }, common_vendor.unref(collection) <= 0 ? {
-        n: common_vendor.o(toCollect)
+        o: common_vendor.o(toCollect)
       } : {
-        o: common_vendor.o(canCollect)
+        p: common_vendor.o(canCollect)
       }, {
-        p: common_vendor.t(common_vendor.unref(collection) > 0 ? "已收藏" : "收藏"),
-        q: common_vendor.s("height:" + common_vendor.unref(winheight) + "px;")
+        q: common_vendor.t(common_vendor.unref(collection) > 0 ? "已收藏" : "收藏"),
+        r: common_vendor.s("height:" + common_vendor.unref(winheight) + "px;")
       });
     };
   }

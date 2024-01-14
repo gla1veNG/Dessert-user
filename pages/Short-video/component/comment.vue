@@ -1,32 +1,83 @@
 <template>
-	<page-container :show="false" position="bottom" bindenter="onEnter">
+	<page-container :show="comment_show.show" position="bottom" bindenter="onEnter">
 		<view class="space-view">
-			<view class="chacha">
+			<view class="chacha" @click="comment_show.show = false">
 				<image src="/static/detail/guanbi.svg" mode="aspectFit"></image>
 			</view>
 			<scroll-view :scroll-y="true" :show-scrollbar="false" :enhanced="true">
-				<view class="messages-views">
+				<view class="messages-views" v-for="(item,index) in comment" :key="index">
 					<view class="messages-name">
-						<image src="/static/detail/jianshao.png" mode="aspectFill"></image>
-						<view class="nickname">昵称</view>
-						<view class="times">2024-01-13</view>
+						<image :src="item.avatarurl" mode="aspectFill"></image>
+						<view class="nickname">{{item.nickname}}</view>
+						<view class="times">{{item.time}}</view>
 					</view>
-					<view class="messages-title">评论内容</view>
+					<view class="messages-title">{{item.content}}</view>
 				</view>
+				<!-- 没有评论的提示 -->
+				<view class="Tips" v-if="comment.length === 0">暂无评论</view>
 			</scroll-view>
 			<!-- 评论框 -->
 			<view class="Comment-box">
 				<view class="Comment-box-input">
-					<input type="text" placeholder="留下你的评论" confirm-type="send" cursor-spacing="50"/>
+					<input type="text" v-model="content" placeholder="留下你的评论" confirm-type="send" cursor-spacing="50"/>
 				</view>
-				<view class="send-out">发送</view>
+				<view class="send-out" @click="sEnd">发送</view>
 			</view>
 		</view>	
 	</page-container>
 </template>
 
 <script setup>
+	import {watch,reactive,toRefs} from 'vue';
 	function onEnter(){}
+	import {comment_show} from '@/Acc-config/answer.js'
+	import moment from 'moment'
+	moment.locale('zh-cn');
+	const db = wx.cloud.database();
+	
+	//监听父组件传值拉起评论框，请求数据
+	watch(comment_show,(newVal,oldVal)=>{
+		if(newVal.show && comment_show.num === 2){
+			relation.goods_id = comm_data.goods_id;
+			called();
+		}
+	})
+	//请求评论数据
+	function called(){
+		console.log('9999');
+	}
+	//评论的数据
+	const comm_data = reactive({
+		content:'',
+		comment:[]
+	})
+	const {content,comment} = toRefs(comm_data);
+	// 提交评论
+	import {login_user} from '@/Acc-config/answer.js'
+	import {Public} from '@/Acc-config/public.js'
+	
+	const relation = reactive({goods_id:''});
+	async function sEnd(){
+		if(comm_data.content.split(" ").join("").length === 0){return false}
+		const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
+		if(!user){login_user.show = true;return false;}
+		let time = moment().utcOffset(8).format('YYYY-MM-DD');
+		const obj = 
+			{
+				avatarurl:user.avatarurl,
+				nickname:user.nickname,
+				time,
+				content:comm_data.content,
+				goods_id:relation.goods_id
+			}
+			try{
+				await db.collection('video_comment').add({data:obj});
+				comm_data.content = '';
+				comm_data.comment.unshift(obj);
+			}catch(e){
+				new Public().toast('评论失败');
+			}
+	}
 </script>
 
 <style scoped>
@@ -121,5 +172,10 @@
 	right: 0; */
 	overflow-y:auto;
 	padding: 20rpx;
+}
+.Tips{
+	text-align: center;
+	padding-top: 100rpx;
+	color: #cccccc;
 }
 </style>

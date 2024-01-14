@@ -38,7 +38,7 @@
 		</view>
 		<!-- 右边的评论等等 -->
 		<view class="user-right">
-			<view class="give-thethu">
+			<view class="give-thethu" @click="pull">
 				<view><image src="/static/detail/video-pinglun.svg" mode="aspectFit"></image></view>
 				<view>{{total === 0 ? '评论' : total}}</view>
 			</view>
@@ -172,6 +172,14 @@
 	watch(()=>login_user.response,(newVal,oldVal)=>{
 		result.collection = result.succ_login;
 	})
+	
+	//拉出评论框
+	import {comment_show} from '@/Acc-config/answer.js'
+	function pull(){
+		comment_show.show = true;
+		comment_show.num++;
+		comment_show.goods_id = result.goods_id;
+	}
 </script>
 
 <style scoped>

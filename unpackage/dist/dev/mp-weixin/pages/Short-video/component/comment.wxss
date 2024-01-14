@@ -91,3 +91,8 @@
 	overflow-y:auto;
 	padding: 20rpx;
 }
+.Tips.data-v-d3817507{
+	text-align: center;
+	padding-top: 100rpx;
+	color: #cccccc;
+}
