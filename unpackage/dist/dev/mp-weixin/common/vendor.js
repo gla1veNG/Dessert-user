@@ -6840,4 +6840,5 @@ exports.s = s;
 exports.t = t;
 exports.toRefs = toRefs;
 exports.unref = unref;
+exports.watch = watch;
 exports.wx$1 = wx$1;

@@ -1,10 +1,18 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const AccConfig_answer = require("../../Acc-config/answer.js");
+const AccConfig_public = require("../../Acc-config/public.js");
 const _sfc_main = {
   __name: "login-view",
   setup(__props) {
-    function login() {
+    async function login() {
+      try {
+        await new AccConfig_public.Public().login();
+        AccConfig_answer.login_user.show = false;
+        AccConfig_answer.login_user.response = "success";
+      } catch (e) {
+        new AccConfig_public.Public().toast("登录失败");
+      }
     }
     return (_ctx, _cache) => {
       return common_vendor.e({

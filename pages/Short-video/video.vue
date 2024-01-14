@@ -62,7 +62,7 @@
 </template>
 
 <script setup>
-	import {onMounted,reactive,toRefs} from 'vue'
+	import {onMounted,reactive,toRefs, watch} from 'vue'
 	import Comment from '@/pages/Short-video/component/comment.vue'
 	import Login from '@/pages/components/login-view.vue'
 	function bindenter(){}
@@ -112,7 +112,7 @@
 	}
 	import {onLoad} from '@dcloudio/uni-app'
 	// 请求短视频数据
-	const result = reactive({goods_id:'',video_data:{},total:0,collection:0});
+	const result = reactive({goods_id:'',video_data:{},total:0,collection:0,succ_login:0});
 	const db = wx.cloud.database();
 	const {video_data,total,collection} = toRefs(result);
 	onLoad(async(event)=>{
@@ -127,6 +127,7 @@
 			result.video_data = res[0].data//短视频数据
 			result.total = res[1].total//评论数量
 			result.collection = user ? res[2].data.length : 0;//收藏的数据
+			result.succ_login = res[2].data.length;//如果登录成功就取这里的收藏数据 
 			// 该商品是否参与秒杀,如果有就展示秒杀价
 			if(res[0].data.seckill){
 				const seckill = await db.collection('seckill').where({goods_id:event.goods_id}).field({price_spike:true}).get();
@@ -138,21 +139,39 @@
 		})
 	})
 	import {login_user} from '@/Acc-config/answer.js'
+	import {Public} from '@/Acc-config/public.js'
  	//收藏
-	function toCollect(){
+	async function toCollect(){
 		const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
 		if(!user){
 			login_user.show = true;
 			return false;
 		}
+		try{
+			await db.collection('collect_goods').add({data:{goods_id:result.goods_id}});
+			result.collection++;
+		}catch(e){
+			new Public().toast('收藏失败');
+		}
 	}
 	//取消收藏
-	function canCollect(){
+	async function canCollect(){
+		const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
 		if(!user){
 			login_user.show = true;
 			return false;
 		}
+		try{
+			await db.collection('collect_goods').where({goods_id:result.goods_id}).remove();
+			result.collection = 0;
+		}catch(e){
+			new Public().toast('取消收藏失败');
+		}
 	}
+	//监听用户登录成功
+	watch(()=>login_user.response,(newVal,oldVal)=>{
+		result.collection = result.succ_login;
+	})
 </script>
 
 <style scoped>

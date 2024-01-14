@@ -10,9 +10,16 @@
 
 <script setup>
 	import {login_user} from '@/Acc-config/answer.js'
+	import {Public} from '@/Acc-config/public.js'
 	//登录
-	function login(){
-	
+	async function login(){
+		try{
+			await new Public().login();
+			login_user.show = false;
+			login_user.response = 'success'
+		}catch(e){
+			new Public().toast('登录失败');
+		}
 	}
 </script>
 

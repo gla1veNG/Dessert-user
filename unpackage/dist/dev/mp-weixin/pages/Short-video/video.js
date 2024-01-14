@@ -1,6 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const AccConfig_answer = require("../../Acc-config/answer.js");
+const AccConfig_public = require("../../Acc-config/public.js");
 if (!Math) {
   (Comment + Login)();
 }
@@ -42,11 +43,11 @@ const _sfc_main = {
         search_data.videoplay.play();
       }
     }
-    const result = common_vendor.reactive({ goods_id: "", video_data: {}, total: 0, collection: 0 });
+    const result = common_vendor.reactive({ goods_id: "", video_data: {}, total: 0, collection: 0, succ_login: 0 });
     const db = common_vendor.wx$1.cloud.database();
     const { video_data, total, collection } = common_vendor.toRefs(result);
     common_vendor.onLoad(async (event) => {
-      const user2 = common_vendor.wx$1.getStorageSync("user_infor");
+      const user = common_vendor.wx$1.getStorageSync("user_infor");
       result.goods_id = event.goods_id;
       const card = await db.collection("goods").doc(event.goods_id).field({ video_url: true, goods_cover: true, goods_title: true, goods_price: true, seckill: true }).get();
       const count = await db.collection("video_comment").where({ goods_id: event.goods_id }).count();
@@ -54,7 +55,8 @@ const _sfc_main = {
       Promise.all([card, count, collect]).then(async (res) => {
         result.video_data = res[0].data;
         result.total = res[1].total;
-        result.collection = user2 ? res[2].data.length : 0;
+        result.collection = user ? res[2].data.length : 0;
+        result.succ_login = res[2].data.length;
         if (res[0].data.seckill) {
           const seckill = await db.collection("seckill").where({ goods_id: event.goods_id }).field({ price_spike: true }).get();
           result.video_data.goods_price = seckill.data[0].price_spike;
@@ -63,19 +65,35 @@ const _sfc_main = {
         console.log(err);
       });
     });
-    function toCollect() {
-      const user2 = common_vendor.wx$1.getStorageSync("user_infor");
-      if (!user2) {
-        AccConfig_answer.login_user.show = true;
-        return false;
-      }
-    }
-    function canCollect() {
+    async function toCollect() {
+      const user = common_vendor.wx$1.getStorageSync("user_infor");
       if (!user) {
         AccConfig_answer.login_user.show = true;
         return false;
       }
+      try {
+        await db.collection("collect_goods").add({ data: { goods_id: result.goods_id } });
+        result.collection++;
+      } catch (e) {
+        new AccConfig_public.Public().toast("收藏失败");
+      }
     }
+    async function canCollect() {
+      const user = common_vendor.wx$1.getStorageSync("user_infor");
+      if (!user) {
+        AccConfig_answer.login_user.show = true;
+        return false;
+      }
+      try {
+        await db.collection("collect_goods").where({ goods_id: result.goods_id }).remove();
+        result.collection = 0;
+      } catch (e) {
+        new AccConfig_public.Public().toast("取消收藏失败");
+      }
+    }
+    common_vendor.watch(() => AccConfig_answer.login_user.response, (newVal, oldVal) => {
+      result.collection = result.succ_login;
+    });
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: common_vendor.s("height:" + common_vendor.unref(S_top) + "px;"),
