@@ -1,5 +1,9 @@
 {
   "navigationBarTitleText": "商品详情页",
   "navigationStyle": "custom",
-  "usingComponents": {}
+  "usingComponents": {
+    "swipers": "./component/swiper",
+    "eva": "./component/evaluate",
+    "img": "./component/image"
+  }
 }
