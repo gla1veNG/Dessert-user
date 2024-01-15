@@ -14,28 +14,28 @@
 		<view class="point">{{current}}/{{ban_length}}</view>
 	</view>
 	<!-- 秒杀 -->
-	<view class="seckill">
+	<view class="seckill" v-if="seckill_display">
 		<view class="seckill-top seckill-flex">
 			<text>秒杀中</text>
 			<text class="seckill-Center">已售 5</text>
-			<text>距离结束还有:</text>
+			<text>距离结束还有：</text>
 		</view>
 		<view class="seckill-flex">
 			<text class="price-spike">9.9￥</text>
 			<text class="seckill-Center ori-price">19.9￥</text>
 			<view class="se-time">
-				<text>01</text>
-				<text>天</text>
-				<text>23</text>
+				<text v-if="day != '00'">{{day}}</text>
+				<text v-if="day != '00'">天</text>
+				<text>{{hour}}</text>
 				<text>:</text>
-				<text>50</text>
+				<text>{{minute}}</text>
 				<text>:</text>
-				<text>20</text>
+				<text>{{second}}</text>
 			</view>
 		</view>
 	</view>
 	<!-- 普通价格 -->
-	<view class="price-view">
+	<view class="price-view" v-else>
 		<view>{{goods.goods_price}}￥</view>
 		<view>已售 {{goods.sold}}</view>
 	</view>
@@ -43,20 +43,82 @@
 	<view class="detail-title">{{goods.goods_title}}</view>
 </template>
 <script setup>
-	import {defineProps,watch,ref} from 'vue'
+	import {defineProps,watch,ref,reactive, toRefs} from 'vue'
 	
-	const props = defineProps({goods:Object});
+	const props = defineProps({goods:Object,seckill:Array});
 	//轮播图片数量
 	const ban_length = ref(0);
 	const current = ref(1);
 	function changeCurrent(e){
 		current.value = e.detail.current + 1;
 	}
+	const seckill_display = ref(false);
 	//获取接收父组件传来的值
 	watch(props,(newVal,oldVal)=>{
 		console.log(newVal);
 		ban_length.value = newVal.goods.goods_banner ? newVal.goods.goods_banner.length : 0;
+		if(newVal.seckill.length === 0){
+			//没有秒杀
+			seckill_display.value = false; 
+		}else{
+			//有秒杀，判断是否开始
+			//判断服务器返回的开始时间是否大于当前时间，如果大于：秒杀还没开始
+				//服务器返回的开始时间
+			let start_Time = newVal.seckill[0].seckill_time.start_Time;
+			//服务器返回的结束时间
+			let end_Time = newVal.seckill[0].seckill_time.end_Time;
+			currentTime();
+			if(start_Time > currentTime()){
+				console.log('有秒杀，未开始');
+				seckill_display.value = false;
+			}else{
+				console.log('有秒杀，已开始');
+				counTdown(newVal.seckill[0],end_Time);
+			}
+		}
 	})
+	//当前的时间戳
+	function currentTime(){
+		return Math.round(new Date().getTime()/1000);
+	}
+	//计算倒计时
+	const result = reactive({
+		day:'00',
+		hour:'00',
+		minute:'00',
+		second:'00'
+	})
+	const {day,hour,minute,second} = toRefs(result); 
+	function counTdown(seckill_pri,end_Time){
+		let timer = setInterval(()=>{
+			let sur = end_Time - currentTime();//剩余的毫秒数
+			let DD = parseInt(sur / 60 / 60 / 24,10);//剩余的天数
+			let HH = parseInt(sur / 60 / 60 % 24,10);//剩余的小时
+			let MM = parseInt(sur / 60 / 60,10);//剩余的分钟数
+			let SS = parseInt(sur % 60,10);//剩余的秒数
+			DD = checkTime(DD);
+			HH = checkTime(HH);
+			MM = checkTime(MM);
+			SS = checkTime(SS);
+			if(sur > 0){
+				seckill_display.value = true;
+				result.day = DD;
+				result.hour = HH;
+				result.minute = MM;
+				result.second = SS;
+			}else{
+				//秒杀结束
+				seckill_display.value = false;
+				clearInterval(timer);
+			}
+		},100)
+		function checkTime(i){
+			if(i < 10){
+				i = '0' + i
+			}
+			return i;
+		}
+	}
 </script>
 
 <style scoped>

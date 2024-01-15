@@ -78,20 +78,19 @@ const _sfc_main = {
       eva_num: 0,
       eva_data: []
     });
-    const { goods_id, goods } = common_vendor.toRefs(result);
+    const { goods_id, goods, seckill } = common_vendor.toRefs(result);
     common_vendor.onLoad((event) => {
       result.goods_id = event.goods_id;
       const goods2 = db.collection("goods").doc(event.goods_id).get();
       const collect = db.collection("collect_goods").where({ goods_id: event.goods_id }).get();
       const sku_data_a = db.collection("sku_data").where({ sku_id: event.goods_id }).field({ sku: true }).get();
-      const seckill = db.collection("seckill").where({ goods_id: event.goods_id }).field({ ori_price: true, price_spike: true, seckill_time: true }).get();
+      const seckill2 = db.collection("seckill").where({ goods_id: event.goods_id }).field({ ori_price: true, price_spike: true, seckill_time: true }).get();
       const nu_sh_cart = db.collection("sh_cart").count();
       const eva_num = db.collection("goods_eva").count();
       const eva_data = db.collection("goods_eva").where({ goods_id: event.goods_id }).limit(3).get();
       const user = common_vendor.wx$1.getStorageSync("user_infor");
-      Promise.all([goods2, collect, sku_data_a, seckill, nu_sh_cart, eva_num, eva_data]).then(async (res) => {
+      Promise.all([goods2, collect, sku_data_a, seckill2, nu_sh_cart, eva_num, eva_data]).then(async (res) => {
         await common_vendor.nextTick$1();
-        console.log(res);
         result.goods = res[0].data;
         result.collection = user ? res[1].data.length : 0;
         result.login_coll = res[1].data.length;
@@ -124,7 +123,8 @@ const _sfc_main = {
         g: common_vendor.unref(being),
         h: common_vendor.p({
           id: "select",
-          goods: common_vendor.unref(goods)
+          goods: common_vendor.unref(goods),
+          seckill: common_vendor.unref(seckill)
         }),
         i: common_vendor.p({
           id: "select"

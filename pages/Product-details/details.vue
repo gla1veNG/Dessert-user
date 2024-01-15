@@ -13,7 +13,7 @@
 		</view>
 	</view>
 	<!-- 轮播 -->
-	<Swipers id="select" class="swiper" :goods="goods"/>
+	<Swipers id="select" class="swiper" :goods="goods" :seckill="seckill"/>
 	<!-- 评价 -->
 	<Eva id="select" class="eva"/>
 	<!-- 详情 -->
@@ -100,7 +100,7 @@
 			eva_num:0,
 			eva_data:[]
 		});
-		const {goods_id,goods} = toRefs(result);
+		const {goods_id,goods,seckill} = toRefs(result);
 		onLoad((event)=>{
 			//获取商品数据
 			result.goods_id = event.goods_id;
@@ -121,7 +121,6 @@
 			Promise.all([goods,collect,sku_data_a,seckill,nu_sh_cart,eva_num,eva_data])
 			.then(async res=>{
 				await nextTick();
-				console.log(res);
 				result.goods = res[0].data;//请求到的商品数据
 				result.collection = user ? res[1].data.length : 0;
 				result.login_coll = res[1].data.length;//登录成功之后获取这里的收藏数据
