@@ -65,9 +65,19 @@ const _sfc_main = {
         }, 500);
       });
     }
+    const db = common_vendor.wx$1.cloud.database();
+    const result = common_vendor.reactive({ goods_id: "", goods: [] });
+    const { goods_id, goods } = common_vendor.toRefs(result);
     common_vendor.onLoad((event) => {
-      console.log(event);
-      viewheight();
+      result.goods_id = event.goods_id;
+      const goods2 = db.collection("goods").doc(event.goods_id).get();
+      Promise.all([goods2]).then(async (res) => {
+        result.goods = res[0].data;
+        await common_vendor.nextTick$1();
+        viewheight();
+      }).catch((err) => {
+        console.log(err);
+      });
     });
     return (_ctx, _cache) => {
       return {
@@ -86,7 +96,8 @@ const _sfc_main = {
         f: common_vendor.unref(styleOpacity),
         g: common_vendor.unref(being),
         h: common_vendor.p({
-          id: "select"
+          id: "select",
+          goods: common_vendor.unref(goods)
         }),
         i: common_vendor.p({
           id: "select"

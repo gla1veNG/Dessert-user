@@ -2,14 +2,16 @@
 	<!-- 轮播 -->
 	<view class="swiper-view">
 		<swiper :duration="1000" :circular="true" @change="changeCurrent">
+			<block v-for="(item,index) in goods.goods_banner" :key="index">
 			<swiper-item>
 				<view class="swiper-item">
-					<image class="imageurl" src="/static/detail/shuxing-img.png" mode="aspectFill"></image>
+					<image class="imageurl" :src="item.image" mode="aspectFill"></image>
 				</view>
 			</swiper-item>
+			</block>
 		</swiper>
 		<!-- 自定义指示点 -->
-		<view class="point">1/3</view>
+		<view class="point">{{current}}/{{ban_length}}</view>
 	</view>
 	<!-- 秒杀 -->
 	<view class="seckill">
@@ -41,9 +43,20 @@
 	<view class="detail-title">这是标题这是标题这是标题这是标题这是标题这是标题这是标题</view>
 </template>
 <script setup>
+	import {defineProps,watch,ref} from 'vue'
+	
+	const props = defineProps({goods:Object});
+	//轮播图片数量
+	const ban_length = ref(0);
+	const current = ref(1);
 	function changeCurrent(e){
-		
+		current.value = e.detail.current + 1;
 	}
+	//获取接收父组件传来的值
+	watch(props,(newVal,oldVal)=>{
+		console.log(newVal);
+		ban_length.value = newVal.goods.goods_banner ? newVal.goods.goods_banner.length : 0;
+	})
 </script>
 
 <style scoped>

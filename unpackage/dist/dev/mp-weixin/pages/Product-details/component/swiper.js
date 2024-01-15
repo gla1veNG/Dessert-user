@@ -2,12 +2,29 @@
 const common_vendor = require("../../../common/vendor.js");
 const _sfc_main = {
   __name: "swiper",
+  props: { goods: Object },
   setup(__props) {
+    const props = __props;
+    const ban_length = common_vendor.ref(0);
+    const current = common_vendor.ref(1);
     function changeCurrent(e) {
+      current.value = e.detail.current + 1;
     }
+    common_vendor.watch(props, (newVal, oldVal) => {
+      console.log(newVal);
+      ban_length.value = newVal.goods.goods_banner ? newVal.goods.goods_banner.length : 0;
+    });
     return (_ctx, _cache) => {
       return {
-        a: common_vendor.o(changeCurrent)
+        a: common_vendor.f(__props.goods.goods_banner, (item, index, i0) => {
+          return {
+            a: item.image,
+            b: index
+          };
+        }),
+        b: common_vendor.o(changeCurrent),
+        c: common_vendor.t(current.value),
+        d: common_vendor.t(ban_length.value)
       };
     };
   }

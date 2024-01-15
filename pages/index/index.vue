@@ -26,7 +26,7 @@
 	import Flash from './component/flash-sale.vue'
 	import Card from '@/pages/common-component/Card-goods.vue'
 	import Loading from '@/pages/public-view/loading.vue'
-	const db = wx.cloud.database()
+	const db = wx.cloud.database();
 	
 	//获取胶囊按钮坐标数据
 	const search_data = reactive({

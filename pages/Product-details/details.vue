@@ -13,7 +13,7 @@
 		</view>
 	</view>
 	<!-- 轮播 -->
-	<Swipers id="select" class="swiper"/>
+	<Swipers id="select" class="swiper" :goods="goods"/>
 	<!-- 评价 -->
 	<Eva id="select" class="eva"/>
 	<!-- 详情 -->
@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-	import {reactive,toRefs,onMounted,ref} from 'vue'
+	import {reactive,toRefs,onMounted,ref,nextTick} from 'vue'
 	import Swipers from '@/pages/Product-details/component/swiper.vue'
 	import Eva from '@/pages/Product-details/component/evaluate.vue'
 	import Img from '@/pages/Product-details/component/image.vue'
@@ -86,9 +86,23 @@
 				setTimeout(()=>{search_data.trigger = index},500);
 			})
 		}
+		//请求数据，传值
+		const db = wx.cloud.database();
+		const result = reactive({goods_id:'',goods:[]});
+		const {goods_id,goods} = toRefs(result);
 		onLoad((event)=>{
-			console.log(event);
-			viewheight();
+			//获取商品数据
+			result.goods_id = event.goods_id;
+			const goods = db.collection('goods').doc(event.goods_id).get();
+			Promise.all([goods])
+			.then(async res=>{
+				result.goods = res[0].data;//请求到的商品数据
+				await nextTick()
+				viewheight();
+			})
+			.catch(err=>{
+				console.log(err);
+			})
 		})
 </script>
 

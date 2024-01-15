@@ -10816,6 +10816,7 @@ exports.e = e;
 exports.f = f;
 exports.hooks = hooks;
 exports.isRef = isRef;
+exports.nextTick$1 = nextTick$1;
 exports.o = o;
 exports.onBeforeUnmount = onBeforeUnmount;
 exports.onLoad = onLoad;
