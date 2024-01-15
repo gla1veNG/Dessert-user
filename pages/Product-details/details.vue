@@ -15,9 +15,9 @@
 	<!-- 轮播 -->
 	<Swipers id="select" class="swiper" :goods="goods" :seckill="seckill"/>
 	<!-- 评价 -->
-	<Eva id="select" class="eva"/>
+	<Eva id="select" class="eva" :eva_num="eva_num" :eva_data="eva_data"/>
 	<!-- 详情 -->
-	<Img id="select" class="img"/>
+	<Img id="select" class="img" :goods_details="goods.goods_details"/>
 </template>
 
 <script setup>
@@ -54,8 +54,8 @@
 			query.selectAll('#select').boundingClientRect();
 			query.exec(res=>{
 				heightset.hei.push(res[0][0].height - search_data.Custom_height);
-				heightset.hei.push(heightset.hei[0] + res[0][1].height); 
-				heightset.hei.push(heightset.hei[1] + res[0][2].height); 
+				heightset.hei.push(heightset.hei[0] + res[0][1].height + 20); 
+				heightset.hei.push(heightset.hei[1] + res[0][2].height + 20); 
 			})
 		}
 		//滚动监听
@@ -100,7 +100,7 @@
 			eva_num:0,
 			eva_data:[]
 		});
-		const {goods_id,goods,seckill} = toRefs(result);
+		const {goods_id,goods,seckill,eva_num,eva_data} = toRefs(result);
 		onLoad((event)=>{
 			//获取商品数据
 			result.goods_id = event.goods_id;
@@ -130,7 +130,7 @@
 				result.login_cart = res[4].total;//登录成功之后获取这里的购物车件数
 				result.eva_num = res[5].total;//评价总条数
 				result.eva_data = res[6].data;//前三条评论
- 				viewheight();
+				setTimeout(()=>{viewheight();},900)
 			})
 			.catch(err=>{
 				console.log(err);

@@ -36,8 +36,8 @@ const _sfc_main = {
       query.selectAll("#select").boundingClientRect();
       query.exec((res) => {
         heightset.hei.push(res[0][0].height - search_data.Custom_height);
-        heightset.hei.push(heightset.hei[0] + res[0][1].height);
-        heightset.hei.push(heightset.hei[1] + res[0][2].height);
+        heightset.hei.push(heightset.hei[0] + res[0][1].height + 20);
+        heightset.hei.push(heightset.hei[1] + res[0][2].height + 20);
       });
     }
     common_vendor.onPageScroll((e) => {
@@ -78,7 +78,7 @@ const _sfc_main = {
       eva_num: 0,
       eva_data: []
     });
-    const { goods_id, goods, seckill } = common_vendor.toRefs(result);
+    const { goods_id, goods, seckill, eva_num, eva_data } = common_vendor.toRefs(result);
     common_vendor.onLoad((event) => {
       result.goods_id = event.goods_id;
       const goods2 = db.collection("goods").doc(event.goods_id).get();
@@ -86,10 +86,10 @@ const _sfc_main = {
       const sku_data_a = db.collection("sku_data").where({ sku_id: event.goods_id }).field({ sku: true }).get();
       const seckill2 = db.collection("seckill").where({ goods_id: event.goods_id }).field({ ori_price: true, price_spike: true, seckill_time: true }).get();
       const nu_sh_cart = db.collection("sh_cart").count();
-      const eva_num = db.collection("goods_eva").count();
-      const eva_data = db.collection("goods_eva").where({ goods_id: event.goods_id }).limit(3).get();
+      const eva_num2 = db.collection("goods_eva").count();
+      const eva_data2 = db.collection("goods_eva").where({ goods_id: event.goods_id }).limit(3).get();
       const user = common_vendor.wx$1.getStorageSync("user_infor");
-      Promise.all([goods2, collect, sku_data_a, seckill2, nu_sh_cart, eva_num, eva_data]).then(async (res) => {
+      Promise.all([goods2, collect, sku_data_a, seckill2, nu_sh_cart, eva_num2, eva_data2]).then(async (res) => {
         await common_vendor.nextTick$1();
         result.goods = res[0].data;
         result.collection = user ? res[1].data.length : 0;
@@ -100,7 +100,9 @@ const _sfc_main = {
         result.login_cart = res[4].total;
         result.eva_num = res[5].total;
         result.eva_data = res[6].data;
-        viewheight();
+        setTimeout(() => {
+          viewheight();
+        }, 900);
       }).catch((err) => {
         console.log(err);
       });
@@ -127,10 +129,13 @@ const _sfc_main = {
           seckill: common_vendor.unref(seckill)
         }),
         i: common_vendor.p({
-          id: "select"
+          id: "select",
+          eva_num: common_vendor.unref(eva_num),
+          eva_data: common_vendor.unref(eva_data)
         }),
         j: common_vendor.p({
-          id: "select"
+          id: "select",
+          goods_details: common_vendor.unref(goods).goods_details
         })
       };
     };

@@ -1,8 +1,38 @@
 "use strict";
 const common_vendor = require("../../../common/vendor.js");
-const _sfc_main = {};
-function _sfc_render(_ctx, _cache) {
-  return {};
-}
-const Component = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__file", "E:/Dessert/Dessert-user/pages/Product-details/component/evaluate.vue"]]);
+const _sfc_main = {
+  __name: "evaluate",
+  props: { eva_num: Number, eva_data: Array },
+  setup(__props) {
+    function juMp(goods_id) {
+      common_vendor.wx$1.navigateTo({
+        url: ""
+      });
+    }
+    return (_ctx, _cache) => {
+      return common_vendor.e({
+        a: common_vendor.t(__props.eva_num),
+        b: __props.eva_num > 0
+      }, __props.eva_num > 0 ? {
+        c: common_vendor.f(__props.eva_data, (item, index, i0) => {
+          return {
+            a: item.avatarurl,
+            b: common_vendor.t(item.nickname),
+            c: common_vendor.t(item.eav_text),
+            d: common_vendor.f(item.eav_image, (item_a, index_a, i1) => {
+              return {
+                a: item_a.image,
+                b: index_a
+              };
+            }),
+            e: index
+          };
+        })
+      } : {}, {
+        d: common_vendor.o(($event) => juMp(__props.eva_data.goods_id))
+      });
+    };
+  }
+};
+const Component = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-071d0b58"], ["__file", "E:/Dessert/Dessert-user/pages/Product-details/component/evaluate.vue"]]);
 wx.createComponent(Component);
