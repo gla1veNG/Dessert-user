@@ -35,12 +35,12 @@
 		</view>
 	</view>
 	<!-- 普通价格 -->
-	<view class="price-view" style="display: none;">
-		<view>19.9￥</view>
-		<view>已售 10</view>
+	<view class="price-view">
+		<view>{{goods.goods_price}}￥</view>
+		<view>已售 {{goods.sold}}</view>
 	</view>
 	<!-- 标题 -->
-	<view class="detail-title">这是标题这是标题这是标题这是标题这是标题这是标题这是标题</view>
+	<view class="detail-title">{{goods.goods_title}}</view>
 </template>
 <script setup>
 	import {defineProps,watch,ref} from 'vue'

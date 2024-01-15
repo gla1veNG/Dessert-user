@@ -74,7 +74,7 @@
 		})
 		//点击tab跳转指定组件
 		function swItch(index){
-			const cls = index == 0 ? '.swiper' : index == 1 ? '.eva' : '.img'
+			const cls = index === 0 ? '.swiper' : index === 1 ? '.eva' : '.img'
 			const query = wx.createSelectorQuery();
 			query.select(cls).boundingClientRect();
 			query.selectViewport().scrollOffset();
@@ -88,17 +88,50 @@
 		}
 		//请求数据，传值
 		const db = wx.cloud.database();
-		const result = reactive({goods_id:'',goods:[]});
+		const result = reactive({
+			goods_id:'',
+			goods:[],
+			collection:0,
+			login_coll:0,
+			sku_data:[],
+			seckill:[],
+			nu_sh_cart:0,
+			login_cart:0,
+			eva_num:0,
+			eva_data:[]
+		});
 		const {goods_id,goods} = toRefs(result);
 		onLoad((event)=>{
 			//获取商品数据
 			result.goods_id = event.goods_id;
 			const goods = db.collection('goods').doc(event.goods_id).get();
-			Promise.all([goods])
+			//获取收藏的商品数据
+			const collect = db.collection('collect_goods').where({goods_id:event.goods_id}).get();
+			//sku 的数据
+			const sku_data_a = db.collection('sku_data').where({sku_id:event.goods_id}).field({sku:true}).get();
+			//秒杀的数据
+			const seckill = db.collection('seckill').where({goods_id:event.goods_id}).field({ori_price:true,price_spike:true,seckill_time:true}).get(); 
+			//购物车的数据
+			const nu_sh_cart = db.collection('sh_cart').count(); 
+			//评论总条数
+			const eva_num = db.collection('goods_eva').count();
+			//评论前三条的数据
+			const eva_data = db.collection('goods_eva').where({goods_id:event.goods_id}).limit(3).get();
+			const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
+			Promise.all([goods,collect,sku_data_a,seckill,nu_sh_cart,eva_num,eva_data])
 			.then(async res=>{
+				await nextTick();
+				console.log(res);
 				result.goods = res[0].data;//请求到的商品数据
-				await nextTick()
-				viewheight();
+				result.collection = user ? res[1].data.length : 0;
+				result.login_coll = res[1].data.length;//登录成功之后获取这里的收藏数据
+				result.sku_data = res[2].data;//sku
+				result.seckill = res[3].data;//秒杀
+				result.nu_sh_cart = user ? res[4].total : 0;//购物车件数
+				result.login_cart = res[4].total;//登录成功之后获取这里的购物车件数
+				result.eva_num = res[5].total;//评价总条数
+				result.eva_data = res[6].data;//前三条评论
+ 				viewheight();
 			})
 			.catch(err=>{
 				console.log(err);

@@ -51,7 +51,7 @@ const _sfc_main = {
       }
     });
     function swItch(index) {
-      const cls = index == 0 ? ".swiper" : index == 1 ? ".eva" : ".img";
+      const cls = index === 0 ? ".swiper" : index === 1 ? ".eva" : ".img";
       const query = common_vendor.wx$1.createSelectorQuery();
       query.select(cls).boundingClientRect();
       query.selectViewport().scrollOffset();
@@ -66,14 +66,41 @@ const _sfc_main = {
       });
     }
     const db = common_vendor.wx$1.cloud.database();
-    const result = common_vendor.reactive({ goods_id: "", goods: [] });
+    const result = common_vendor.reactive({
+      goods_id: "",
+      goods: [],
+      collection: 0,
+      login_coll: 0,
+      sku_data: [],
+      seckill: [],
+      nu_sh_cart: 0,
+      login_cart: 0,
+      eva_num: 0,
+      eva_data: []
+    });
     const { goods_id, goods } = common_vendor.toRefs(result);
     common_vendor.onLoad((event) => {
       result.goods_id = event.goods_id;
       const goods2 = db.collection("goods").doc(event.goods_id).get();
-      Promise.all([goods2]).then(async (res) => {
-        result.goods = res[0].data;
+      const collect = db.collection("collect_goods").where({ goods_id: event.goods_id }).get();
+      const sku_data_a = db.collection("sku_data").where({ sku_id: event.goods_id }).field({ sku: true }).get();
+      const seckill = db.collection("seckill").where({ goods_id: event.goods_id }).field({ ori_price: true, price_spike: true, seckill_time: true }).get();
+      const nu_sh_cart = db.collection("sh_cart").count();
+      const eva_num = db.collection("goods_eva").count();
+      const eva_data = db.collection("goods_eva").where({ goods_id: event.goods_id }).limit(3).get();
+      const user = common_vendor.wx$1.getStorageSync("user_infor");
+      Promise.all([goods2, collect, sku_data_a, seckill, nu_sh_cart, eva_num, eva_data]).then(async (res) => {
         await common_vendor.nextTick$1();
+        console.log(res);
+        result.goods = res[0].data;
+        result.collection = user ? res[1].data.length : 0;
+        result.login_coll = res[1].data.length;
+        result.sku_data = res[2].data;
+        result.seckill = res[3].data;
+        result.nu_sh_cart = user ? res[4].total : 0;
+        result.login_cart = res[4].total;
+        result.eva_num = res[5].total;
+        result.eva_data = res[6].data;
         viewheight();
       }).catch((err) => {
         console.log(err);

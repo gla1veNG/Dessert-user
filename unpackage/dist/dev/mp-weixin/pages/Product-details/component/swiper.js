@@ -24,7 +24,10 @@ const _sfc_main = {
         }),
         b: common_vendor.o(changeCurrent),
         c: common_vendor.t(current.value),
-        d: common_vendor.t(ban_length.value)
+        d: common_vendor.t(ban_length.value),
+        e: common_vendor.t(__props.goods.goods_price),
+        f: common_vendor.t(__props.goods.sold),
+        g: common_vendor.t(__props.goods.goods_title)
       };
     };
   }
