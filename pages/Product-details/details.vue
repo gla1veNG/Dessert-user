@@ -6,18 +6,18 @@
 			<view class="tab-jiantou">
 				<image src="/static/detail/fanhuijiantou.svg" mode="aspectFit"></image>
 			</view>
-			<view class="tab-view" v-for="(item,index) in tab_name" :key="index" :style=" 'height:' + S_height + 'px;' ">
+			<view class="tab-view" v-for="(item,index) in tab_name" :key="index" :style=" 'height:' + S_height + 'px;' " @click="swItch(index)">
 				<text>{{item}}</text>
 				<text :class="{active:index === trigger}"></text>
 			</view>
 		</view>
 	</view>
 	<!-- 轮播 -->
-	<Swipers id="select"/>
+	<Swipers id="select" class="swiper"/>
 	<!-- 评价 -->
-	<Eva id="select"/>
+	<Eva id="select" class="eva"/>
 	<!-- 详情 -->
-	<Img id="select"/>
+	<Img id="select" class="img"/>
 </template>
 
 <script setup>
@@ -44,14 +44,14 @@
 		search_data.S_height = but_data.height;
 		search_data.S_top = but_data.top;
 		search_data.S_width = but_data.width;
-		search_data.Custom_height = but_data.height + but_data.top + 10;
+		search_data.Custom_height = but_data.height + but_data.top;
 	})
 	
 	// 获取轮播，评价，详情每个组件的高度
 	let heightset = reactive({hei:[]}) 
 	function viewheight(){
-			const query = wx.createSelectorQuery()
-			query.selectAll('#select').boundingClientRect()
+			const query = wx.createSelectorQuery();
+			query.selectAll('#select').boundingClientRect();
 			query.exec(res=>{
 				heightset.hei.push(res[0][0].height - search_data.Custom_height);
 				heightset.hei.push(heightset.hei[0] + res[0][1].height); 
@@ -72,7 +72,20 @@
 				search_data.trigger -= 1;
 			}
 		})
-		
+		//点击tab跳转指定组件
+		function swItch(index){
+			const cls = index == 0 ? '.swiper' : index == 1 ? '.eva' : '.img'
+			const query = wx.createSelectorQuery();
+			query.select(cls).boundingClientRect();
+			query.selectViewport().scrollOffset();
+			query.exec(res=>{
+				wx.pageScrollTo({
+					scrollTop: res[0].top + res[1].scrollTop - search_data.Custom_height,
+					duration: 300
+				})
+				setTimeout(()=>{search_data.trigger = index},500);
+			})
+		}
 		onLoad((event)=>{
 			viewheight();
 		})

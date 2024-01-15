@@ -28,7 +28,7 @@ const _sfc_main = {
       search_data.S_height = but_data.height;
       search_data.S_top = but_data.top;
       search_data.S_width = but_data.width;
-      search_data.Custom_height = but_data.height + but_data.top + 10;
+      search_data.Custom_height = but_data.height + but_data.top;
     });
     let heightset = common_vendor.reactive({ hei: [] });
     function viewheight() {
@@ -50,6 +50,21 @@ const _sfc_main = {
         search_data.trigger -= 1;
       }
     });
+    function swItch(index) {
+      const cls = index == 0 ? ".swiper" : index == 1 ? ".eva" : ".img";
+      const query = common_vendor.wx$1.createSelectorQuery();
+      query.select(cls).boundingClientRect();
+      query.selectViewport().scrollOffset();
+      query.exec((res) => {
+        common_vendor.wx$1.pageScrollTo({
+          scrollTop: res[0].top + res[1].scrollTop - search_data.Custom_height,
+          duration: 300
+        });
+        setTimeout(() => {
+          search_data.trigger = index;
+        }, 500);
+      });
+    }
     common_vendor.onLoad((event) => {
       viewheight();
     });
@@ -60,7 +75,8 @@ const _sfc_main = {
           return {
             a: common_vendor.t(item),
             b: index === common_vendor.unref(trigger) ? 1 : "",
-            c: index
+            c: index,
+            d: common_vendor.o(($event) => swItch(index), index)
           };
         }),
         c: common_vendor.s("height:" + common_vendor.unref(S_height) + "px;"),
