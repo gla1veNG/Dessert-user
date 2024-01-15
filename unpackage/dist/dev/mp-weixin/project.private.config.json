@@ -9,6 +9,13 @@
       "list": [
         {
           "name": "",
+          "pathName": "pages/Product-details/details",
+          "query": "goods_id=b751f28065a3cf1507057adf37e618be",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "",
           "pathName": "pages/Short-video/video",
           "query": "goods_id=b751f28065a26f6406ddfc723ff916ab",
           "launchMode": "default",

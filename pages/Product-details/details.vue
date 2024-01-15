@@ -87,6 +87,7 @@
 			})
 		}
 		onLoad((event)=>{
+			console.log(event);
 			viewheight();
 		})
 </script>

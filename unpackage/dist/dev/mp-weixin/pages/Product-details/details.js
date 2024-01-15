@@ -66,6 +66,7 @@ const _sfc_main = {
       });
     }
     common_vendor.onLoad((event) => {
+      console.log(event);
       viewheight();
     });
     return (_ctx, _cache) => {
