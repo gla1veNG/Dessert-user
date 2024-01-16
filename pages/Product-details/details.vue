@@ -23,7 +23,7 @@
 	<!-- 登录界面 -->
 	<Login/>
 	<!-- sku选择弹窗 -->
-	<Specs/>
+	<Specs :sku_data="sku_data" :goods="goods"/>
 </template>
 
 <script setup>

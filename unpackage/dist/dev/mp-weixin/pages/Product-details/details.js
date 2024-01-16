@@ -150,6 +150,10 @@ const _sfc_main = {
           collection: common_vendor.unref(collection),
           sku_data: common_vendor.unref(sku_data),
           goods: common_vendor.unref(goods)
+        }),
+        l: common_vendor.p({
+          sku_data: common_vendor.unref(sku_data),
+          goods: common_vendor.unref(goods)
         })
       };
     };

@@ -16,8 +16,8 @@
 			<image src="/static/detail/yishoucang.svg" mode="aspectFit" v-else></image>
 			<text>{{collection > 0 ? '已收藏' : '收藏' }}</text>
 		</view>
-		<view v-if="whether" class="flex-right shopping-cart">加入购物车</view>
-		<view v-if="whether" class="flex-right buy">立即购买</view>
+		<view v-if="whether" class="flex-right shopping-cart" @click="purChase('j_sho',sku_data)">加入购物车</view>
+		<view v-if="whether" class="flex-right buy" @click="purChase('j_pur',sku_data)">立即购买</view>
 		<!-- 库存不足 商品已下架 -->
 		<view v-else class="flex-right buy">{{tips}}</view>
 	</view>
@@ -29,7 +29,6 @@
 	const result = reactive({collection:0,goods_id:'',whether:true,tips:'',goods:{}});
 	const {collection,whether,tips} = toRefs(result);
 	watch(props,(newVal,oldVal)=>{
-		console.log(newVal);
 		let {collection,goods_id,goods} = newVal;
 		result.collection = collection;
 		result.goods_id = goods_id;
@@ -86,6 +85,22 @@
 			imageUrl:result.goods.goods_cover
 		}
 	})
+	//加入购物车或立即购买
+	import {sku_popup} from '@/Acc-config/answer.js'
+	function purChase(judge,sku){
+		const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
+		if(!user){login_user.show = true;return false};
+		if(sku.length > 0){//有规格
+			sku_popup.show = true;
+			sku_popup.judge = judge;
+		}else{
+			if(judge === 'j_sho'){
+				//加入购物车
+			}else{
+				//直接下单
+			}
+		}
+	}
 </script>
 
 <style scoped>

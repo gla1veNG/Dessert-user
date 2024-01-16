@@ -1,6 +1,6 @@
 <template>
 	<!-- 公用的sku规格选择弹窗 -->
-	<page-container :show="true" positon="bottom" bindenter="onEnter">
+	<page-container :show="sku_popup.show" positon="bottom" bindenter="onEnter">
 		<view class="space-view">
 			<!-- 展示已选的规格：图片，价格等-->
 			<view class="space-price">
@@ -19,7 +19,7 @@
 					</view>
 				</view>
 				<view class="space-xx">
-					<image src="/static/detail/guanbi.svg" mode="aspectFit"></image>
+					<image src="/static/detail/guanbi.svg" mode="aspectFit" @click="sku_popup.show = false "></image>
 				</view>
 			</view>
 			<!-- sku选择区域 -->
@@ -42,7 +42,7 @@
 			<view style="height: 200rpx;"></view>
 			<!-- 底部 -->
 			<view class="space-botton">
-				<view>加入购物车</view>
+				<view>{{sku_popup.judge === 'j_sho' ? '加入购物车' : '立即购买'}}</view>
 			</view>
 		</view>
 	</page-container>	
@@ -50,6 +50,16 @@
 
 <script setup>
 	function onEnter(){}
+	//详情页点击底部加入购物车或购买拉起sku弹窗
+	import {sku_popup} from '@/Acc-config/answer.js'
+	import {defineProps,watch,reactive} from 'vue'
+	
+	const props = defineProps({sku_data:Array,goods:Object});
+	const skudata = reactive({goods:{}}); 
+	watch(props,(newVal,oldVal)=>{
+		console.log(newVal);
+		skudata.goods = newVal.goods;
+	})
 </script>
 
 <style scoped>

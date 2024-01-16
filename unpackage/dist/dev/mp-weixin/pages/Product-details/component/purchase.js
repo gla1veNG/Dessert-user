@@ -10,7 +10,6 @@ const _sfc_main = {
     const result = common_vendor.reactive({ collection: 0, goods_id: "", whether: true, tips: "", goods: {} });
     const { collection, whether, tips } = common_vendor.toRefs(result);
     common_vendor.watch(props, (newVal, oldVal) => {
-      console.log(newVal);
       let { collection: collection2, goods_id, goods } = newVal;
       result.collection = collection2;
       result.goods_id = goods_id;
@@ -63,6 +62,17 @@ const _sfc_main = {
         imageUrl: result.goods.goods_cover
       };
     });
+    function purChase(judge, sku) {
+      const user = common_vendor.wx$1.getStorageSync("user_infor");
+      if (!user) {
+        AccConfig_answer.login_user.show = true;
+        return false;
+      }
+      if (sku.length > 0) {
+        AccConfig_answer.sku_popup.show = true;
+        AccConfig_answer.sku_popup.judge = judge;
+      }
+    }
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: common_vendor.unref(collection) <= 0
@@ -70,10 +80,14 @@ const _sfc_main = {
         b: common_vendor.t(common_vendor.unref(collection) > 0 ? "已收藏" : "收藏"),
         c: common_vendor.o(($event) => toCollect(common_vendor.unref(collection))),
         d: common_vendor.unref(whether)
-      }, common_vendor.unref(whether) ? {} : {}, {
-        e: common_vendor.unref(whether)
-      }, common_vendor.unref(whether) ? {} : {
-        f: common_vendor.t(common_vendor.unref(tips))
+      }, common_vendor.unref(whether) ? {
+        e: common_vendor.o(($event) => purChase("j_sho", __props.sku_data))
+      } : {}, {
+        f: common_vendor.unref(whether)
+      }, common_vendor.unref(whether) ? {
+        g: common_vendor.o(($event) => purChase("j_pur", __props.sku_data))
+      } : {
+        h: common_vendor.t(common_vendor.unref(tips))
       });
     };
   }
