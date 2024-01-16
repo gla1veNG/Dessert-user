@@ -64,7 +64,18 @@
 		const sku_data = newVal.sku_data[0];
 		//取出标题
 		const sku_name = sku_data.sku[0].att_data.map(item=>item.att_name);
-		
+		//重组 sku 展示，根据 sku_name 的数据取出：判断是单规格还是多规格
+		let new_sku = [];
+		let att_length = sku_data.sku[0].att_data.length;
+		for(let i=0;i<sku_name.length;i++){
+			let res = sku_data.sku.map(item=>{
+				if(att_length === 1){
+					return {att_val:item.att_data[i].att_val,stock:item.stock}
+				}else{
+					return {att_val:item.att_data[i].att_val,act:false}
+				}
+			})
+		}
 	})
 </script>
 

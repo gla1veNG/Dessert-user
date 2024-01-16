@@ -15,7 +15,17 @@ const _sfc_main = {
         return false;
       }
       const sku_data = newVal.sku_data[0];
-      sku_data.sku[0].att_data.map((item) => item.att_name);
+      const sku_name = sku_data.sku[0].att_data.map((item) => item.att_name);
+      let att_length = sku_data.sku[0].att_data.length;
+      for (let i = 0; i < sku_name.length; i++) {
+        sku_data.sku.map((item) => {
+          if (att_length === 1) {
+            return { att_val: item.att_data[i].att_val, stock: item.stock };
+          } else {
+            return { att_val: item.att_data[i].att_val, act: false };
+          }
+        });
+      }
     });
     return (_ctx, _cache) => {
       return {
