@@ -1,33 +1,5 @@
-<template>
-	<view class="purchase">
-		<view class="flex-left"> 
-			<button plain="true" open-type="share">
-				<image src="/static/detail/fenxiang.svg" mode="aspectFit"></image>
-				<text>分享</text>
-			</button>
-		</view>
-		<view class="flex-left shopping-amount">
-			<image src="/static/detail/gouwuche.svg" mode="aspectFit"></image>
-			<text>购物车</text>
-			<text class="amount">1</text>
-		</view>
-		<view class="flex-left">
-			<image src="/static/detail/shoucang.svg" mode="aspectFit"></image>
-			<!-- <image src="/static/detail/yishoucang.svg" mode="aspectFit"></image> -->
-			<text>收藏</text>
-		</view>
-		<view class="flex-right shopping-cart">加入购物车</view>
-		<view class="flex-right buy">立即购买</view>
-		<!-- 库存不足 商品已下架 -->
-		<!-- <view class="flex-right buy">库存不足</view> -->
-	</view>
-</template>
 
-<script>
-</script>
-
-<style scoped>
-.purchase{
+.purchase.data-v-571f8077{
 	height: 100rpx;
 	background-color: #fefefe;
 	border-top: 1rpx solid #e3e3e4;
@@ -40,13 +12,13 @@
 	justify-content: space-between;
 	padding-bottom:68rpx;
 }
-.purchase image{
+.purchase image.data-v-571f8077{
 	width: 40rpx;
 	height: 40rpx;
 	display: block;
 	padding-bottom: 8rpx;
 }
-.flex-left{
+.flex-left.data-v-571f8077{
 	flex: 1;
 	display: flex;
 	flex-direction: column;
@@ -54,7 +26,7 @@
 	font-size: 25rpx;
 	color: #8a8b90;
 }
-.flex-left button{
+.flex-left button.data-v-571f8077{
 	border: navajowhite;
 	padding: inherit !important;
 	margin: 0 !important;
@@ -62,26 +34,26 @@
 	line-height: inherit !important;
 	color: #8a8b90 !important;
 }
-.flex-right{
+.flex-right.data-v-571f8077{
 	flex: 2;
 	text-align: center;
 	height: 100rpx;
 	line-height: 100rpx;
 }
-.shopping-cart{
+.shopping-cart.data-v-571f8077{
 	background-color: #fdf5f7;
 	color: #ec697f;
 	font-weight: bold;
 }
-.buy{
+.buy.data-v-571f8077{
 	background-color: #e9445a;
 	color: #fefefe;
 	font-weight: bold;
 }
-.shopping-amount{
+.shopping-amount.data-v-571f8077{
 	position: relative;
 }
-.amount{
+.amount.data-v-571f8077{
 	position: absolute;
 	right: 0;
 	top: -4rpx;
@@ -95,4 +67,3 @@
 	font-size: 20rpx;
 	border-radius: 50rpx;
 }
-</style>

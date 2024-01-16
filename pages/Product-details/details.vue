@@ -18,13 +18,19 @@
 	<Eva id="select" class="eva" :eva_num="eva_num" :eva_data="eva_data"/>
 	<!-- 详情 -->
 	<Img id="select" class="img" :goods_details="goods.goods_details"/>
+	<!-- 底部 -->
+	<purchase :goods_id="goods_id" :collection="collection" :sku_data="sku_data" :goods="goods"/>
+	<!-- 登录界面 -->
+	<Login/>
 </template>
 
 <script setup>
-	import {reactive,toRefs,onMounted,ref,nextTick} from 'vue'
+	import {reactive,toRefs,onMounted,ref,nextTick,watch} from 'vue'
 	import Swipers from '@/pages/Product-details/component/swiper.vue'
 	import Eva from '@/pages/Product-details/component/evaluate.vue'
 	import Img from '@/pages/Product-details/component/image.vue'
+	import Purchase from '@/pages/Product-details/component/purchase.vue'
+	import Login from '@/pages/components/login-view.vue'
 	//顶部导航栏
 	const search_data = reactive({
 		tab_name:['商品','评价','详情'],
@@ -100,7 +106,7 @@
 			eva_num:0,
 			eva_data:[]
 		});
-		const {goods_id,goods,seckill,eva_num,eva_data} = toRefs(result);
+		const {goods_id,goods,seckill,eva_num,eva_data,collection,sku_data} = toRefs(result);
 		onLoad((event)=>{
 			//获取商品数据
 			result.goods_id = event.goods_id;
@@ -135,6 +141,13 @@
 			.catch(err=>{
 				console.log(err);
 			})
+		})
+		
+		//监听登录是否成功，成功则重新取收藏和购物车数据
+		import {login_user} from '@/Acc-config/answer.js'
+		watch(()=>login_user.response,(newVal,oldVal)=>{
+			result.collection = result.login_coll;
+			result.nu_sh_cart = result.login_cart;
 		})
 </script>
 

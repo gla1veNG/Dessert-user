@@ -1,11 +1,14 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
+const AccConfig_answer = require("../../Acc-config/answer.js");
 if (!Math) {
-  (Swipers + Eva + Img)();
+  (Swipers + Eva + Img + Purchase + Login)();
 }
 const Swipers = () => "./component/swiper.js";
 const Eva = () => "./component/evaluate.js";
 const Img = () => "./component/image.js";
+const Purchase = () => "./component/purchase.js";
+const Login = () => "../components/login-view.js";
 const _sfc_main = {
   __name: "details",
   setup(__props) {
@@ -78,7 +81,7 @@ const _sfc_main = {
       eva_num: 0,
       eva_data: []
     });
-    const { goods_id, goods, seckill, eva_num, eva_data } = common_vendor.toRefs(result);
+    const { goods_id, goods, seckill, eva_num, eva_data, collection, sku_data } = common_vendor.toRefs(result);
     common_vendor.onLoad((event) => {
       result.goods_id = event.goods_id;
       const goods2 = db.collection("goods").doc(event.goods_id).get();
@@ -106,6 +109,10 @@ const _sfc_main = {
       }).catch((err) => {
         console.log(err);
       });
+    });
+    common_vendor.watch(() => AccConfig_answer.login_user.response, (newVal, oldVal) => {
+      result.collection = result.login_coll;
+      result.nu_sh_cart = result.login_cart;
     });
     return (_ctx, _cache) => {
       return {
@@ -136,6 +143,12 @@ const _sfc_main = {
         j: common_vendor.p({
           id: "select",
           goods_details: common_vendor.unref(goods).goods_details
+        }),
+        k: common_vendor.p({
+          goods_id: common_vendor.unref(goods_id),
+          collection: common_vendor.unref(collection),
+          sku_data: common_vendor.unref(sku_data),
+          goods: common_vendor.unref(goods)
         })
       };
     };

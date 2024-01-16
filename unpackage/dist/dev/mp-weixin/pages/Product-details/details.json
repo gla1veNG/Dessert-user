@@ -4,6 +4,8 @@
   "usingComponents": {
     "swipers": "./component/swiper",
     "eva": "./component/evaluate",
-    "img": "./component/image"
+    "img": "./component/image",
+    "purchase": "./component/purchase",
+    "login": "../components/login-view"
   }
 }
