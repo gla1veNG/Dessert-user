@@ -6,7 +6,7 @@ const _sfc_main = {
   props: { sku_data: Array, goods: Object },
   setup(__props) {
     const props = __props;
-    const skudata = common_vendor.reactive({ goods: {}, new_sku: [] });
+    const skudata = common_vendor.reactive({ goods: {}, new_sku: [], all_sku: [], sku_length: 0, sku_sort: {} });
     const { goods, new_sku } = common_vendor.toRefs(skudata);
     common_vendor.watch(props, (newVal, oldVal) => {
       console.log(newVal);
@@ -15,6 +15,11 @@ const _sfc_main = {
         return false;
       }
       const sku_data = newVal.sku_data[0];
+      selectdata.all_sku = newVal.sku_data[0];
+      selectdata.sku_length = sku_data.sku[0].att_data.length;
+      sku_data.sku[0].att_data.forEach((item, index) => {
+        selectdata.sku_sort = { ...selectdata.sku_sort, ...{ [item.att_name]: index } };
+      });
       const sku_name = sku_data.sku[0].att_data.map((item) => item.att_name);
       let new_sku2 = [];
       let att_length = sku_data.sku[0].att_data.length;
@@ -54,6 +59,11 @@ const _sfc_main = {
       } else {
         selectdata.select.push({ att_name, att_val });
         selectdata.seleIndex[index] = index_one;
+      }
+      if (selectdata.select.length === skudata.sku_length) {
+        selectdata.select.sort((p1, p2) => {
+          return skudata.sku_sort[p1.att_name] - skudata.sku_sort[p2.att_name];
+        });
       }
     }
     return (_ctx, _cache) => {

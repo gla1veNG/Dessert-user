@@ -74,13 +74,19 @@
 	import {defineProps,watch,reactive,toRefs} from 'vue'
 	
 	const props = defineProps({sku_data:Array,goods:Object});
-	const skudata = reactive({goods:{},new_sku:[]});
+	const skudata = reactive({goods:{},new_sku:[],all_sku:[],sku_length:0,sku_sort:{}});
 	 const {goods,new_sku} =toRefs(skudata)
 	watch(props,(newVal,oldVal)=>{
 		console.log(newVal);
 		skudata.goods = newVal.goods;
 		if(newVal.sku_data.length === 0){return false}
 		const sku_data = newVal.sku_data[0];
+		//取出sku数据，给后面的开发使用
+		selectdata.all_sku = newVal.sku_data[0];
+		selectdata.sku_length = sku_data.sku[0].att_data.length;
+		sku_data.sku[0].att_data.forEach((item,index)=>{
+			selectdata.sku_sort = {...selectdata.sku_sort,...{[item.att_name]:index}};
+		})
 		//取出标题
 		const sku_name = sku_data.sku[0].att_data.map(item=>item.att_name);
 		//重组 sku 展示，根据 sku_name 的数据取出：判断是单规格还是多规格
@@ -125,6 +131,14 @@
 		}else{
 			selectdata.select.push({att_name,att_val});
 			selectdata.seleIndex[index] = index_one;
+		}
+		
+		// 查询选中的sku的图片，价格，库存
+		if(selectdata.select.length === skudata.sku_length){
+			//对已选的sku排序
+			selectdata.select.sort((p1,p2)=>{
+				return skudata.sku_sort[p1.att_name] - skudata.sku_sort[p2.att_name]; 
+			})
 		}
 	}
 </script>
