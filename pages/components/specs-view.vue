@@ -14,8 +14,9 @@
 					</view>
 					<text class="space-text-stock">库存：{{goods.stock}}</text>
 					<view class="choice">
-						<text>请选择</text>
-						<text>微辣</text>
+						<text>{{select.length > 0 ? '已选择：' : '请选择'}}</text>
+						<text v-if="select.length === 0" v-for="(item,index) in new_sku" :key="index">{{item.att_name}}</text>
+						<text v-else v-for="(item,index) in select"  :key="index">{{item.att_val}}</text>
 					</view>
 				</view>
 				<view class="space-xx">
@@ -27,7 +28,10 @@
 				<block v-for="(item,index) in new_sku" :key="index">
 				<text class="space-title">{{item.att_name}}</text>
 				<view class="space-sku">
-					<text v-for="(item_one,index_one) in item.sku" :key="index" :class="[item_one.stock === 0 ? 'prevent_style' : '']">{{item_one.att_val}}</text>
+					<text v-for="(item_one,index_one) in item.sku" :key="index" 
+					:class="[item_one.stock === 0 ? 'prevent_style' : '',seleIndex[index] === index_one ? 'new_style' : '']" 
+					@click="choIce(item_one.att_val,item.att_name,index,index_one)"
+					>{{item_one.att_val}}</text>
 				</view>
 				</block>
 			</view>
@@ -37,7 +41,10 @@
 				<block v-for="(item,index) in new_sku" :key="index">
 				<text class="space-title">{{item.att_name}}</text>
 				<view class="space-sku">
-					<text v-for="(item_one,index_one) in item.sku" :key="index" :class="[item_one.act === 0 ? 'prevent_style' : '']">{{item_one.att_val}}</text>
+					<text v-for="(item_one,index_one) in item.sku" :key="index" 
+					:class="[item_one.act === 0 ? 'prevent_style' : '',seleIndex[index] === index_one ? 'new_style' : '']"
+					@click="choIce(item_one.att_val,item.att_name,index,index_one)"
+					>{{item_one.att_val}}</text>
 				</view>
 				</block>
 			</view>
@@ -88,18 +95,38 @@
 				}
 			})
 		// 数组对象去重
-			let obj = {}
+			let obj = {};
 			let removal = res.reduce((prev,item)=>{
 				if(!obj[item.att_val]){
-					prev.push(item)
-					obj[item.att_val] = true
+					prev.push(item);
+					obj[item.att_val] = true;
 				}
-				return prev
-			},[])
-			new_sku.push({att_name:sku_name[i],sku:removal})
+				return prev;
+			},[]);
+			new_sku.push({att_name:sku_name[i],sku:removal});
 		}
-			skudata.new_sku = new_sku
+			skudata.new_sku = new_sku;
 	})
+	// 选中规格select:[{att_val:'微辣',att_name:'口味'}]
+	const selectdata = reactive({select:[],seleIndex:[]});
+	const {select,seleIndex} = toRefs(selectdata);
+	function choIce(att_val,att_name,index,index_one){
+		//切换选中的颜色
+		let IN = selectdata.select.findIndex(item=>item.att_name === att_name);
+		if(IN > -1){
+			let MB = selectdata.select.findIndex(item=>item.att_val === att_val);
+			if(MB > -1){
+				selectdata.select.splice(IN,1);
+				selectdata.seleIndex[index] = -1;
+			}else{
+				selectdata.select[IN] = {att_name,att_val};
+				selectdata.seleIndex[index] = index_one;
+			}
+		}else{
+			selectdata.select.push({att_name,att_val});
+			selectdata.seleIndex[index] = index_one;
+		}
+	}
 </script>
 
 <style scoped>
