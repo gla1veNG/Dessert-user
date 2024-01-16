@@ -22,12 +22,24 @@
 					<image src="/static/detail/guanbi.svg" mode="aspectFit" @click="sku_popup.show = false "></image>
 				</view>
 			</view>
-			<!-- sku选择区域 -->
-			<view class="space-mar">
-				<text class="space-title">口味</text>
+			<!-- sku选择区域:单规格 -->
+			<view class="space-mar" v-if="new_sku.length === 1">
+				<block v-for="(item,index) in new_sku" :key="index">
+				<text class="space-title">{{item.att_name}}</text>
 				<view class="space-sku">
-					<text>微辣</text>
+					<text v-for="(item_one,index_one) in item.sku" :key="index" :class="[item_one.stock === 0 ? 'prevent_style' : '']">{{item_one.att_val}}</text>
 				</view>
+				</block>
+			</view>
+			
+			<!-- sku选择区域:多规格 -->
+			<view class="space-mar" v-else>
+				<block v-for="(item,index) in new_sku" :key="index">
+				<text class="space-title">{{item.att_name}}</text>
+				<view class="space-sku">
+					<text v-for="(item_one,index_one) in item.sku" :key="index" :class="[item_one.act === 0 ? 'prevent_style' : '']">{{item_one.att_val}}</text>
+				</view>
+				</block>
 			</view>
 			<!-- 购买数量 -->
 			<view class="Pur-quantity">
@@ -55,8 +67,8 @@
 	import {defineProps,watch,reactive,toRefs} from 'vue'
 	
 	const props = defineProps({sku_data:Array,goods:Object});
-	const skudata = reactive({goods:{}});
-	 const {goods} =toRefs(skudata)
+	const skudata = reactive({goods:{},new_sku:[]});
+	 const {goods,new_sku} =toRefs(skudata)
 	watch(props,(newVal,oldVal)=>{
 		console.log(newVal);
 		skudata.goods = newVal.goods;
@@ -75,7 +87,18 @@
 					return {att_val:item.att_data[i].att_val,act:false}
 				}
 			})
+		// 数组对象去重
+			let obj = {}
+			let removal = res.reduce((prev,item)=>{
+				if(!obj[item.att_val]){
+					prev.push(item)
+					obj[item.att_val] = true
+				}
+				return prev
+			},[])
+			new_sku.push({att_name:sku_name[i],sku:removal})
 		}
+			skudata.new_sku = new_sku
 	})
 </script>
 

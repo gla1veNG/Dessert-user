@@ -46,6 +46,26 @@ function parseStringStyle(cssText) {
   });
   return ret;
 }
+function normalizeClass(value) {
+  let res = "";
+  if (isString$1(value)) {
+    res = value;
+  } else if (isArray$1(value)) {
+    for (let i = 0; i < value.length; i++) {
+      const normalized = normalizeClass(value[i]);
+      if (normalized) {
+        res += normalized + " ";
+      }
+    }
+  } else if (isObject$1(value)) {
+    for (const name in value) {
+      if (value[name]) {
+        res += name + " ";
+      }
+    }
+  }
+  return res.trim();
+}
 const toDisplayString = (val) => {
   return isString$1(val) ? val : val == null ? "" : isArray$1(val) || isObject$1(val) && (val.toString === objectToString || !isFunction$1(val.toString)) ? JSON.stringify(val, replacer, 2) : String(val);
 };
@@ -136,8 +156,8 @@ const def = (obj, key, value) => {
   });
 };
 const looseToNumber = (val) => {
-  const n = parseFloat(val);
-  return isNaN(n) ? val : n;
+  const n2 = parseFloat(val);
+  return isNaN(n2) ? val : n2;
 };
 const LINEFEED = "\n";
 const SLOT_DEFAULT_NAME = "d";
@@ -961,7 +981,7 @@ const $off = defineSyncApi(API_OFF, (name, callback) => {
   }
   if (!isArray$1(name))
     name = [name];
-  name.forEach((n) => emitter.off(n, callback));
+  name.forEach((n2) => emitter.off(n2, callback));
 }, OffProtocol);
 const $emit = defineSyncApi(API_EMIT, (name, ...args) => {
   emitter.emit(name, ...args);
@@ -3650,9 +3670,9 @@ const PublicInstanceProxyHandlers = {
     }
     let normalizedProps;
     if (key[0] !== "$") {
-      const n = accessCache[key];
-      if (n !== void 0) {
-        switch (n) {
+      const n2 = accessCache[key];
+      if (n2 !== void 0) {
+        switch (n2) {
           case 1:
             return setupState[key];
           case 2:
@@ -5989,6 +6009,7 @@ const o = (value, key) => vOn(value, key);
 const f = (source, renderItem) => vFor(source, renderItem);
 const s = (value) => stringifyStyle(value);
 const e = (target, ...sources) => extend$1(target, ...sources);
+const n = (value) => normalizeClass(value);
 const t = (val) => toDisplayString(val);
 const p = (props) => renderProps(props);
 function createApp$1(rootComponent, rootProps = null) {
@@ -7562,8 +7583,8 @@ function stringSet(units, value) {
   }
   return this;
 }
-function mod(n, x) {
-  return (n % x + x) % x;
+function mod(n2, x) {
+  return (n2 % x + x) % x;
 }
 var indexOf;
 if (Array.prototype.indexOf) {
@@ -7956,8 +7977,8 @@ function parseIsoWeekday(input, locale2) {
   }
   return isNaN(input) ? null : input;
 }
-function shiftWeekdays(ws, n) {
-  return ws.slice(n, 7).concat(ws.slice(0, n));
+function shiftWeekdays(ws, n2) {
+  return ws.slice(n2, 7).concat(ws.slice(0, n2));
 }
 var defaultLocaleWeekdays = "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"), defaultLocaleWeekdaysShort = "Sun_Mon_Tue_Wed_Thu_Fri_Sat".split("_"), defaultLocaleWeekdaysMin = "Su_Mo_Tu_We_Th_Fr_Sa".split("_"), defaultWeekdaysRegex = matchWord, defaultWeekdaysShortRegex = matchWord, defaultWeekdaysMinRegex = matchWord;
 function localeWeekdays(m, format2) {
@@ -10816,6 +10837,7 @@ exports.e = e;
 exports.f = f;
 exports.hooks = hooks;
 exports.isRef = isRef;
+exports.n = n;
 exports.nextTick$1 = nextTick$1;
 exports.o = o;
 exports.onBeforeUnmount = onBeforeUnmount;
