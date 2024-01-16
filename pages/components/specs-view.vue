@@ -162,6 +162,44 @@
 				}
 			})
 		})
+		let STR = ''
+		selectdata.select.forEach((item=>STR += item.att_val))
+		if(STR == ''){
+			var new_res = []//取消选中
+		}else{//选中
+			var new_res = raw.all_sku.filter(item=>item.custom == STR)
+		}
+		// 让库存为0的禁用点击，去掉背景颜色
+		if(new_res.length > 0){
+			for(let i = 0; i<new_res.length; i++){
+				for(let m = 0; m<new_res[i].att_data.length; m++){
+					for(let I = 0; I<skudata.new_sku.length; I++){
+						for(let k = 0; k<skudata.new_sku[I].sku.length; k++){
+							selectdata.select.forEach(async item_se=>{
+								if(item_se.att_name != skudata.new_sku[I].att_name && new_res[i].att_data[m].att_val == skudata.new_sku[I].sku[k].att_val){
+									await nextTick()
+									skudata.new_sku[I].sku[k].act = true
+									selectdata.seleIndex[I] = -1
+									let DE = selectdata.select.findIndex(item=>item.att_val == skudata.new_sku[I].sku[k].att_val)
+									if(DE > -1){
+										selectdata.select.splice(DE,1)
+									}
+								}
+							})
+						}
+					}
+				}
+			}
+		}else{
+			skudata.new_sku.forEach(async(item,index)=>{
+				await nextTick()
+				item.sku.forEach((item_act,index_act)=>{
+					if(item_act.act){
+						skudata.new_sku[index].sku[index_act].act = false
+					}
+				})
+			})
+		}
 	}
 </script>
 
