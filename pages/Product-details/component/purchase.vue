@@ -11,10 +11,10 @@
 			<text>购物车</text>
 			<text class="amount">1</text>
 		</view>
-		<view class="flex-left">
-			<image src="/static/detail/shoucang.svg" mode="aspectFit"></image>
-			<!-- <image src="/static/detail/yishoucang.svg" mode="aspectFit"></image> -->
-			<text>收藏</text>
+		<view class="flex-left" @click="toCollect(collection)">
+			<image src="/static/detail/shoucang.svg" mode="aspectFit" v-if="collection <=0"></image>
+			<image src="/static/detail/yishoucang.svg" mode="aspectFit" v-else></image>
+			<text>{{collection > 0 ? '已收藏' : '收藏' }}</text>
 		</view>
 		<view class="flex-right shopping-cart">加入购物车</view>
 		<view class="flex-right buy">立即购买</view>
@@ -23,7 +23,40 @@
 	</view>
 </template>
 
-<script>
+<script setup>
+	import {defineProps, reactive, watch,toRefs} from 'vue'
+	let props = defineProps({goods_id:String,collection:Number,sku_data:Array,goods:Object});
+	const result = reactive({collection:0,goods_id:''});
+	const {collection} = toRefs(result);
+	watch(props,(newVal,oldVal)=>{
+		console.log(newVal);
+		let {collection,goods_id} = newVal;
+		result.collection = collection;
+		result.goods_id = goods_id;
+	})
+	//收藏和取消收藏
+	import {login_user} from '@/Acc-config/answer.js'
+	import {Public} from '@/Acc-config/public.js'
+	const db = wx.cloud.database();
+	async function toCollect(n){
+		const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
+		if(!user){login_user.show = true;return false}
+		if(n === 0){//收藏
+			try{
+				await db.collection('collect_goods').add({data:{goods_id:result.goods_id}});
+				result.collection++;
+			}catch(e){
+				new Plublic().toast('收藏失败');
+			}
+		}else{//取消收藏
+			try{
+				await db.collection('collect_goods').where({goods_id:result.goods_id}).remove();
+				result.collection = 0;
+			}catch(e){
+				new Plublic().toast('取消收藏失败');
+			}
+		}
+	}
 </script>
 
 <style scoped>

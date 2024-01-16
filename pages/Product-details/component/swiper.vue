@@ -55,7 +55,6 @@
 	const seckill_display = ref(false);
 	//获取接收父组件传来的值
 	watch(props,(newVal,oldVal)=>{
-		console.log(newVal);
 		ban_length.value = newVal.goods.goods_banner ? newVal.goods.goods_banner.length : 0;
 		if(newVal.seckill.length === 0){
 			//没有秒杀

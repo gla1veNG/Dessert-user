@@ -12,7 +12,6 @@ const _sfc_main = {
     }
     const seckill_display = common_vendor.ref(false);
     common_vendor.watch(props, (newVal, oldVal) => {
-      console.log(newVal);
       ban_length.value = newVal.goods.goods_banner ? newVal.goods.goods_banner.length : 0;
       if (newVal.seckill.length === 0) {
         seckill_display.value = false;
