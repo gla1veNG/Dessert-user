@@ -6,6 +6,7 @@
     "eva": "./component/evaluate",
     "img": "./component/image",
     "purchase": "./component/purchase",
+    "specs": "../components/specs-view",
     "login": "../components/login-view"
   }
 }

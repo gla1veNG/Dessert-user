@@ -7,13 +7,31 @@ const _sfc_main = {
   props: { goods_id: String, collection: Number, sku_data: Array, goods: Object },
   setup(__props) {
     const props = __props;
-    const result = common_vendor.reactive({ collection: 0, goods_id: "" });
-    const { collection } = common_vendor.toRefs(result);
+    const result = common_vendor.reactive({ collection: 0, goods_id: "", whether: true, tips: "", goods: {} });
+    const { collection, whether, tips } = common_vendor.toRefs(result);
     common_vendor.watch(props, (newVal, oldVal) => {
       console.log(newVal);
-      let { collection: collection2, goods_id } = newVal;
+      let { collection: collection2, goods_id, goods } = newVal;
       result.collection = collection2;
       result.goods_id = goods_id;
+      result.goods = goods;
+      if (goods.shelves === false) {
+        if (goods.stock <= 0) {
+          result.whether = false;
+          result.tips = "该商品已下架";
+        } else {
+          result.whether = false;
+          result.tips = "该商品已下架";
+        }
+      } else if (goods.stock <= 0) {
+        if (goods.shelves === false) {
+          result.whether = false;
+          result.tips = "该商品已下架";
+        } else {
+          result.whether = false;
+          result.tips = "该商品已售完";
+        }
+      }
     });
     const db = common_vendor.wx$1.cloud.database();
     async function toCollect(n) {
@@ -38,12 +56,24 @@ const _sfc_main = {
         }
       }
     }
+    common_vendor.onShareAppMessage(() => {
+      return {
+        title: result.goods.goods_title,
+        path: `pages/Product-details/details?goods_id=${result.goods_id}`,
+        imageUrl: result.goods.goods_cover
+      };
+    });
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: common_vendor.unref(collection) <= 0
       }, common_vendor.unref(collection) <= 0 ? {} : {}, {
         b: common_vendor.t(common_vendor.unref(collection) > 0 ? "已收藏" : "收藏"),
-        c: common_vendor.o(($event) => toCollect(common_vendor.unref(collection)))
+        c: common_vendor.o(($event) => toCollect(common_vendor.unref(collection))),
+        d: common_vendor.unref(whether)
+      }, common_vendor.unref(whether) ? {} : {}, {
+        e: common_vendor.unref(whether)
+      }, common_vendor.unref(whether) ? {} : {
+        f: common_vendor.t(common_vendor.unref(tips))
       });
     };
   }

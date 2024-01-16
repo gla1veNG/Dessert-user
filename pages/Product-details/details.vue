@@ -22,6 +22,8 @@
 	<purchase :goods_id="goods_id" :collection="collection" :sku_data="sku_data" :goods="goods"/>
 	<!-- 登录界面 -->
 	<Login/>
+	<!-- sku选择弹窗 -->
+	<Specs/>
 </template>
 
 <script setup>
@@ -30,6 +32,7 @@
 	import Eva from '@/pages/Product-details/component/evaluate.vue'
 	import Img from '@/pages/Product-details/component/image.vue'
 	import Purchase from '@/pages/Product-details/component/purchase.vue'
+	import Specs from '@/pages/components/specs-view.vue'
 	import Login from '@/pages/components/login-view.vue'
 	//顶部导航栏
 	const search_data = reactive({

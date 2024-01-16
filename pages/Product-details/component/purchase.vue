@@ -16,23 +16,42 @@
 			<image src="/static/detail/yishoucang.svg" mode="aspectFit" v-else></image>
 			<text>{{collection > 0 ? '已收藏' : '收藏' }}</text>
 		</view>
-		<view class="flex-right shopping-cart">加入购物车</view>
-		<view class="flex-right buy">立即购买</view>
+		<view v-if="whether" class="flex-right shopping-cart">加入购物车</view>
+		<view v-if="whether" class="flex-right buy">立即购买</view>
 		<!-- 库存不足 商品已下架 -->
-		<!-- <view class="flex-right buy">库存不足</view> -->
+		<view v-else class="flex-right buy">{{tips}}</view>
 	</view>
 </template>
 
 <script setup>
 	import {defineProps, reactive, watch,toRefs} from 'vue'
 	let props = defineProps({goods_id:String,collection:Number,sku_data:Array,goods:Object});
-	const result = reactive({collection:0,goods_id:''});
-	const {collection} = toRefs(result);
+	const result = reactive({collection:0,goods_id:'',whether:true,tips:'',goods:{}});
+	const {collection,whether,tips} = toRefs(result);
 	watch(props,(newVal,oldVal)=>{
 		console.log(newVal);
-		let {collection,goods_id} = newVal;
+		let {collection,goods_id,goods} = newVal;
 		result.collection = collection;
 		result.goods_id = goods_id;
+		result.goods = goods;
+		//判断商品是否已下架或商品库存足不足够
+		if(goods.shelves === false){
+			if(goods.stock <= 0){//商品下架以及库存不足
+				result.whether = false;
+				result.tips = '该商品已下架'
+			}else{//商品下架以及库存足够
+				result.whether = false;
+				result.tips = '该商品已下架'
+			}
+		}else if(goods.stock <= 0){
+			if(goods.shelves === false){//库存不足以及商品下架
+				result.whether = false;
+				result.tips = '该商品已下架'
+			}else{
+				result.whether = false;
+				result.tips = '该商品已售完'
+			}
+		}
 	})
 	//收藏和取消收藏
 	import {login_user} from '@/Acc-config/answer.js'
@@ -57,6 +76,16 @@
 			}
 		}
 	}
+	
+	//分享
+	import {onShareAppMessage} from '@dcloudio/uni-app'
+	onShareAppMessage(()=>{
+		return{
+			title:result.goods.goods_title,
+			path:`pages/Product-details/details?goods_id=${result.goods_id}`,
+			imageUrl:result.goods.goods_cover
+		}
+	})
 </script>
 
 <style scoped>

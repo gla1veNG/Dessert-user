@@ -2,12 +2,13 @@
 const common_vendor = require("../../common/vendor.js");
 const AccConfig_answer = require("../../Acc-config/answer.js");
 if (!Math) {
-  (Swipers + Eva + Img + Purchase + Login)();
+  (Swipers + Eva + Img + Purchase + Login + Specs)();
 }
 const Swipers = () => "./component/swiper.js";
 const Eva = () => "./component/evaluate.js";
 const Img = () => "./component/image.js";
 const Purchase = () => "./component/purchase.js";
+const Specs = () => "../components/specs-view.js";
 const Login = () => "../components/login-view.js";
 const _sfc_main = {
   __name: "details",
