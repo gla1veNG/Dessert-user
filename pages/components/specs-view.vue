@@ -76,8 +76,7 @@
 	const props = defineProps({sku_data:Array,goods:Object});
 	const skudata = reactive({goods:{},new_sku:[],all_sku:[],sku_length:0,sku_sort:{}});
 	 const {goods,new_sku} =toRefs(skudata)
-	watch(props,(newVal,oldVal)=>{
-		console.log(newVal);
+	let cease = watch(props,(newVal,oldVal)=>{
 		skudata.goods = newVal.goods;
 		if(newVal.sku_data.length === 0){return false}
 		const sku_data = newVal.sku_data[0];
@@ -117,6 +116,7 @@
 	const selectdata = reactive({select:[],seleIndex:[]});
 	const {select,seleIndex} = toRefs(selectdata);
 	function choIce(att_val,att_name,index,index_one){
+		cease()//销毁监听器
 		//切换选中的颜色
 		let IN = selectdata.select.findIndex(item=>item.att_name === att_name);
 		if(IN > -1){
@@ -139,7 +139,29 @@
 			selectdata.select.sort((p1,p2)=>{
 				return skudata.sku_sort[p1.att_name] - skudata.sku_sort[p2.att_name]; 
 			})
+			let query_sku = skudata.all_sku.filter(item=>{
+				return JSON.stringify(item.att_data) == JSON.stringify(selectdata.select)
+			})
+			skudata.goods.goods_cover = query_sku[0].image;
+			skudata.goods.goods_cover = query_sku[0].price;
+			skudata.goods.goods_cover = query_sku[0].stock;
 		}
+		//查询库存是否不足:主要针对多规格
+		if(skudata.new_sku.length === 1){return false}
+		let raw = toRaw(skudata);
+		raw.all_sku.forEach(item=>item['custom'] = '');
+		selectdata.select.forEach((item_k,index_k)=>{
+			raw.all_sku.forEach((item,index)=>{
+				if(item.stock === 0){
+					item.att_data.forEach((item_i,index_i)=>{
+						if(item_i.att_name == item_k.att_name && item_i.att_val == item_k.att_val){
+						// 此处查询到库存为0的，custom就标记为不是空字符串
+						raw.all_sku[index].custom += item_i.att_val;
+						}
+					})
+				}
+			})
+		})
 	}
 </script>
 

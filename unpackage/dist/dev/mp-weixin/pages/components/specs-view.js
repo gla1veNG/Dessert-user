@@ -8,8 +8,7 @@ const _sfc_main = {
     const props = __props;
     const skudata = common_vendor.reactive({ goods: {}, new_sku: [], all_sku: [], sku_length: 0, sku_sort: {} });
     const { goods, new_sku } = common_vendor.toRefs(skudata);
-    common_vendor.watch(props, (newVal, oldVal) => {
-      console.log(newVal);
+    let cease = common_vendor.watch(props, (newVal, oldVal) => {
       skudata.goods = newVal.goods;
       if (newVal.sku_data.length === 0) {
         return false;
@@ -46,6 +45,7 @@ const _sfc_main = {
     const selectdata = common_vendor.reactive({ select: [], seleIndex: [] });
     const { select, seleIndex } = common_vendor.toRefs(selectdata);
     function choIce(att_val, att_name, index, index_one) {
+      cease();
       let IN = selectdata.select.findIndex((item) => item.att_name === att_name);
       if (IN > -1) {
         let MB = selectdata.select.findIndex((item) => item.att_val === att_val);
@@ -64,7 +64,29 @@ const _sfc_main = {
         selectdata.select.sort((p1, p2) => {
           return skudata.sku_sort[p1.att_name] - skudata.sku_sort[p2.att_name];
         });
+        let query_sku = skudata.all_sku.filter((item) => {
+          return JSON.stringify(item.att_data) == JSON.stringify(selectdata.select);
+        });
+        skudata.goods.goods_cover = query_sku[0].image;
+        skudata.goods.goods_cover = query_sku[0].price;
+        skudata.goods.goods_cover = query_sku[0].stock;
       }
+      if (skudata.new_sku.length === 1) {
+        return false;
+      }
+      let raw = toRaw(skudata);
+      raw.all_sku.forEach((item) => item["custom"] = "");
+      selectdata.select.forEach((item_k, index_k) => {
+        raw.all_sku.forEach((item, index2) => {
+          if (item.stock === 0) {
+            item.att_data.forEach((item_i, index_i) => {
+              if (item_i.att_name == item_k.att_name && item_i.att_val == item_k.att_val) {
+                raw.all_sku[index2].custom += item_i.att_val;
+              }
+            });
+          }
+        });
+      });
     }
     return (_ctx, _cache) => {
       return common_vendor.e({
