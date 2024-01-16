@@ -5,14 +5,14 @@
 			<!-- 展示已选的规格：图片，价格等-->
 			<view class="space-price">
 				<view class="space-goods-img">
-					<image src="/static/detail/jianshao.png" mode="aspectFill"></image>
+					<image :src="goods.goods_cover" mode="aspectFill"></image>
 				</view>
 				<view class="space-text">
 					<view class="space-text-price">
-						<text>1.8</text>
+						<text>{{goods.goods_price}}</text>
 						<text>秒杀价：9.9</text>
 					</view>
-					<text class="space-text-stock">库存：200</text>
+					<text class="space-text-stock">库存：{{goods.stock}}</text>
 					<view class="choice">
 						<text>请选择</text>
 						<text>微辣</text>
@@ -52,13 +52,19 @@
 	function onEnter(){}
 	//详情页点击底部加入购物车或购买拉起sku弹窗
 	import {sku_popup} from '@/Acc-config/answer.js'
-	import {defineProps,watch,reactive} from 'vue'
+	import {defineProps,watch,reactive,toRefs} from 'vue'
 	
 	const props = defineProps({sku_data:Array,goods:Object});
-	const skudata = reactive({goods:{}}); 
+	const skudata = reactive({goods:{}});
+	 const {goods} =toRefs(skudata)
 	watch(props,(newVal,oldVal)=>{
 		console.log(newVal);
 		skudata.goods = newVal.goods;
+		if(newVal.sku_data.length === 0){return false}
+		const sku_data = newVal.sku_data[0];
+		//取出标题
+		const sku_name = sku_data.sku[0].att_data.map(item=>item.att_name);
+		
 	})
 </script>
 
