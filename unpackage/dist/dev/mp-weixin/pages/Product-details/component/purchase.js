@@ -1,5 +1,6 @@
 "use strict";
 const common_vendor = require("../../../common/vendor.js");
+const AccConfig_placeOrder = require("../../../Acc-config/place-order.js");
 const AccConfig_answer = require("../../../Acc-config/answer.js");
 require("../../../Acc-config/public.js");
 const _sfc_main = {
@@ -9,7 +10,7 @@ const _sfc_main = {
     const props = __props;
     const result = common_vendor.reactive({ collection: 0, goods_id: "", whether: true, tips: "", goods: {} });
     const { collection, whether, tips } = common_vendor.toRefs(result);
-    common_vendor.watch(props, (newVal, oldVal) => {
+    let cease = common_vendor.watch(props, (newVal, oldVal) => {
       let { collection: collection2, goods_id, goods } = newVal;
       result.collection = collection2;
       result.goods_id = goods_id;
@@ -31,6 +32,7 @@ const _sfc_main = {
           result.tips = "该商品已售完";
         }
       }
+      cease();
     });
     const db = common_vendor.wx$1.cloud.database();
     async function toCollect(n) {
@@ -75,19 +77,23 @@ const _sfc_main = {
     }
     return (_ctx, _cache) => {
       return common_vendor.e({
-        a: common_vendor.unref(collection) <= 0
-      }, common_vendor.unref(collection) <= 0 ? {} : {}, {
-        b: common_vendor.t(common_vendor.unref(collection) > 0 ? "已收藏" : "收藏"),
-        c: common_vendor.o(($event) => toCollect(common_vendor.unref(collection))),
-        d: common_vendor.unref(whether)
-      }, common_vendor.unref(whether) ? {
-        e: common_vendor.o(($event) => purChase("j_sho", __props.sku_data))
+        a: common_vendor.unref(AccConfig_placeOrder.ORDER).nu_sh_cart > 0
+      }, common_vendor.unref(AccConfig_placeOrder.ORDER).nu_sh_cart > 0 ? {
+        b: common_vendor.t(common_vendor.unref(AccConfig_placeOrder.ORDER).nu_sh_cart)
       } : {}, {
+        c: common_vendor.unref(collection) <= 0
+      }, common_vendor.unref(collection) <= 0 ? {} : {}, {
+        d: common_vendor.t(common_vendor.unref(collection) > 0 ? "已收藏" : "收藏"),
+        e: common_vendor.o(($event) => toCollect(common_vendor.unref(collection))),
         f: common_vendor.unref(whether)
       }, common_vendor.unref(whether) ? {
-        g: common_vendor.o(($event) => purChase("j_pur", __props.sku_data))
+        g: common_vendor.o(($event) => purChase("j_sho", __props.sku_data))
+      } : {}, {
+        h: common_vendor.unref(whether)
+      }, common_vendor.unref(whether) ? {
+        i: common_vendor.o(($event) => purChase("j_pur", __props.sku_data))
       } : {
-        h: common_vendor.t(common_vendor.unref(tips))
+        j: common_vendor.t(common_vendor.unref(tips))
       });
     };
   }

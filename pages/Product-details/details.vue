@@ -104,12 +104,12 @@
 			login_coll:0,
 			sku_data:[],
 			seckill:[],
-			nu_sh_cart:0,
 			login_cart:0,
 			eva_num:0,
 			eva_data:[]
 		});
 		const {goods_id,goods,seckill,eva_num,eva_data,collection,sku_data} = toRefs(result);
+		import {ORDER} from '@/Acc-config/place-order.js'
 		onLoad((event)=>{
 			//获取商品数据
 			result.goods_id = event.goods_id;
@@ -135,10 +135,18 @@
 				result.login_coll = res[1].data.length;//登录成功之后获取这里的收藏数据
 				result.sku_data = res[2].data;//sku
 				result.seckill = res[3].data;//秒杀
-				result.nu_sh_cart = user ? res[4].total : 0;//购物车件数
+				ORDER.nu_sh_cart = user ? res[4].total : 0;//购物车件数
 				result.login_cart = res[4].total;//登录成功之后获取这里的购物车件数
 				result.eva_num = res[5].total;//评价总条数
 				result.eva_data = res[6].data;//前三条评论
+				//取到固定不变值
+				ORDER.order.goods_id = res[0].data._id;
+				ORDER.order.goods_image = res[0].data.goods_cover;
+				ORDER.order.goods_title = res[0].data.goods_title;
+				//没有秒杀，sku,取返回价格下单
+				if(result.sku_data.length === 0 && result.seckill.length === 0 ){
+					ORDER.order.goods_price = res[0]
+				}
 				setTimeout(()=>{viewheight();},900)
 			})
 			.catch(err=>{
@@ -150,7 +158,7 @@
 		import {login_user} from '@/Acc-config/answer.js'
 		watch(()=>login_user.response,(newVal,oldVal)=>{
 			result.collection = result.login_coll;
-			result.nu_sh_cart = result.login_cart;
+			ORDER.nu_sh_cart = result.login_cart;
 		})
 </script>
 

@@ -43,7 +43,8 @@
 	<view class="detail-title">{{goods.goods_title}}</view>
 </template>
 <script setup>
-	import {defineProps,watch,ref,reactive, toRefs} from 'vue'
+	import {defineProps,watch,ref,reactive,toRefs,onBeforeUnmount} from 'vue'
+	import {ORDER} from '@/Acc-config/place-order.js'
 	
 	const props = defineProps({goods:Object,seckill:Array});
 	//轮播图片数量
@@ -54,11 +55,13 @@
 	}
 	const seckill_display = ref(false);
 	//获取接收父组件传来的值
-	watch(props,(newVal,oldVal)=>{
+	let cease = watch(props,(newVal,oldVal)=>{
 		ban_length.value = newVal.goods.goods_banner ? newVal.goods.goods_banner.length : 0;
 		if(newVal.seckill.length === 0){
 			//没有秒杀
-			seckill_display.value = false; 
+			seckill_display.value = false;
+			ORDER.order.goods_price = newVal.goods.goods_price;
+			ORDER.exist = false;
 		}else{
 			//有秒杀，判断是否开始
 			//判断服务器返回的开始时间是否大于当前时间，如果大于：秒杀还没开始
@@ -70,11 +73,14 @@
 			if(start_Time > currentTime()){
 				console.log('有秒杀，未开始');
 				seckill_display.value = false;
+				ORDER.order.goods_price = newVal.goods.goods_price;
+				ORDER.exist = false
 			}else{
 				console.log('有秒杀，已开始');
 				counTdown(newVal.seckill[0],end_Time);
 			}
 		}
+		cease();
 	})
 	//当前的时间戳
 	function currentTime(){
@@ -101,16 +107,22 @@
 			SS = checkTime(SS);
 			if(sur > 0){
 				seckill_display.value = true;
+				ORDER.order.goods_price = seckill_pri.price_spike;
+				ORDER.exist = true;
 				result.day = DD;
 				result.hour = HH;
 				result.minute = MM;
 				result.second = SS;
 			}else{
 				//秒杀结束
+				console.log('秒杀结束');
 				seckill_display.value = false;
+				ORDER.order.goods_price = seckill_pri.ori_price;
+				ORDER.exist = false;
 				clearInterval(timer);
 			}
-		},100)
+		},1000)
+		clear_time.value = timer;
 		function checkTime(i){
 			if(i < 10){
 				i = '0' + i
@@ -118,6 +130,11 @@
 			return i;
 		}
 	}
+	//销毁：返回上一页面，停止定时器运行
+	let clear_time = ref('')
+	onBeforeUnmount(()=>{
+		clearInterval(clear_time.value);
+	})
 </script>
 
 <style scoped>

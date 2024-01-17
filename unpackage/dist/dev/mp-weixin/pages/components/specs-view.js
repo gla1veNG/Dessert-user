@@ -1,6 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const AccConfig_answer = require("../../Acc-config/answer.js");
+const AccConfig_placeOrder = require("../../Acc-config/place-order.js");
 const _sfc_main = {
   __name: "specs-view",
   props: { sku_data: Array, goods: Object },
@@ -68,8 +69,8 @@ const _sfc_main = {
           return JSON.stringify(item.att_data) == JSON.stringify(selectdata.select);
         });
         skudata.goods.goods_cover = query_sku[0].image;
-        skudata.goods.goods_cover = query_sku[0].price;
-        skudata.goods.goods_cover = query_sku[0].stock;
+        skudata.goods.goods_price = query_sku[0].price;
+        skudata.goods.stock = query_sku[0].stock;
       }
       if (skudata.new_sku.length === 1) {
         return false;
@@ -125,32 +126,43 @@ const _sfc_main = {
         });
       }
     }
+    const goods_amount = common_vendor.ref(1);
+    function reDuce() {
+      goods_amount.value--;
+    }
+    function plUs() {
+      goods_amount.value++;
+    }
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: common_vendor.unref(goods).goods_cover,
         b: common_vendor.t(common_vendor.unref(goods).goods_price),
-        c: common_vendor.t(common_vendor.unref(goods).stock),
-        d: common_vendor.t(common_vendor.unref(select).length > 0 ? "已选择：" : "请选择"),
-        e: common_vendor.unref(select).length === 0
+        c: common_vendor.unref(AccConfig_placeOrder.ORDER).exist
+      }, common_vendor.unref(AccConfig_placeOrder.ORDER).exist ? {
+        d: common_vendor.t(common_vendor.unref(AccConfig_placeOrder.ORDER).order.goods_price)
+      } : {}, {
+        e: common_vendor.t(common_vendor.unref(goods).stock),
+        f: common_vendor.t(common_vendor.unref(select).length > 0 ? "已选择：" : "请选择"),
+        g: common_vendor.unref(select).length === 0
       }, common_vendor.unref(select).length === 0 ? {
-        f: common_vendor.f(common_vendor.unref(new_sku), (item, index, i0) => {
+        h: common_vendor.f(common_vendor.unref(new_sku), (item, index, i0) => {
           return {
             a: common_vendor.t(item.att_name),
             b: index
           };
         })
       } : {
-        g: common_vendor.f(common_vendor.unref(select), (item, index, i0) => {
+        i: common_vendor.f(common_vendor.unref(select), (item, index, i0) => {
           return {
             a: common_vendor.t(item.att_val),
             b: index
           };
         })
       }, {
-        h: common_vendor.o(($event) => common_vendor.unref(AccConfig_answer.sku_popup).show = false),
-        i: common_vendor.unref(new_sku).length === 1
+        j: common_vendor.o(($event) => common_vendor.unref(AccConfig_answer.sku_popup).show = false),
+        k: common_vendor.unref(new_sku).length === 1
       }, common_vendor.unref(new_sku).length === 1 ? {
-        j: common_vendor.f(common_vendor.unref(new_sku), (item, index, i0) => {
+        l: common_vendor.f(common_vendor.unref(new_sku), (item, index, i0) => {
           return {
             a: common_vendor.t(item.att_name),
             b: common_vendor.f(item.sku, (item_one, index_one, i1) => {
@@ -166,7 +178,7 @@ const _sfc_main = {
           };
         })
       } : {
-        k: common_vendor.f(common_vendor.unref(new_sku), (item, index, i0) => {
+        m: common_vendor.f(common_vendor.unref(new_sku), (item, index, i0) => {
           return {
             a: common_vendor.t(item.att_name),
             b: common_vendor.f(item.sku, (item_one, index_one, i1) => {
@@ -182,8 +194,12 @@ const _sfc_main = {
           };
         })
       }, {
-        l: common_vendor.t(common_vendor.unref(AccConfig_answer.sku_popup).judge === "j_sho" ? "加入购物车" : "立即购买"),
-        m: common_vendor.unref(AccConfig_answer.sku_popup).show
+        n: common_vendor.o(reDuce),
+        o: common_vendor.n(goods_amount.value === 1 ? "prevent_style" : ""),
+        p: common_vendor.t(goods_amount.value),
+        q: common_vendor.o(plUs),
+        r: common_vendor.t(common_vendor.unref(AccConfig_answer.sku_popup).judge === "j_sho" ? "加入购物车" : "立即购买"),
+        s: common_vendor.unref(AccConfig_answer.sku_popup).show
       });
     };
   }

@@ -10,7 +10,7 @@
 				<view class="space-text">
 					<view class="space-text-price">
 						<text>{{goods.goods_price}}</text>
-						<text>秒杀价：9.9</text>
+						<text v-if="ORDER.exist">秒杀价：{{ORDER.order.goods_price}}</text>
 					</view>
 					<text class="space-text-stock">库存：{{goods.stock}}</text>
 					<view class="choice">
@@ -52,9 +52,9 @@
 			<view class="Pur-quantity">
 				<view class="Pur-title">购买数量</view>
 				<view class="Pur-image">
-					<image src="/static/detail/jianshao.png" mode="aspectFit"></image>
-					<text>1</text>
-					<image src="/static/detail/tianjia.png" mode="aspectFit"></image>
+					<image src="/static/detail/jianshao.png" mode="aspectFit" @click="reDuce" :class="[goods_amount === 1 ? 'prevent_style' : '']"></image>
+					<text>{{goods_amount}}</text>
+					<image src="/static/detail/tianjia.png" mode="aspectFit" @click="plUs"></image>
 				</view>
 			</view>
 			<!-- 给一个防止超出页面的区域被按钮给盖住 -->
@@ -68,10 +68,12 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 	function onEnter(){}
 	//详情页点击底部加入购物车或购买拉起sku弹窗
 	import {sku_popup} from '@/Acc-config/answer.js'
 	import {defineProps,watch,reactive,toRefs} from 'vue'
+	import {ORDER} from '@/Acc-config/place-order.js'
 	
 	const props = defineProps({sku_data:Array,goods:Object});
 	const skudata = reactive({goods:{},new_sku:[],all_sku:[],sku_length:0,sku_sort:{}});
@@ -142,9 +144,9 @@
 			let query_sku = skudata.all_sku.filter(item=>{
 				return JSON.stringify(item.att_data) == JSON.stringify(selectdata.select)
 			})
-			skudata.goods.goods_cover = query_sku[0].image;
-			skudata.goods.goods_cover = query_sku[0].price;
-			skudata.goods.goods_cover = query_sku[0].stock;
+			skudata.goods.goods_cover = query_sku[0].image
+			skudata.goods.goods_price = query_sku[0].price
+			skudata.goods.stock = query_sku[0].stock
 		}
 		//查询库存是否不足:主要针对多规格
 		if(skudata.new_sku.length === 1){return false}
@@ -200,6 +202,14 @@
 				})
 			})
 		}
+	}
+	//加减商品数量
+	const goods_amount = ref(1);
+	function reDuce(){
+		goods_amount.value --;
+	}
+	function plUs(){
+		goods_amount.value ++;
 	}
 </script>
 
@@ -328,5 +338,4 @@
 	background-color: #e9445a !important;
 	color: #FFFFFF;
 }
-
 </style>

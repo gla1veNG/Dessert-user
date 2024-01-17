@@ -9,7 +9,7 @@
 		<view class="flex-left shopping-amount">
 			<image src="/static/detail/gouwuche.svg" mode="aspectFit"></image>
 			<text>购物车</text>
-			<text class="amount">1</text>
+			<text class="amount" v-if="ORDER.nu_sh_cart > 0">{{ORDER.nu_sh_cart}}</text>
 		</view>
 		<view class="flex-left" @click="toCollect(collection)">
 			<image src="/static/detail/shoucang.svg" mode="aspectFit" v-if="collection <=0"></image>
@@ -25,10 +25,11 @@
 
 <script setup>
 	import {defineProps, reactive, watch,toRefs} from 'vue'
+	import {ORDER} from '@/Acc-config/place-order.js'
 	let props = defineProps({goods_id:String,collection:Number,sku_data:Array,goods:Object});
 	const result = reactive({collection:0,goods_id:'',whether:true,tips:'',goods:{}});
 	const {collection,whether,tips} = toRefs(result);
-	watch(props,(newVal,oldVal)=>{
+	let cease = watch(props,(newVal,oldVal)=>{
 		let {collection,goods_id,goods} = newVal;
 		result.collection = collection;
 		result.goods_id = goods_id;
@@ -51,6 +52,7 @@
 				result.tips = '该商品已售完'
 			}
 		}
+		cease();
 	})
 	//收藏和取消收藏
 	import {login_user} from '@/Acc-config/answer.js'

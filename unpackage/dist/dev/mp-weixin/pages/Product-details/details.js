@@ -1,5 +1,6 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
+const AccConfig_placeOrder = require("../../Acc-config/place-order.js");
 const AccConfig_answer = require("../../Acc-config/answer.js");
 if (!Math) {
   (Swipers + Eva + Img + Purchase + Login + Specs)();
@@ -77,7 +78,6 @@ const _sfc_main = {
       login_coll: 0,
       sku_data: [],
       seckill: [],
-      nu_sh_cart: 0,
       login_cart: 0,
       eva_num: 0,
       eva_data: []
@@ -100,10 +100,16 @@ const _sfc_main = {
         result.login_coll = res[1].data.length;
         result.sku_data = res[2].data;
         result.seckill = res[3].data;
-        result.nu_sh_cart = user ? res[4].total : 0;
+        AccConfig_placeOrder.ORDER.nu_sh_cart = user ? res[4].total : 0;
         result.login_cart = res[4].total;
         result.eva_num = res[5].total;
         result.eva_data = res[6].data;
+        AccConfig_placeOrder.ORDER.order.goods_id = res[0].data._id;
+        AccConfig_placeOrder.ORDER.order.goods_image = res[0].data.goods_cover;
+        AccConfig_placeOrder.ORDER.order.goods_title = res[0].data.goods_title;
+        if (result.sku_data.length === 0 && result.seckill.length === 0) {
+          AccConfig_placeOrder.ORDER.order.goods_price = res[0];
+        }
         setTimeout(() => {
           viewheight();
         }, 900);
@@ -113,7 +119,7 @@ const _sfc_main = {
     });
     common_vendor.watch(() => AccConfig_answer.login_user.response, (newVal, oldVal) => {
       result.collection = result.login_coll;
-      result.nu_sh_cart = result.login_cart;
+      AccConfig_placeOrder.ORDER.nu_sh_cart = result.login_cart;
     });
     return (_ctx, _cache) => {
       return {
