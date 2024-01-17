@@ -2,6 +2,7 @@
 const common_vendor = require("../../common/vendor.js");
 const AccConfig_answer = require("../../Acc-config/answer.js");
 const AccConfig_placeOrder = require("../../Acc-config/place-order.js");
+const AccConfig_public = require("../../Acc-config/public.js");
 const _sfc_main = {
   __name: "specs-view",
   props: { sku_data: Array, goods: Object },
@@ -133,6 +134,20 @@ const _sfc_main = {
     function plUs() {
       goods_amount.value++;
     }
+    function subMit(judge) {
+      if (selectdata.select.length != skudata.new_sku.length) {
+        new AccConfig_public.Public().toast("请选择商品规格");
+      } else {
+        AccConfig_placeOrder.ORDER.order.buy_amount = goods_amount.value;
+        AccConfig_placeOrder.ORDER.order.specs = selectdata.select;
+        AccConfig_placeOrder.ORDER.order.goods_image = skudata.goods.goods_cover;
+        AccConfig_placeOrder.ORDER.order.goods_price = AccConfig_placeOrder.ORDER.exist ? AccConfig_placeOrder.ORDER.order.goods_price : skudata.goods.goods_price;
+        if (judge === "j_sho") {
+          console.log(AccConfig_placeOrder.ORDER.order);
+          AccConfig_placeOrder.SHCART();
+        }
+      }
+    }
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: common_vendor.unref(goods).goods_cover,
@@ -199,7 +214,8 @@ const _sfc_main = {
         p: common_vendor.t(goods_amount.value),
         q: common_vendor.o(plUs),
         r: common_vendor.t(common_vendor.unref(AccConfig_answer.sku_popup).judge === "j_sho" ? "加入购物车" : "立即购买"),
-        s: common_vendor.unref(AccConfig_answer.sku_popup).show
+        s: common_vendor.o(($event) => subMit(common_vendor.unref(AccConfig_answer.sku_popup).judge)),
+        t: common_vendor.unref(AccConfig_answer.sku_popup).show
       });
     };
   }

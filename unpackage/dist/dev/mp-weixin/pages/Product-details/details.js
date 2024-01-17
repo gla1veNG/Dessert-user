@@ -121,6 +121,13 @@ const _sfc_main = {
       result.collection = result.login_coll;
       AccConfig_placeOrder.ORDER.nu_sh_cart = result.login_cart;
     });
+    common_vendor.onShareAppMessage(() => {
+      return {
+        title: result.goods.goods_title,
+        path: `pages/Product-details/details?goods_id=${result.goods_id}`,
+        imageUrl: result.goods.goods_cover
+      };
+    });
     return (_ctx, _cache) => {
       return {
         a: common_vendor.s("height:" + common_vendor.unref(S_top) + "px;"),
@@ -166,5 +173,5 @@ const _sfc_main = {
   }
 };
 const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__file", "E:/Dessert/Dessert-user/pages/Product-details/details.vue"]]);
-_sfc_main.__runtimeHooks = 1;
+_sfc_main.__runtimeHooks = 3;
 wx.createPage(MiniProgramPage);

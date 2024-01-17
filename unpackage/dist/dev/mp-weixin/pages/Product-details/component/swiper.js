@@ -12,7 +12,7 @@ const _sfc_main = {
       current.value = e.detail.current + 1;
     }
     const seckill_display = common_vendor.ref(false);
-    let cease = common_vendor.watch(props, (newVal, oldVal) => {
+    common_vendor.watch(props, (newVal, oldVal) => {
       ban_length.value = newVal.goods.goods_banner ? newVal.goods.goods_banner.length : 0;
       if (newVal.seckill.length === 0) {
         seckill_display.value = false;
@@ -32,7 +32,6 @@ const _sfc_main = {
           counTdown(newVal.seckill[0], end_Time);
         }
       }
-      cease();
     });
     function currentTime() {
       return Math.round((/* @__PURE__ */ new Date()).getTime() / 1e3);

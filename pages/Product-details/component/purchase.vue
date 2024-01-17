@@ -78,15 +78,6 @@
 		}
 	}
 	
-	//分享
-	import {onShareAppMessage} from '@dcloudio/uni-app'
-	onShareAppMessage(()=>{
-		return{
-			title:result.goods.goods_title,
-			path:`pages/Product-details/details?goods_id=${result.goods_id}`,
-			imageUrl:result.goods.goods_cover
-		}
-	})
 	//加入购物车或立即购买
 	import {sku_popup} from '@/Acc-config/answer.js'
 	function purChase(judge,sku){

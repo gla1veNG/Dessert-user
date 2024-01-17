@@ -80,7 +80,6 @@
 				counTdown(newVal.seckill[0],end_Time);
 			}
 		}
-		cease();
 	})
 	//当前的时间戳
 	function currentTime(){

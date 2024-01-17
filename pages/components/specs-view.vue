@@ -61,23 +61,22 @@
 			<view style="height: 200rpx;"></view>
 			<!-- 底部 -->
 			<view class="space-botton">
-				<view>{{sku_popup.judge === 'j_sho' ? '加入购物车' : '立即购买'}}</view>
+				<view @click="subMit(sku_popup.judge)">{{sku_popup.judge === 'j_sho' ? '加入购物车' : '立即购买'}}</view>
 			</view>
 		</view>
 	</page-container>	
 </template>
 
 <script setup>
-import { ref } from 'vue';
 	function onEnter(){}
 	//详情页点击底部加入购物车或购买拉起sku弹窗
 	import {sku_popup} from '@/Acc-config/answer.js'
-	import {defineProps,watch,reactive,toRefs} from 'vue'
-	import {ORDER} from '@/Acc-config/place-order.js'
+	import {defineProps,watch,reactive,toRefs,ref} from 'vue'
+	import {ORDER,SHCART} from '@/Acc-config/place-order.js'
 	
 	const props = defineProps({sku_data:Array,goods:Object});
 	const skudata = reactive({goods:{},new_sku:[],all_sku:[],sku_length:0,sku_sort:{}});
-	 const {goods,new_sku} =toRefs(skudata)
+	const {goods,new_sku} =toRefs(skudata)
 	let cease = watch(props,(newVal,oldVal)=>{
 		skudata.goods = newVal.goods;
 		if(newVal.sku_data.length === 0){return false}
@@ -210,6 +209,26 @@ import { ref } from 'vue';
 	}
 	function plUs(){
 		goods_amount.value ++;
+	}
+	//加入购物车或者直接下单
+	import {Public} from '@/Acc-config/public.js'
+	function subMit(judge){
+		if(selectdata.select.length != skudata.new_sku.length){
+			new Public().toast('请选择商品规格');
+		}else{
+			ORDER.order.buy_amount = goods_amount.value;
+			ORDER.order.specs = selectdata.select;
+			ORDER.order.goods_image = skudata.goods.goods_cover;
+			ORDER.order.goods_price = ORDER.exist ? ORDER.order.goods_price : skudata.goods.goods_price; 
+			if(judge === 'j_sho'){
+				//加入购物车
+				console.log(ORDER.order);
+				SHCART();
+				
+			}else{
+				//立即购买
+			}
+		}
 	}
 </script>
 

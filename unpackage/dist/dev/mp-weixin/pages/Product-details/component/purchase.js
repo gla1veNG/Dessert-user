@@ -57,13 +57,6 @@ const _sfc_main = {
         }
       }
     }
-    common_vendor.onShareAppMessage(() => {
-      return {
-        title: result.goods.goods_title,
-        path: `pages/Product-details/details?goods_id=${result.goods_id}`,
-        imageUrl: result.goods.goods_cover
-      };
-    });
     function purChase(judge, sku) {
       const user = common_vendor.wx$1.getStorageSync("user_infor");
       if (!user) {
