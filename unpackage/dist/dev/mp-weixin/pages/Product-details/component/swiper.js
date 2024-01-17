@@ -95,20 +95,22 @@ const _sfc_main = {
         d: common_vendor.t(ban_length.value),
         e: seckill_display.value
       }, seckill_display.value ? common_vendor.e({
-        f: common_vendor.unref(day) != "00"
-      }, common_vendor.unref(day) != "00" ? {
-        g: common_vendor.t(common_vendor.unref(day))
-      } : {}, {
+        f: common_vendor.t(__props.seckill[0].price_spike),
+        g: common_vendor.t(__props.seckill[0].ori_price),
         h: common_vendor.unref(day) != "00"
+      }, common_vendor.unref(day) != "00" ? {
+        i: common_vendor.t(common_vendor.unref(day))
+      } : {}, {
+        j: common_vendor.unref(day) != "00"
       }, common_vendor.unref(day) != "00" ? {} : {}, {
-        i: common_vendor.t(common_vendor.unref(hour)),
-        j: common_vendor.t(common_vendor.unref(minute)),
-        k: common_vendor.t(common_vendor.unref(second))
+        k: common_vendor.t(common_vendor.unref(hour)),
+        l: common_vendor.t(common_vendor.unref(minute)),
+        m: common_vendor.t(common_vendor.unref(second))
       }) : {
-        l: common_vendor.t(__props.goods.goods_price),
-        m: common_vendor.t(__props.goods.sold)
+        n: common_vendor.t(__props.goods.goods_price),
+        o: common_vendor.t(__props.goods.sold)
       }, {
-        n: common_vendor.t(__props.goods.goods_title)
+        p: common_vendor.t(__props.goods.goods_title)
       });
     };
   }

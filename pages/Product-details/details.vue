@@ -27,7 +27,7 @@
 </template>
 
 <script setup>
-	import {reactive,toRefs,onMounted,ref,nextTick,watch} from 'vue'
+	import {reactive,toRefs,onMounted,ref,nextTick,watch,onBeforeUnmount} from 'vue'
 	import Swipers from '@/pages/Product-details/component/swiper.vue'
 	import Eva from '@/pages/Product-details/component/evaluate.vue'
 	import Img from '@/pages/Product-details/component/image.vue'
@@ -95,6 +95,11 @@
 				setTimeout(()=>{search_data.trigger = index},500);
 			})
 		}
+		import {ORDER} from '@/Acc-config/place-order.js'
+		onBeforeUnmount(()=>{
+			ORDER.order.specs=[]//清空之前缓存的数据
+			ORDER.order.SPECE_STR = ''
+		})
 		//请求数据，传值
 		const db = wx.cloud.database();
 		const result = reactive({
@@ -109,7 +114,6 @@
 			eva_data:[]
 		});
 		const {goods_id,goods,seckill,eva_num,eva_data,collection,sku_data} = toRefs(result);
-		import {ORDER} from '@/Acc-config/place-order.js'
 		onLoad((event)=>{
 			//获取商品数据
 			result.goods_id = event.goods_id;
@@ -129,7 +133,6 @@
 			const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
 			Promise.all([goods,collect,sku_data_a,seckill,nu_sh_cart,eva_num,eva_data])
 			.then(async res=>{
-				ORDER.order.specs=[]//清空之前缓存的数据
 				await nextTick();
 				result.goods = res[0].data;//请求到的商品数据
 				result.collection = user ? res[1].data.length : 0;

@@ -21,8 +21,8 @@
 			<text>距离结束还有：</text>
 		</view>
 		<view class="seckill-flex">
-			<text class="price-spike">9.9￥</text>
-			<text class="seckill-Center ori-price">19.9￥</text>
+			<text class="price-spike">{{seckill[0].price_spike}}￥</text>
+			<text class="seckill-Center ori-price">{{seckill[0].ori_price}}￥</text>
 			<view class="se-time">
 				<text v-if="day != '00'">{{day}}</text>
 				<text v-if="day != '00'">天</text>

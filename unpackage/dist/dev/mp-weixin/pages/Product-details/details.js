@@ -70,6 +70,10 @@ const _sfc_main = {
         }, 500);
       });
     }
+    common_vendor.onBeforeUnmount(() => {
+      AccConfig_placeOrder.ORDER.order.specs = [];
+      AccConfig_placeOrder.ORDER.order.SPECE_STR = "";
+    });
     const db = common_vendor.wx$1.cloud.database();
     const result = common_vendor.reactive({
       goods_id: "",
@@ -94,7 +98,6 @@ const _sfc_main = {
       const eva_data2 = db.collection("goods_eva").where({ goods_id: event.goods_id }).limit(3).get();
       const user = common_vendor.wx$1.getStorageSync("user_infor");
       Promise.all([goods2, collect, sku_data_a, seckill2, nu_sh_cart, eva_num2, eva_data2]).then(async (res) => {
-        AccConfig_placeOrder.ORDER.order.specs = [];
         await common_vendor.nextTick$1();
         result.goods = res[0].data;
         result.collection = user ? res[1].data.length : 0;
