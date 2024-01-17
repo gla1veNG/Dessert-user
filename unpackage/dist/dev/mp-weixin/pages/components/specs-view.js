@@ -10,7 +10,8 @@ const _sfc_main = {
     const props = __props;
     const skudata = common_vendor.reactive({ goods: {}, new_sku: [], all_sku: [], sku_length: 0, sku_sort: {} });
     const { goods, new_sku } = common_vendor.toRefs(skudata);
-    let cease = common_vendor.watch(props, (newVal, oldVal) => {
+    common_vendor.watch(props, (newVal_a, oldVal) => {
+      const newVal = JSON.parse(JSON.stringify(newVal_a));
       skudata.goods = newVal.goods;
       if (newVal.sku_data.length === 0) {
         return false;
@@ -47,7 +48,6 @@ const _sfc_main = {
     const selectdata = common_vendor.reactive({ select: [], seleIndex: [] });
     const { select, seleIndex } = common_vendor.toRefs(selectdata);
     function choIce(att_val, att_name, index, index_one) {
-      cease();
       let IN = selectdata.select.findIndex((item) => item.att_name === att_name);
       if (IN > -1) {
         let MB = selectdata.select.findIndex((item) => item.att_val === att_val);
@@ -147,6 +147,7 @@ const _sfc_main = {
           try {
             let res = await AccConfig_placeOrder.SHCART();
             new AccConfig_public.Public().toast(res);
+            AccConfig_answer.sku_popup.show = false;
           } catch (err) {
             new AccConfig_public.Public().toast(err);
           }

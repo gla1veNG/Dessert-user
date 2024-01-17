@@ -77,7 +77,8 @@
 	const props = defineProps({sku_data:Array,goods:Object});
 	const skudata = reactive({goods:{},new_sku:[],all_sku:[],sku_length:0,sku_sort:{}});
 	const {goods,new_sku} =toRefs(skudata)
-	let cease = watch(props,(newVal,oldVal)=>{
+	watch(props,(newVal_a,oldVal)=>{
+		const newVal = JSON.parse(JSON.stringify(newVal_a));//深拷贝
 		skudata.goods = newVal.goods;
 		if(newVal.sku_data.length === 0){return false}
 		const sku_data = newVal.sku_data[0];
@@ -117,7 +118,6 @@
 	const selectdata = reactive({select:[],seleIndex:[]});
 	const {select,seleIndex} = toRefs(selectdata);
 	function choIce(att_val,att_name,index,index_one){
-		cease()//销毁监听器
 		//切换选中的颜色
 		let IN = selectdata.select.findIndex(item=>item.att_name === att_name);
 		if(IN > -1){
@@ -226,6 +226,7 @@
 				try{
 					let res = await SHCART();
 					new Public().toast(res);
+					sku_popup.show = false;
 				}catch(err){
 					new Public().toast(err)
 				}

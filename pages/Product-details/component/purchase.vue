@@ -29,8 +29,8 @@
 	let props = defineProps({goods_id:String,collection:Number,sku_data:Array,goods:Object});
 	const result = reactive({collection:0,goods_id:'',whether:true,tips:'',goods:{}});
 	const {whether,tips} = toRefs(result);
-	let cease = watch(props,(newVal,oldVal)=>{
-		let {goods_id,goods} = newVal;
+	watch(props,(newVal,oldVal)=>{
+		let {goods_id,goods} = JSON.parse(JSON.stringify(newVal));
 		result.goods_id = goods_id;
 		result.goods = goods;
 		//判断商品是否已下架或商品库存足不足够
@@ -51,7 +51,6 @@
 				result.tips = '该商品已售完'
 			}
 		}
-		cease();
 	})
 	//接收父组件传来的收藏数
 	let COLL = ref(0);

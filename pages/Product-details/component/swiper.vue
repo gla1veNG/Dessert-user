@@ -55,7 +55,8 @@
 	}
 	const seckill_display = ref(false);
 	//获取接收父组件传来的值
-	let cease = watch(props,(newVal,oldVal)=>{
+	watch(props,(newVal_a,oldVal)=>{
+		const newVal = JSON.parse(JSON.stringify(newVal_a));//深拷贝
 		ban_length.value = newVal.goods.goods_banner ? newVal.goods.goods_banner.length : 0;
 		if(newVal.seckill.length === 0){
 			//没有秒杀

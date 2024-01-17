@@ -12,7 +12,8 @@ const _sfc_main = {
       current.value = e.detail.current + 1;
     }
     const seckill_display = common_vendor.ref(false);
-    common_vendor.watch(props, (newVal, oldVal) => {
+    common_vendor.watch(props, (newVal_a, oldVal) => {
+      const newVal = JSON.parse(JSON.stringify(newVal_a));
       ban_length.value = newVal.goods.goods_banner ? newVal.goods.goods_banner.length : 0;
       if (newVal.seckill.length === 0) {
         seckill_display.value = false;

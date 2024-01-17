@@ -10,8 +10,8 @@ const _sfc_main = {
     const props = __props;
     const result = common_vendor.reactive({ collection: 0, goods_id: "", whether: true, tips: "", goods: {} });
     const { whether, tips } = common_vendor.toRefs(result);
-    let cease = common_vendor.watch(props, (newVal, oldVal) => {
-      let { goods_id, goods } = newVal;
+    common_vendor.watch(props, (newVal, oldVal) => {
+      let { goods_id, goods } = JSON.parse(JSON.stringify(newVal));
       result.goods_id = goods_id;
       result.goods = goods;
       if (goods.shelves === false) {
@@ -31,7 +31,6 @@ const _sfc_main = {
           result.tips = "该商品已售完";
         }
       }
-      cease();
     });
     let COLL = common_vendor.ref(0);
     common_vendor.watch(() => props.collection, (newVal, oldVal) => {
