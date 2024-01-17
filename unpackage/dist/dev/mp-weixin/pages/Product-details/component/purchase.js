@@ -2,17 +2,16 @@
 const common_vendor = require("../../../common/vendor.js");
 const AccConfig_placeOrder = require("../../../Acc-config/place-order.js");
 const AccConfig_answer = require("../../../Acc-config/answer.js");
-require("../../../Acc-config/public.js");
+const AccConfig_public = require("../../../Acc-config/public.js");
 const _sfc_main = {
   __name: "purchase",
   props: { goods_id: String, collection: Number, sku_data: Array, goods: Object },
   setup(__props) {
     const props = __props;
     const result = common_vendor.reactive({ collection: 0, goods_id: "", whether: true, tips: "", goods: {} });
-    const { collection, whether, tips } = common_vendor.toRefs(result);
+    const { whether, tips } = common_vendor.toRefs(result);
     let cease = common_vendor.watch(props, (newVal, oldVal) => {
-      let { collection: collection2, goods_id, goods } = newVal;
-      result.collection = collection2;
+      let { collection, goods_id, goods } = newVal;
       result.goods_id = goods_id;
       result.goods = goods;
       if (goods.shelves === false) {
@@ -57,7 +56,7 @@ const _sfc_main = {
         }
       }
     }
-    function purChase(judge, sku) {
+    async function purChase(judge, sku) {
       const user = common_vendor.wx$1.getStorageSync("user_infor");
       if (!user) {
         AccConfig_answer.login_user.show = true;
@@ -66,7 +65,22 @@ const _sfc_main = {
       if (sku.length > 0) {
         AccConfig_answer.sku_popup.show = true;
         AccConfig_answer.sku_popup.judge = judge;
+      } else {
+        AccConfig_placeOrder.ORDER.order.buy_amount = 1;
+        if (judge === "j_sho") {
+          try {
+            let res = await AccConfig_placeOrder.SHCART();
+            new AccConfig_public.Public().toast(res);
+          } catch (err) {
+            new AccConfig_public.Public().toast(err);
+          }
+        }
       }
+    }
+    function goCart() {
+      common_vendor.wx$1.switchTab({
+        url: "/pages/shopping-cart/shopping-cart"
+      });
     }
     return (_ctx, _cache) => {
       return common_vendor.e({
@@ -74,19 +88,20 @@ const _sfc_main = {
       }, common_vendor.unref(AccConfig_placeOrder.ORDER).nu_sh_cart > 0 ? {
         b: common_vendor.t(common_vendor.unref(AccConfig_placeOrder.ORDER).nu_sh_cart)
       } : {}, {
-        c: common_vendor.unref(collection) <= 0
-      }, common_vendor.unref(collection) <= 0 ? {} : {}, {
-        d: common_vendor.t(common_vendor.unref(collection) > 0 ? "已收藏" : "收藏"),
-        e: common_vendor.o(($event) => toCollect(common_vendor.unref(collection))),
-        f: common_vendor.unref(whether)
+        c: common_vendor.o(goCart),
+        d: __props.collection <= 0
+      }, __props.collection <= 0 ? {} : {}, {
+        e: common_vendor.t(__props.collection > 0 ? "已收藏" : "收藏"),
+        f: common_vendor.o(($event) => toCollect(__props.collection)),
+        g: common_vendor.unref(whether)
       }, common_vendor.unref(whether) ? {
-        g: common_vendor.o(($event) => purChase("j_sho", __props.sku_data))
+        h: common_vendor.o(($event) => purChase("j_sho", __props.sku_data))
       } : {}, {
-        h: common_vendor.unref(whether)
+        i: common_vendor.unref(whether)
       }, common_vendor.unref(whether) ? {
-        i: common_vendor.o(($event) => purChase("j_pur", __props.sku_data))
+        j: common_vendor.o(($event) => purChase("j_pur", __props.sku_data))
       } : {
-        j: common_vendor.t(common_vendor.unref(tips))
+        k: common_vendor.t(common_vendor.unref(tips))
       });
     };
   }

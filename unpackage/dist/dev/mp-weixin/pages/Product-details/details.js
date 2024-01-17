@@ -94,6 +94,7 @@ const _sfc_main = {
       const eva_data2 = db.collection("goods_eva").where({ goods_id: event.goods_id }).limit(3).get();
       const user = common_vendor.wx$1.getStorageSync("user_infor");
       Promise.all([goods2, collect, sku_data_a, seckill2, nu_sh_cart, eva_num2, eva_data2]).then(async (res) => {
+        AccConfig_placeOrder.ORDER.order.specs = [];
         await common_vendor.nextTick$1();
         result.goods = res[0].data;
         result.collection = user ? res[1].data.length : 0;
@@ -128,10 +129,16 @@ const _sfc_main = {
         imageUrl: result.goods.goods_cover
       };
     });
+    function goTo() {
+      common_vendor.wx$1.navigateBack({
+        delta: 1
+      });
+    }
     return (_ctx, _cache) => {
       return {
         a: common_vendor.s("height:" + common_vendor.unref(S_top) + "px;"),
-        b: common_vendor.f(common_vendor.unref(tab_name), (item, index, i0) => {
+        b: common_vendor.o(goTo),
+        c: common_vendor.f(common_vendor.unref(tab_name), (item, index, i0) => {
           return {
             a: common_vendor.t(item),
             b: index === common_vendor.unref(trigger) ? 1 : "",
@@ -139,32 +146,32 @@ const _sfc_main = {
             d: common_vendor.o(($event) => swItch(index), index)
           };
         }),
-        c: common_vendor.s("height:" + common_vendor.unref(S_height) + "px;"),
         d: common_vendor.s("height:" + common_vendor.unref(S_height) + "px;"),
-        e: common_vendor.s("padding-right:" + common_vendor.unref(S_width) + "px;"),
-        f: common_vendor.unref(styleOpacity),
-        g: common_vendor.unref(being),
-        h: common_vendor.p({
+        e: common_vendor.s("height:" + common_vendor.unref(S_height) + "px;"),
+        f: common_vendor.s("padding-right:" + common_vendor.unref(S_width) + "px;"),
+        g: common_vendor.unref(styleOpacity),
+        h: common_vendor.unref(being),
+        i: common_vendor.p({
           id: "select",
           goods: common_vendor.unref(goods),
           seckill: common_vendor.unref(seckill)
         }),
-        i: common_vendor.p({
+        j: common_vendor.p({
           id: "select",
           eva_num: common_vendor.unref(eva_num),
           eva_data: common_vendor.unref(eva_data)
         }),
-        j: common_vendor.p({
+        k: common_vendor.p({
           id: "select",
           goods_details: common_vendor.unref(goods).goods_details
         }),
-        k: common_vendor.p({
+        l: common_vendor.p({
           goods_id: common_vendor.unref(goods_id),
           collection: common_vendor.unref(collection),
           sku_data: common_vendor.unref(sku_data),
           goods: common_vendor.unref(goods)
         }),
-        l: common_vendor.p({
+        m: common_vendor.p({
           sku_data: common_vendor.unref(sku_data),
           goods: common_vendor.unref(goods)
         })

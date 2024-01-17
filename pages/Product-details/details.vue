@@ -3,7 +3,7 @@
 	<view class="search-back" :style="{opacity:styleOpacity}" v-show="being">
 		<view :style=" 'height:' + S_top + 'px;' "></view>
 		<view class="search-input" :style=" ['height:' + S_height + 'px;','padding-right:' + S_width + 'px;'] ">
-			<view class="tab-jiantou">
+			<view class="tab-jiantou" @click="goTo">
 				<image src="/static/detail/fanhuijiantou.svg" mode="aspectFit"></image>
 			</view>
 			<view class="tab-view" v-for="(item,index) in tab_name" :key="index" :style=" 'height:' + S_height + 'px;' " @click="swItch(index)">
@@ -129,6 +129,7 @@
 			const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
 			Promise.all([goods,collect,sku_data_a,seckill,nu_sh_cart,eva_num,eva_data])
 			.then(async res=>{
+				ORDER.order.specs=[]//清空之前缓存的数据
 				await nextTick();
 				result.goods = res[0].data;//请求到的商品数据
 				result.collection = user ? res[1].data.length : 0;
@@ -169,6 +170,12 @@
 				imageUrl:result.goods.goods_cover
 			}
 		})
+		//返回上一页面
+		function goTo(){
+			wx.navigateBack({
+				delta:1
+			})
+		}
 </script>
 
 <style>
@@ -192,8 +199,8 @@ page{background-color: #f6f6f6;}
 	height: 50rpx;
 }
 .tab-jiantou image{
-	width: 50rpx;
-	height: 50rpx;
+	width: 40rpx;
+	height: 40rpx;
 }
 .tab-view{
 	display: flex;

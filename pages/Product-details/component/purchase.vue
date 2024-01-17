@@ -6,7 +6,7 @@
 				<text>分享</text>
 			</button>
 		</view>
-		<view class="flex-left shopping-amount">
+		<view class="flex-left shopping-amount" @click="goCart">
 			<image src="/static/detail/gouwuche.svg" mode="aspectFit"></image>
 			<text>购物车</text>
 			<text class="amount" v-if="ORDER.nu_sh_cart > 0">{{ORDER.nu_sh_cart}}</text>
@@ -25,13 +25,12 @@
 
 <script setup>
 	import {defineProps, reactive, watch,toRefs} from 'vue'
-	import {ORDER} from '@/Acc-config/place-order.js'
+	import {ORDER,SHCART} from '@/Acc-config/place-order.js'
 	let props = defineProps({goods_id:String,collection:Number,sku_data:Array,goods:Object});
 	const result = reactive({collection:0,goods_id:'',whether:true,tips:'',goods:{}});
-	const {collection,whether,tips} = toRefs(result);
+	const {whether,tips} = toRefs(result);
 	let cease = watch(props,(newVal,oldVal)=>{
 		let {collection,goods_id,goods} = newVal;
-		result.collection = collection;
 		result.goods_id = goods_id;
 		result.goods = goods;
 		//判断商品是否已下架或商品库存足不足够
@@ -52,7 +51,7 @@
 				result.tips = '该商品已售完'
 			}
 		}
-		cease();
+		cease()
 	})
 	//收藏和取消收藏
 	import {login_user} from '@/Acc-config/answer.js'
@@ -80,19 +79,32 @@
 	
 	//加入购物车或立即购买
 	import {sku_popup} from '@/Acc-config/answer.js'
-	function purChase(judge,sku){
+	async function purChase(judge,sku){
 		const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
 		if(!user){login_user.show = true;return false};
 		if(sku.length > 0){//有规格
 			sku_popup.show = true;
 			sku_popup.judge = judge;
 		}else{
+			ORDER.order.buy_amount = 1;
 			if(judge === 'j_sho'){
 				//加入购物车
+				try{
+					let res = await SHCART();
+					new Public().toast(res);
+				}catch(err){
+					new Public().toast(err)
+				}
 			}else{
 				//直接下单
 			}
 		}
+	}
+	//跳转购物车
+	function goCart(){
+		wx.switchTab({
+			url:'/pages/shopping-cart/shopping-cart'
+		})
 	}
 </script>
 

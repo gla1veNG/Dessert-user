@@ -10,7 +10,9 @@ const _sfc_main = {
     }
     function juMp(goods_id, video_url) {
       if (video_url === "") {
-        console.log("跳转详情页");
+        common_vendor.wx$1.navigateTo({
+          url: `/pages/Product-details/details?goods_id=${goods_id}`
+        });
       } else {
         common_vendor.wx$1.navigateTo({
           url: `/pages/Short-video/video?goods_id=${goods_id}`

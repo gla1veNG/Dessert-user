@@ -19,8 +19,8 @@ page{background-color: #f6f6f6;}
 	height: 50rpx;
 }
 .tab-jiantou image{
-	width: 50rpx;
-	height: 50rpx;
+	width: 40rpx;
+	height: 40rpx;
 }
 .tab-view{
 	display: flex;

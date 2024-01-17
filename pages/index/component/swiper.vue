@@ -33,7 +33,9 @@
 	//跳转详情页
 	function juMp(goods_id,video_url){
 		if(video_url === ''){
-			console.log('跳转详情页');
+			wx.navigateTo({
+				url:`/pages/Product-details/details?goods_id=${goods_id}`
+			})
 		}else{
 			wx.navigateTo({
 				url:`/pages/Short-video/video?goods_id=${goods_id}`
