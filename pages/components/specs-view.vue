@@ -212,7 +212,7 @@
 	}
 	//加入购物车或者直接下单
 	import {Public} from '@/Acc-config/public.js'
-	function subMit(judge){
+	async function subMit(judge){
 		if(selectdata.select.length != skudata.new_sku.length){
 			new Public().toast('请选择商品规格');
 		}else{
@@ -223,8 +223,12 @@
 			if(judge === 'j_sho'){
 				//加入购物车
 				console.log(ORDER.order);
-				SHCART();
-				
+				try{
+					let res = await SHCART();
+					new Public().toast(res);
+				}catch(err){
+					new Public().toast(err)
+				}
 			}else{
 				//立即购买
 			}

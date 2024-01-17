@@ -134,7 +134,7 @@ const _sfc_main = {
     function plUs() {
       goods_amount.value++;
     }
-    function subMit(judge) {
+    async function subMit(judge) {
       if (selectdata.select.length != skudata.new_sku.length) {
         new AccConfig_public.Public().toast("请选择商品规格");
       } else {
@@ -144,7 +144,12 @@ const _sfc_main = {
         AccConfig_placeOrder.ORDER.order.goods_price = AccConfig_placeOrder.ORDER.exist ? AccConfig_placeOrder.ORDER.order.goods_price : skudata.goods.goods_price;
         if (judge === "j_sho") {
           console.log(AccConfig_placeOrder.ORDER.order);
-          AccConfig_placeOrder.SHCART();
+          try {
+            let res = await AccConfig_placeOrder.SHCART();
+            new AccConfig_public.Public().toast(res);
+          } catch (err) {
+            new AccConfig_public.Public().toast(err);
+          }
         }
       }
     }

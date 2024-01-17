@@ -17,8 +17,24 @@ const ORDER = reactive({
 })
 //加入购物车
 const db = wx.cloud.database();
+const _ = db.command;
 const SHCART = function(){
-	let subtotal = ORDER.order.goods_price * ORDER.order.buy_amount;
-	console.log(subtotal);
+	let subtotal = parseFloat(ORDER.order.goods_price * ORDER.order.buy_amount.toFixed(10));
+	ORDER.order.subtotal = subtotal;
+	return new Promise(async(resolve,reject)=>{
+		try{
+			//判断数据库是否出现相同的数据
+			let res = await db.collection('sh_cart').where({goods_id:ORDER.order.goods_id,specs:_.eq(ORDER.order.specs)}).get();
+			if(res.data.length >0){
+				resolve('加入购物车成功')
+			}else{
+				await db.collection('sh_cart').add({data:ORDER.order});
+				ORDER.nu_sh_cart +=1;
+				resolve('加入购物车成功')
+			}
+		}catch(e){
+			reject('加入购物车失败')
+		}
+	})
 }
 export {ORDER,SHCART}
