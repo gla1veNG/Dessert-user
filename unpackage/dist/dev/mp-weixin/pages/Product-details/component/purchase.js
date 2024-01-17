@@ -11,7 +11,7 @@ const _sfc_main = {
     const result = common_vendor.reactive({ collection: 0, goods_id: "", whether: true, tips: "", goods: {} });
     const { whether, tips } = common_vendor.toRefs(result);
     let cease = common_vendor.watch(props, (newVal, oldVal) => {
-      let { collection, goods_id, goods } = newVal;
+      let { goods_id, goods } = newVal;
       result.goods_id = goods_id;
       result.goods = goods;
       if (goods.shelves === false) {
@@ -33,6 +33,10 @@ const _sfc_main = {
       }
       cease();
     });
+    let COLL = common_vendor.ref(0);
+    common_vendor.watch(() => props.collection, (newVal, oldVal) => {
+      COLL.value = newVal;
+    });
     const db = common_vendor.wx$1.cloud.database();
     async function toCollect(n) {
       const user = common_vendor.wx$1.getStorageSync("user_infor");
@@ -43,14 +47,14 @@ const _sfc_main = {
       if (n === 0) {
         try {
           await db.collection("collect_goods").add({ data: { goods_id: result.goods_id } });
-          result.collection++;
+          COLL.value++;
         } catch (e) {
           new Plublic().toast("收藏失败");
         }
       } else {
         try {
           await db.collection("collect_goods").where({ goods_id: result.goods_id }).remove();
-          result.collection = 0;
+          COLL.value = 0;
         } catch (e) {
           new Plublic().toast("取消收藏失败");
         }
@@ -89,10 +93,10 @@ const _sfc_main = {
         b: common_vendor.t(common_vendor.unref(AccConfig_placeOrder.ORDER).nu_sh_cart)
       } : {}, {
         c: common_vendor.o(goCart),
-        d: __props.collection <= 0
-      }, __props.collection <= 0 ? {} : {}, {
-        e: common_vendor.t(__props.collection > 0 ? "已收藏" : "收藏"),
-        f: common_vendor.o(($event) => toCollect(__props.collection)),
+        d: common_vendor.unref(COLL) <= 0
+      }, common_vendor.unref(COLL) <= 0 ? {} : {}, {
+        e: common_vendor.t(common_vendor.unref(COLL) > 0 ? "已收藏" : "收藏"),
+        f: common_vendor.o(($event) => toCollect(common_vendor.unref(COLL))),
         g: common_vendor.unref(whether)
       }, common_vendor.unref(whether) ? {
         h: common_vendor.o(($event) => purChase("j_sho", __props.sku_data))

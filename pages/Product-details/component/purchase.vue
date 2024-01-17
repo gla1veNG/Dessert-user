@@ -11,10 +11,10 @@
 			<text>购物车</text>
 			<text class="amount" v-if="ORDER.nu_sh_cart > 0">{{ORDER.nu_sh_cart}}</text>
 		</view>
-		<view class="flex-left" @click="toCollect(collection)">
-			<image src="/static/detail/shoucang.svg" mode="aspectFit" v-if="collection <=0"></image>
+		<view class="flex-left" @click="toCollect(COLL)">
+			<image src="/static/detail/shoucang.svg" mode="aspectFit" v-if="COLL <=0"></image>
 			<image src="/static/detail/yishoucang.svg" mode="aspectFit" v-else></image>
-			<text>{{collection > 0 ? '已收藏' : '收藏' }}</text>
+			<text>{{COLL > 0 ? '已收藏' : '收藏' }}</text>
 		</view>
 		<view v-if="whether" class="flex-right shopping-cart" @click="purChase('j_sho',sku_data)">加入购物车</view>
 		<view v-if="whether" class="flex-right buy" @click="purChase('j_pur',sku_data)">立即购买</view>
@@ -24,13 +24,13 @@
 </template>
 
 <script setup>
-	import {defineProps, reactive, watch,toRefs} from 'vue'
+	import {defineProps, reactive, watch,toRefs,ref} from 'vue'
 	import {ORDER,SHCART} from '@/Acc-config/place-order.js'
 	let props = defineProps({goods_id:String,collection:Number,sku_data:Array,goods:Object});
 	const result = reactive({collection:0,goods_id:'',whether:true,tips:'',goods:{}});
 	const {whether,tips} = toRefs(result);
 	let cease = watch(props,(newVal,oldVal)=>{
-		let {collection,goods_id,goods} = newVal;
+		let {goods_id,goods} = newVal;
 		result.goods_id = goods_id;
 		result.goods = goods;
 		//判断商品是否已下架或商品库存足不足够
@@ -51,7 +51,12 @@
 				result.tips = '该商品已售完'
 			}
 		}
-		cease()
+		cease();
+	})
+	//接收父组件传来的收藏数
+	let COLL = ref(0);
+	watch(()=>props.collection,(newVal,oldVal)=>{
+		COLL.value = newVal;
 	})
 	//收藏和取消收藏
 	import {login_user} from '@/Acc-config/answer.js'
@@ -63,14 +68,14 @@
 		if(n === 0){//收藏
 			try{
 				await db.collection('collect_goods').add({data:{goods_id:result.goods_id}});
-				result.collection++;
+				COLL.value++;
 			}catch(e){
 				new Plublic().toast('收藏失败');
 			}
 		}else{//取消收藏
 			try{
 				await db.collection('collect_goods').where({goods_id:result.goods_id}).remove();
-				result.collection = 0;
+				COLL.value = 0;
 			}catch(e){
 				new Plublic().toast('取消收藏失败');
 			}
