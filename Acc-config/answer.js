@@ -11,4 +11,10 @@ let sku_popup = reactive({show:false,judge:''});//judge是为了判断点击了�
 
 //收货地址页面父组件调用子组件弹窗
 let show = ref(false);
-export {login_user,comment_show,sku_popup,show};
+
+//收货地址页面,父组件用户修改地址传值到子组件
+let modify = reactive({data:[],id:''});
+
+//收货地址页面,判断用户是新建地址还是修改地址
+let deci = ref('001');
+export {login_user,comment_show,sku_popup,show,modify,deci};

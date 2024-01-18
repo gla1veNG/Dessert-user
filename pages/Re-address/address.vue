@@ -15,13 +15,13 @@
 	
 	<!-- 设置默认 -->
 	<view class="Defa-address Re-flex">
-		<view class="Re-flex" :class="[item.tacitly ? 'Disable' : '']">
+		<view class="Re-flex" :class="[item.tacitly ? 'Disable' : '']" @click="setUp(item._id,index)">
 			<icon class="icon-small" type="success" size="23" v-if="item.tacitly"></icon>
 			<text class="Defa-padd">{{item.tacitly ? '已设为默认' : '设为默认'}}</text>
 		</view>
 		<view class="Re-flex">
-			<text>删除</text>
-			<text class="Defa-padd">修改</text>
+			<text @click="deleTe(item._id,index)">删除</text>
+			<text class="Defa-padd" @click="modIfy(item,item._id)">修改</text>
 		</view>
 	</view>
 </view>
@@ -31,19 +31,16 @@
 <view style="height: 300rpx;"></view>
 <view class="New-address" @click="newAddress">+ 新建地址</view>
 <!-- 弹窗 -->
-<Address/>
+<Address @upLoad="upLoad"/>
 </template>
 
 <script setup>
 	import Address from '@/pages/Re-address/component/new-address.vue'
-	import {show} from '@/Acc-config/answer.js'
+	import {show,modify,deci} from '@/Acc-config/answer.js'
 	import {onMounted,reactive,toRefs} from 'vue'
 	const db = wx.cloud.database();
 	
-	//调用弹窗新建地址
-	function newAddress(){
-		show.value = true;
-	}
+	
 	//请求数据
 	onMounted(()=>{getAdd()});
 	const data = reactive({address:{}});
@@ -52,6 +49,58 @@
 		const res = await db.collection('re_address').get();
 		data.address = res.data;
 	}
+	//弹窗组件提交数据成功时触发
+	function upLoad(){
+		getAdd();
+	}
+	//删除地址
+	import {Public} from '@/Acc-config/public.js'
+	function deleTe(_id,index){
+		wx.showModal({
+			title:'确认删除吗',
+		})
+		.then(async (res)=>{
+			if(res.confirm){
+				try{
+					await db.collection('re_address').doc(_id).remove();
+					data.address.splice(index,1);
+				}catch(e){
+					new Public().toast('删除失败');
+				}
+			}
+		})
+	}
+	//修改地址
+	function modIfy(item,id){
+		modify.data = item;
+		modify.id = id;
+		show.value = true;
+		deci.value = '001';//'001'是修改
+	}
+	//调用弹窗新建地址
+	function newAddress(){
+		show.value = true;
+		deci.value = '002';//'002'是新建地址
+	}
+	//设置默认地址
+	async function setUp(id,index){
+		let sto = [];
+		data.address.forEach((item,index_a)=>{
+			if(item.tacitly){
+				sto.push({index:index_a,id:item._id})
+			}
+		})
+		try{
+			await db.collection('re_address').doc(id).update({data:{tacitly:true}});
+			data.address[index].tacitly = true;
+			if(sto.length >0){
+				await db.collection('re_address').doc(sto[0].id).update({data:{tacitly:false}});
+				data.address[sto[0].index].tacitly = false;
+			}
+		}catch(e){
+			new Public().toast('设置失败')
+		}
+	} 
 </script>
 
 <style>

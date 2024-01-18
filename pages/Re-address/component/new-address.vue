@@ -15,7 +15,7 @@
 			</view>
 			<view class="address-input">
 				<text>选择地址</text>
-				<picker class="flex-left" mode="region">
+				<picker class="flex-left" mode="region" @change="regionFun">
 					<view>
 						<text>{{result.district}}</text>
 						<image src="/static/detail/xiangyou-jiantou.svg" mode="aspectFit"></image>
@@ -34,8 +34,8 @@
 </template>
 
 <script setup>
-	import {show} from '@/Acc-config/answer.js'
-	import {onMounted,reactive,toRefs} from 'vue'
+	import {show,modify,deci} from '@/Acc-config/answer.js'
+	import {onMounted,reactive,toRefs,defineEmits,watch} from 'vue'
 	import {Public} from '@/Acc-config/public.js'
 	const db = wx.cloud.database();
 	function onEnter(){}
@@ -51,7 +51,14 @@
 		},
 		_id:''//用于判断是提交新数据还是修改数据
 	})
-	const {result} = toRefs(data);
+	const {result,_id} = toRefs(data);
+	//获取省市区数据
+	let str = ''
+	function regionFun(event){
+		str = '';
+		event.detail.value.forEach(item=>str += item);
+		data.result.district = str;
+	}
 	//校验数据
 	function subMit(_id){
 		let phone = /^[1][3,4,5,7,8,9][0-9]{9}$/;
@@ -70,13 +77,52 @@
 			
 			case data.result.address === '' : new Public().toast('请填写详细地址');
 			break;
-			default : database();
+			default : database(_id);
 		}
 	}
+	let emits = defineEmits(['upLoad'])
 	//提交到数据库
-	function database(){
-		console.log('通过');
+	async function database(_id){
+		try{
+			if(_id === ''){//提交新地址
+				await db.collection('re_address').add({data:data.result});
+				
+			}else{//修改地址
+				await db.collection('re_address').doc(_id).update({data:data.result});
+			}
+			show.value = false;
+			emits('upLoad');
+			emPty();
+		}catch(e){
+			new Public().toast('提交失败')
+		}
 	}
+	//清空输入框里的值
+	function emPty(){
+		data.result.name = '',//姓名
+		data.result.mobile = '',//手机号码
+		data.result.district = '',//省市区
+		data.result.address = '',//详细地址
+		data.result.tacitly = false, //默认收货地址标示
+		data._id = ''
+	}
+	//监听用户修改地址
+	watch(modify,(newVal,oldVal)=>{
+		let {name,mobile,district,address,tacitly,_id} = newVal.data;
+		data.result.name = name,//姓名
+		data.result.mobile = mobile,//手机号码
+		data.result.district = district,//省市区
+		data.result.address = address,//详细地址
+		data.result.tacitly = tacitly, //默认收货地址标示
+		data._id = _id
+	})
+	
+	//判断用户是新建地址还是修改地址
+	watch(deci,(newVal,oldVal)=>{
+		if(newVal === '002' ){
+			emPty();
+		}
+	})
 </script>
 
 <style scoped>
