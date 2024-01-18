@@ -1,15 +1,15 @@
 <template>
 	<!-- 收货地址 -->
-	<view class="pay-address">
+	<view class="pay-address" v-for="(item,index) in address" :key="index" @click="choIce">
 		<view class="pay-address-left">
 			<image src="/static/detail/dingdan-dizhi.svg" mode="aspectFit"></image>
 		</view>
 		<view class="pay-address-name">
 			<view>
-				<text>小明</text>
-				<text>152866772</text>
+				<text>{{item.name}}</text>
+				<text>{{item.mobile}}</text>
 			</view>
-			<text>广东省xx市</text>
+			<text>{{item.district + item.address}}</text>
 		</view>
 		<view class="pay-address-right">
 			<image src="/static/detail/xiangyou-jiantou.svg" mode="aspectFit"></image>
@@ -42,7 +42,26 @@
 	</view>
 </template>
 
-<script>
+<script setup>
+	import {onMounted,reactive,toRefs,watch} from 'vue'
+	const db = wx.cloud.database();
+	
+	const re_data = reactive({address:[]});
+	const {address} = toRefs(re_data);
+	onMounted(async()=>{
+		const res = await db.collection('re_address').where({tacitly:true}).get();
+		re_data.address = res.data;
+	})
+	//跳转收货地址
+	import {new_address} from '@/Acc-config/answer.js'
+	function choIce(){
+		wx.navigateTo({
+			url:'/pages/Re-address/address'
+		})
+	}
+	watch(new_address,(newVal,oldVal)=>{
+		re_data.address = [newVal.data];
+	})
 </script>
 
 <style>

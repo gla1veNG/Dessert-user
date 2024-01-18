@@ -17,4 +17,7 @@ let modify = reactive({data:[],id:''});
 
 //收货地址页面,判断用户是新建地址还是修改地址
 let deci = ref('001');
-export {login_user,comment_show,sku_popup,show,modify,deci};
+
+//收货地址页面,选择地址传值返回上一页
+let new_address = reactive({data:[]});
+export {login_user,comment_show,sku_popup,show,modify,deci,new_address};

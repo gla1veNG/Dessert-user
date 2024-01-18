@@ -64,6 +64,12 @@ const _sfc_main = {
         new AccConfig_public.Public().toast("设置失败");
       }
     }
+    function choIce(item) {
+      AccConfig_answer.new_address.data = item;
+      common_vendor.wx$1.navigateBack({
+        delta: 1
+      });
+    }
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: common_vendor.f(common_vendor.unref(address), (item, index, i0) => {
@@ -73,14 +79,15 @@ const _sfc_main = {
             c: common_vendor.t(item.district + item.address),
             d: item.tacitly
           }, item.tacitly ? {} : {}, {
-            e: item.tacitly
+            e: common_vendor.o(($event) => choIce(item), index),
+            f: item.tacitly
           }, item.tacitly ? {} : {}, {
-            f: common_vendor.t(item.tacitly ? "已设为默认" : "设为默认"),
-            g: common_vendor.n(item.tacitly ? "Disable" : ""),
-            h: common_vendor.o(($event) => setUp(item._id, index), index),
-            i: common_vendor.o(($event) => deleTe(item._id, index), index),
-            j: common_vendor.o(($event) => modIfy(item, item._id), index),
-            k: index
+            g: common_vendor.t(item.tacitly ? "已设为默认" : "设为默认"),
+            h: common_vendor.n(item.tacitly ? "Disable" : ""),
+            i: common_vendor.o(($event) => setUp(item._id, index), index),
+            j: common_vendor.o(($event) => deleTe(item._id, index), index),
+            k: common_vendor.o(($event) => modIfy(item, item._id), index),
+            l: index
           });
         }),
         b: common_vendor.unref(address).length === 0

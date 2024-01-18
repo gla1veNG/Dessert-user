@@ -1,7 +1,7 @@
 {
   "pages": [
-    "pages/Re-address/address",
     "pages/Pay-view/pay",
+    "pages/Re-address/address",
     "pages/index/index",
     "pages/Product-details/details",
     "pages/Short-video/video",

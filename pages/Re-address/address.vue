@@ -1,6 +1,6 @@
 <template>
 	<view class="Re-view" v-for="(item,index) in address" :key="index">
-		<view class="Re-address Re-flex">
+		<view class="Re-address Re-flex" @click="choIce(item)">
 			<view>
 				<view class="Re-name Re-flex">
 					<text>{{item.name}}</text>
@@ -36,7 +36,7 @@
 
 <script setup>
 	import Address from '@/pages/Re-address/component/new-address.vue'
-	import {show,modify,deci} from '@/Acc-config/answer.js'
+	import {show,modify,deci,new_address} from '@/Acc-config/answer.js'
 	import {onMounted,reactive,toRefs} from 'vue'
 	const db = wx.cloud.database();
 	
@@ -100,7 +100,14 @@
 		}catch(e){
 			new Public().toast('设置失败')
 		}
-	} 
+	}
+	//选择地址传值返回上一页
+	function choIce(item){
+		new_address.data = item;
+		wx.navigateBack({
+			delta:1
+		})
+	}
 </script>
 
 <style>
