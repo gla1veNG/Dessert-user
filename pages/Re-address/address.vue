@@ -1,23 +1,23 @@
 <template>
-	<view class="Re-view">
+	<view class="Re-view" v-for="(item,index) in address" :key="index">
 		<view class="Re-address Re-flex">
 			<view>
 				<view class="Re-name Re-flex">
-					<text>小明</text>
-					<text>1523248545</text>
+					<text>{{item.name}}</text>
+					<text>{{item.mobile}}</text>
 				</view>
-				<text>广东省xx市</text>
+				<text>{{item.district + item.address}}</text>
 			</view>
-			<view>
+			<view v-if="item.tacitly">
 				<icon class="icon-small" type="success_no_circle" size="23"></icon>
 			</view>
 		</view>
 	
 	<!-- 设置默认 -->
 	<view class="Defa-address Re-flex">
-		<view class="Re-flex">
-			<icon class="icon-small" type="success" size="23"></icon>
-			<text class="Defa-padd">设为默认</text>
+		<view class="Re-flex" :class="[item.tacitly ? 'Disable' : '']">
+			<icon class="icon-small" type="success" size="23" v-if="item.tacitly"></icon>
+			<text class="Defa-padd">{{item.tacitly ? '已设为默认' : '设为默认'}}</text>
 		</view>
 		<view class="Re-flex">
 			<text>删除</text>
@@ -26,7 +26,7 @@
 	</view>
 </view>
 <!-- 没有数据的提示 -->
-<!-- <view class="Tips">您还没有收货地址</view> -->
+<view class="Tips" v-if="address.length === 0">您还没有收货地址</view>
 <!-- 底部 -->
 <view style="height: 300rpx;"></view>
 <view class="New-address" @click="newAddress">+ 新建地址</view>
@@ -37,10 +37,20 @@
 <script setup>
 	import Address from '@/pages/Re-address/component/new-address.vue'
 	import {show} from '@/Acc-config/answer.js'
+	import {onMounted,reactive,toRefs} from 'vue'
+	const db = wx.cloud.database();
 	
 	//调用弹窗新建地址
 	function newAddress(){
 		show.value = true;
+	}
+	//请求数据
+	onMounted(()=>{getAdd()});
+	const data = reactive({address:{}});
+	const {address} = toRefs(data);
+	async function getAdd(){
+		const res = await db.collection('re_address').get();
+		data.address = res.data;
 	}
 </script>
 

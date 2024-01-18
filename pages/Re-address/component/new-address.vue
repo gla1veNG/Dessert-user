@@ -7,27 +7,27 @@
 			</view>
 			<view class="address-input">
 				<text>收货人</text>
-				<input type="text">
+				<input type="text" v-model="result.name">
 			</view>
 			<view class="address-input">
 				<text>手机号码</text>
-				<input type="number">
+				<input type="number" v-model="result.mobile">
 			</view>
 			<view class="address-input">
 				<text>选择地址</text>
 				<picker class="flex-left" mode="region">
 					<view>
-						<text>广东省xx市</text>
+						<text>{{result.district}}</text>
 						<image src="/static/detail/xiangyou-jiantou.svg" mode="aspectFit"></image>
 					</view>
 				</picker>
 			</view>
 			<view class="address-input">
 				<text>详细地址</text>
-				<input type="text">
+				<input type="text" v-model="result.address">
 			</view>
-			<view class="New-address">
-				保存
+			<view class="New-address" @click="subMit(_id)">
+				{{_id === '' ? '保存' : '修改地址'}}
 			</view>
 		</view>
 	</page-container>
@@ -35,7 +35,48 @@
 
 <script setup>
 	import {show} from '@/Acc-config/answer.js'
+	import {onMounted,reactive,toRefs} from 'vue'
+	import {Public} from '@/Acc-config/public.js'
+	const db = wx.cloud.database();
 	function onEnter(){}
+	
+	//输入框的值
+	const data = reactive({
+		result:{
+			name:'',//姓名
+			mobile:'',//手机号码
+			district:'',//省市区
+			address:'',//详细地址
+			tacitly:false, //默认收货地址标示
+		},
+		_id:''//用于判断是提交新数据还是修改数据
+	})
+	const {result} = toRefs(data);
+	//校验数据
+	function subMit(_id){
+		let phone = /^[1][3,4,5,7,8,9][0-9]{9}$/;
+		switch(true){
+			case data.result.name === '' : new Public().toast('请填写姓名');
+			break;
+			
+			case data.result.mobile === '': new Public().toast('请填写手机号码');
+			break;
+			
+			case !phone.test(data.result.mobile) : new Public().toast('请填写正确手机号码格式');
+			break;
+			
+			case data.result.district === '' : new Public().toast('请选择地址');
+			break;
+			
+			case data.result.address === '' : new Public().toast('请填写详细地址');
+			break;
+			default : database();
+		}
+	}
+	//提交到数据库
+	function database(){
+		console.log('通过');
+	}
 </script>
 
 <style scoped>
