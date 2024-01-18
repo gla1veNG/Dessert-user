@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/Pay-view/pay",
     "pages/index/index",
     "pages/Product-details/details",
     "pages/Short-video/video",
