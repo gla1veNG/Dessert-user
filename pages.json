@@ -1,6 +1,13 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
+			"path": "pages/Product-details/details",
+			"style": {
+				"navigationBarTitleText": "商品详情页",
+				"navigationStyle":"custom"
+			}
+		},
+		{
 			"path": "pages/Pay-view/pay",
 			"style": {
 				"navigationBarTitleText": "确认订单",
@@ -21,13 +28,7 @@
 				"navigationStyle":"custom"
 			}
 		},
-		{
-			"path": "pages/Product-details/details",
-			"style": {
-				"navigationBarTitleText": "商品详情页",
-				"navigationStyle":"custom"
-			}
-		},
+		
 		
 		{
 			"path": "pages/Short-video/video",

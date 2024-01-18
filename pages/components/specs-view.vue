@@ -231,7 +231,14 @@
 					new Public().toast(err)
 				}
 			}else{
-				//立即购买
+			/* 立即购买 */
+			// 计算总价
+			ORDER.order.subtotal = parseFloat((ORDER.order.goods_price * ORDER.order.buy_amount).toFixed(10))
+			sku_popup.show = false
+			const STR = JSON.stringify([ORDER.order])
+			wx.navigateTo({//direct单个商品下单
+				url:`/pages/Pay-view/pay?order=${STR}&type=direct`
+			 })
 			}
 		}
 	}

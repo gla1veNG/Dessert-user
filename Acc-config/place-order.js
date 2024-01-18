@@ -11,7 +11,8 @@ const ORDER = reactive({
 		specs:[],//规格
 		subtotal:0,//总价
 		select:false,//购物车是否选中
-		SPECE_STR:''//用于查询相同规格的
+		SPECE_STR:'',//用于查询相同规格的
+		order_number:''//订单编号
 	},
 	exist:false,//判断是是否存在秒杀或者秒杀开始或结束
 	nu_sh_cart:0,//购物车数量

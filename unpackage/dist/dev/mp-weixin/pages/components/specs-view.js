@@ -151,6 +151,14 @@ const _sfc_main = {
           } catch (err) {
             new AccConfig_public.Public().toast(err);
           }
+        } else {
+          AccConfig_placeOrder.ORDER.order.subtotal = parseFloat((AccConfig_placeOrder.ORDER.order.goods_price * AccConfig_placeOrder.ORDER.order.buy_amount).toFixed(10));
+          AccConfig_answer.sku_popup.show = false;
+          const STR = JSON.stringify([AccConfig_placeOrder.ORDER.order]);
+          common_vendor.wx$1.navigateTo({
+            //direct单个商品下单
+            url: `/pages/Pay-view/pay?order=${STR}&type=direct`
+          });
         }
       }
     }

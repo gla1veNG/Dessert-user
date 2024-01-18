@@ -19,6 +19,26 @@ const _sfc_main = {
     common_vendor.watch(AccConfig_answer.new_address, (newVal, oldVal) => {
       re_data.address = [newVal.data];
     });
+    const or_data = common_vendor.reactive({ order: [], type: "", total_price: 0 });
+    const { order, type, total_price } = common_vendor.toRefs(or_data);
+    common_vendor.onLoad((event) => {
+      const data = JSON.parse(event.order);
+      or_data.order = data;
+      or_data.type = event.type;
+      let sum = 0;
+      or_data.order.forEach((item) => sum += item.subtotal);
+      or_data.total_price = parseFloat(sum.toFixed(10));
+    });
+    function reDuce() {
+      or_data.order[0].buy_amount--;
+      or_data.order[0].subtotal = parseFloat((or_data.order[0].goods_price * or_data.order[0].buy_amount).toFixed(10));
+      or_data.total_price = or_data.order[0].subtotal;
+    }
+    function plUs() {
+      or_data.order[0].buy_amount++;
+      or_data.order[0].subtotal = parseFloat((or_data.order[0].goods_price * or_data.order[0].buy_amount).toFixed(10));
+      or_data.total_price = or_data.order[0].subtotal;
+    }
     return (_ctx, _cache) => {
       return {
         a: common_vendor.f(common_vendor.unref(address), (item, index, i0) => {
@@ -29,7 +49,34 @@ const _sfc_main = {
             d: index,
             e: common_vendor.o(choIce, index)
           };
-        })
+        }),
+        b: common_vendor.f(common_vendor.unref(order), (item, index, i0) => {
+          return common_vendor.e({
+            a: item.goods_image,
+            b: common_vendor.t(item.goods_title),
+            c: item.specs.length > 0
+          }, item.specs.length > 0 ? {
+            d: common_vendor.f(item.specs, (item_a, index_a, i1) => {
+              return {
+                a: common_vendor.t(item_a.att_val),
+                b: index_a
+              };
+            })
+          } : {}, {
+            e: common_vendor.t(item.goods_price)
+          }, common_vendor.unref(type) != "direct" ? {
+            f: common_vendor.t(item.buy_amount)
+          } : {
+            g: common_vendor.o(reDuce, index),
+            h: common_vendor.n(item.buy_amount == 1 ? "prevent_style" : ""),
+            i: common_vendor.t(item.buy_amount),
+            j: common_vendor.o(plUs, index)
+          }, {
+            k: index
+          });
+        }),
+        c: common_vendor.unref(type) != "direct",
+        d: common_vendor.t(common_vendor.unref(total_price))
       };
     };
   }

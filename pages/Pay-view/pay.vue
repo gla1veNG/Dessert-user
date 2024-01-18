@@ -16,20 +16,20 @@
 		</view>
 	</view>
 	<!-- 商品详情 -->
-	<view class="pay-goods" >
+	<view class="pay-goods" v-for="(item,index) in order" :key="index">
 			<view>
-				<image src="/static/detail/jianshao.png" mode="aspectFill"></image>
+				<image :src="item.goods_image" mode="aspectFill"></image>
 			</view>
 			<view style="width: 100%;">
-				<text class="pay-goods-title">这是标题</text>
-				<text class="pay-goods-specs">微辣</text>
+				<text class="pay-goods-title">{{item.goods_title}}</text>
+				<text class="pay-goods-specs"  v-if="item.specs.length > 0" v-for="(item_a,index_a) in item.specs" :key="index_a">{{item_a.att_val}}</text>
 				<view class="pay-goods-price">
-					<text>9.9￥</text>
-					<!-- <text></text> -->
-					<view>
-						<image src="/static/detail/jianshao.png" mode="aspectFit"></image>
-						<text>1</text>
-						<image src="/static/detail/tianjia.png" mode="aspectFit"></image>
+					<text>{{item.goods_price}}￥</text>
+					<text v-if="type !='direct'">x{{item.buy_amount}}</text>
+					<view v-else>
+						<image src="/static/detail/jianshao.png" mode="aspectFit" @click="reDuce" :class="[item.buy_amount == 1 ? 'prevent_style' : '']"></image>
+						<text>{{item.buy_amount}}</text>
+						<image src="/static/detail/tianjia.png" mode="aspectFit" @click="plUs"></image>
 					</view>
 				</view>
 			</view>
@@ -37,7 +37,7 @@
 	<!-- 支付按钮 -->
 	<view style="height: 300rpx;"></view>
 	<view class="set-accounts">
-		<view>20￥</view>
+		<view>{{total_price}}￥</view>
 		<view>提交订单</view>
 	</view>
 </template>
@@ -62,6 +62,31 @@
 	watch(new_address,(newVal,oldVal)=>{
 		re_data.address = [newVal.data];
 	})
+	//接收上个页面传来的值
+	import {onLoad} from '@dcloudio/uni-app'
+	const or_data = reactive({order:[],type:'',total_price:0});
+	const {order,type,total_price} = toRefs(or_data);
+	onLoad((event)=>{
+		const data = JSON.parse(event.order);
+		or_data.order = data;
+		or_data.type = event.type;
+		//计算待支付的价格
+		let sum = 0;
+		or_data.order.forEach(item=>sum += item.subtotal);
+		or_data.total_price = parseFloat((sum).toFixed(10));
+	})
+	//减数量
+	function reDuce(){
+		or_data.order[0].buy_amount--;
+		or_data.order[0].subtotal = parseFloat((or_data.order[0].goods_price * or_data.order[0].buy_amount).toFixed(10));
+		or_data.total_price = or_data.order[0].subtotal;
+	}
+	//加数量
+	function plUs(){
+		or_data.order[0].buy_amount++;
+		or_data.order[0].subtotal = parseFloat((or_data.order[0].goods_price * or_data.order[0].buy_amount).toFixed(10));
+		or_data.total_price = or_data.order[0].subtotal;
+	}
 </script>
 
 <style>
