@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/Re-address/address",
     "pages/Pay-view/pay",
     "pages/index/index",
     "pages/Product-details/details",

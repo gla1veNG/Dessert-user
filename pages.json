@@ -1,6 +1,13 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
+			"path": "pages/Re-address/address",
+			"style": {
+				"navigationBarTitleText": "收货地址",
+				"navigationBarBackgroundColor": "#fefefe"
+			}
+		},
+		{
 			"path": "pages/Pay-view/pay",
 			"style": {
 				"navigationBarTitleText": "确认订单",
