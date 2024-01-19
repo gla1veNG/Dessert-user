@@ -1,9 +1,12 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const AccConfig_answer = require("../../Acc-config/answer.js");
+const AccConfig_orde_number = require("../../Acc-config/orde_number.js");
+const AccConfig_wxPay = require("../../Acc-config/wx-pay.js");
 const _sfc_main = {
   __name: "pay",
   setup(__props) {
+    common_vendor.hooks.locale("zh-cn");
     const db = common_vendor.wx$1.cloud.database();
     const re_data = common_vendor.reactive({ address: [] });
     const { address } = common_vendor.toRefs(re_data);
@@ -38,6 +41,18 @@ const _sfc_main = {
       or_data.order[0].buy_amount++;
       or_data.order[0].subtotal = parseFloat((or_data.order[0].goods_price * or_data.order[0].buy_amount).toFixed(10));
       or_data.total_price = or_data.order[0].subtotal;
+    }
+    async function subMit() {
+      common_vendor.hooks().utcOffset(8).format("YYYY-MM-DD HH:mm:ss");
+      common_vendor.hooks().utcOffset(8).format("YYYY-MM-DD");
+      or_data.order.forEach((item) => item.order_number = AccConfig_orde_number.coDe());
+      let out_trade_no = AccConfig_orde_number.outTradeno();
+      try {
+        var payment = await new AccConfig_wxPay.Wxpay().pLace(or_data.total_price, out_trade_no);
+        console.log(payment);
+      } catch (e) {
+        console.log(e);
+      }
     }
     return (_ctx, _cache) => {
       return {
@@ -76,7 +91,8 @@ const _sfc_main = {
           });
         }),
         c: common_vendor.unref(type) != "direct",
-        d: common_vendor.t(common_vendor.unref(total_price))
+        d: common_vendor.t(common_vendor.unref(total_price)),
+        e: common_vendor.o(subMit)
       };
     };
   }

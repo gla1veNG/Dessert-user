@@ -38,12 +38,14 @@
 	<view style="height: 300rpx;"></view>
 	<view class="set-accounts">
 		<view>{{total_price}}￥</view>
-		<view>提交订单</view>
+		<view @click="subMit">提交订单</view>
 	</view>
 </template>
 
 <script setup>
 	import {onMounted,reactive,toRefs,watch} from 'vue'
+	import moment from 'moment'
+	moment.locale('zh-cn');
 	const db = wx.cloud.database();
 	
 	const re_data = reactive({address:[]});
@@ -86,6 +88,25 @@
 		or_data.order[0].buy_amount++;
 		or_data.order[0].subtotal = parseFloat((or_data.order[0].goods_price * or_data.order[0].buy_amount).toFixed(10));
 		or_data.total_price = or_data.order[0].subtotal;
+	}
+	//提交订单
+	import {outTradeno,coDe} from '@/Acc-config/orde_number.js'
+	import {Wxpay} from '@/Acc-config/wx-pay.js'
+	async function subMit(){
+		// 当前时间:年月日，时分秒
+		let time = moment().utcOffset(8).format('YYYY-MM-DD HH:mm:ss')
+		// 当前时间：年月日
+		let query_time = moment().utcOffset(8).format('YYYY-MM-DD')
+		// 对每个商品生成订单编号
+		or_data.order.forEach(item=>item.order_number = coDe())
+		let out_trade_no = outTradeno()
+		try{
+			//1.统一下单
+			var payment = await new Wxpay().pLace(or_data.total_price,out_trade_no);
+			console.log(payment);
+		}catch(e){
+			console.log(e);
+		}
 	}
 </script>
 

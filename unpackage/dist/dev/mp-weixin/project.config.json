@@ -39,6 +39,7 @@
       "list": []
     }
   },
+  "cloudfunctionRoot": "cloudfunctions/",
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
