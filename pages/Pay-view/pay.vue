@@ -104,6 +104,9 @@
 			//1.统一下单
 			var payment = await new Wxpay().pLace(or_data.total_price,out_trade_no);
 			console.log(payment);
+			//2.提交到数据库
+			const can_res = await new Wxpay().suBmit(or_data.order,re_data.address,time,query_time,out_trade_no)
+			
 		}catch(e){
 			console.log(e);
 		}

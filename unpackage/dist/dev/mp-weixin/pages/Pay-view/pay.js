@@ -43,13 +43,14 @@ const _sfc_main = {
       or_data.total_price = or_data.order[0].subtotal;
     }
     async function subMit() {
-      common_vendor.hooks().utcOffset(8).format("YYYY-MM-DD HH:mm:ss");
-      common_vendor.hooks().utcOffset(8).format("YYYY-MM-DD");
+      let time = common_vendor.hooks().utcOffset(8).format("YYYY-MM-DD HH:mm:ss");
+      let query_time = common_vendor.hooks().utcOffset(8).format("YYYY-MM-DD");
       or_data.order.forEach((item) => item.order_number = AccConfig_orde_number.coDe());
       let out_trade_no = AccConfig_orde_number.outTradeno();
       try {
         var payment = await new AccConfig_wxPay.Wxpay().pLace(or_data.total_price, out_trade_no);
         console.log(payment);
+        const can_res = await new AccConfig_wxPay.Wxpay().suBmit(or_data.order, re_data.address, time, query_time, out_trade_no);
       } catch (e) {
         console.log(e);
       }
