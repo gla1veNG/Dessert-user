@@ -43,18 +43,29 @@ const _sfc_main = {
       or_data.total_price = or_data.order[0].subtotal;
     }
     async function subMit() {
+      if (re_data.address.length === 0) {
+        new Plublic().toast("请选择收货地址");
+        return false;
+      }
+      common_vendor.wx$1.showLoading({ title: "正在下单", mask: true });
       let time = common_vendor.hooks().utcOffset(8).format("YYYY-MM-DD HH:mm:ss");
       let query_time = common_vendor.hooks().utcOffset(8).format("YYYY-MM-DD");
       or_data.order.forEach((item) => item.order_number = AccConfig_orde_number.coDe());
       let out_trade_no = AccConfig_orde_number.outTradeno();
       try {
-        var payment = await new AccConfig_wxPay.Wxpay().pLace(or_data.total_price, out_trade_no);
-        console.log(payment);
         const can_res = await new AccConfig_wxPay.Wxpay().suBmit(or_data.order, re_data.address, time, query_time, out_trade_no);
-      } catch (e) {
-        console.log(e);
+        result.out_trade_no = out_trade_no;
+        result.or_data = or_data.order;
+        common_vendor.wx$1.hideLoading();
+        show.value = true;
+      } catch (err) {
+        new Plublic().toast("支付发生错误");
+        await db.collection("order_data").where({ out_trade_no }).remove();
       }
     }
+    common_vendor.onBeforeUnmount(() => {
+      show.value = false;
+    });
     return (_ctx, _cache) => {
       return {
         a: common_vendor.f(common_vendor.unref(address), (item, index, i0) => {

@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-	import {onMounted,reactive,toRefs,watch} from 'vue'
+	import {onMounted,reactive,toRefs,watch,onBeforeUnmount} from 'vue'
 	import moment from 'moment'
 	moment.locale('zh-cn');
 	const db = wx.cloud.database();
@@ -93,24 +93,60 @@
 	import {outTradeno,coDe} from '@/Acc-config/orde_number.js'
 	import {Wxpay} from '@/Acc-config/wx-pay.js'
 	async function subMit(){
-		// 当前时间:年月日，时分秒
-		let time = moment().utcOffset(8).format('YYYY-MM-DD HH:mm:ss')
-		// 当前时间：年月日
-		let query_time = moment().utcOffset(8).format('YYYY-MM-DD')
-		// 对每个商品生成订单编号
-		or_data.order.forEach(item=>item.order_number = coDe())
-		let out_trade_no = outTradeno()
-		try{
-			//1.统一下单
-			var payment = await new Wxpay().pLace(or_data.total_price,out_trade_no);
-			console.log(payment);
-			//2.提交到数据库
-			const can_res = await new Wxpay().suBmit(or_data.order,re_data.address,time,query_time,out_trade_no)
-			
-		}catch(e){
-			console.log(e);
+			if(re_data.address.length === 0){
+				new Plublic().toast('请选择收货地址')
+				return false
+			}
+			wx.showLoading({title: '正在下单',mask:true})
+			// 当前时间:年月日，时分秒
+			let time = moment().utcOffset(8).format('YYYY-MM-DD HH:mm:ss')
+			// 当前时间：年月日
+			let query_time = moment().utcOffset(8).format('YYYY-MM-DD')
+			// 对每个商品生成订单编号
+			or_data.order.forEach(item=>item.order_number = coDe())
+			let out_trade_no = outTradeno()
+			try{
+				// 2.提交订单到数据库
+				const can_res = await new Wxpay().suBmit(or_data.order,re_data.address,time,query_time,out_trade_no)
+				result.out_trade_no = out_trade_no
+				result.or_data = or_data.order
+				// 弹出支付弹窗
+				wx.hideLoading()
+				show.value = true
+			}catch(err){
+				// 支付发生错误
+				new Plublic().toast('支付发生错误')
+				await db.collection('order_data').where({out_trade_no}).remove()
+			}
 		}
-	}
+		// 确认支付
+		async function confirmPayment(){
+			loadIng.value = true
+			// 1.支付成功更改订单字段为成功，跳转订单页面
+			await new Wxpay().staTe('success',result.out_trade_no)
+			// 2.支付成功：库存自减，售出自增
+			await new Wxpay().resTock(result.or_data)
+			// 3.如果购物车的下单商品数据要删除
+			if(or_data.type == 'cart'){
+				let cart = await new Wxpay().deleteCart(result.or_data)
+			}
+			loadIng.value = false
+			show.value = false
+			// 跳转订单界面
+			wx.redirectTo({url:'/pages/All-orders/order'})
+		}
+		
+		// 取消支付
+		async function cancelPayment(){
+			// 取消支付
+			if(or_data.type == 'cart'){
+				let cart = await new Wxpay().deleteCart(or_data.order)
+			}
+			show.value = false
+			// 跳转订单界面
+			wx.redirectTo({url:'/pages/All-orders/order'})
+		}
+		onBeforeUnmount(()=>{show.value = false})
 </script>
 
 <style>
