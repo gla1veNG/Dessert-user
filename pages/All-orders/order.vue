@@ -44,7 +44,7 @@
 			<!-- 已发货 评价 申请退款 -->
 			<block v-if="item.deliver === 'rece_goods'">
 				<text class="order-button-a">已发货</text>
-				<text class="order-button-b">评价</text>
+				<text class="order-button-b" @click="eavLuate(item._id,item.goods_id,index,item.evaluate,item.specs)">{{item.evaluate ? '已评价' : '评价'}}</text>
 				<text class="order-button-b" @click="refUnd(index,item._id)">申请退款</text>
 			</block>
 			<!-- 申请退款中 -->
@@ -95,7 +95,7 @@
 	</page-container> -->
 </template>
 <script setup>
-	import {reactive,toRefs,ref} from 'vue'
+	import {reactive,toRefs,ref,watch} from 'vue'
 	import {onLoad,onReachBottom} from '@dcloudio/uni-app'
 	import Loading from '@/pages/public-view/loading.vue'
 
@@ -172,6 +172,10 @@
 		await getOrder(sk,data.tab[re.value].query)
 		loading.value = false
 	})
+	// 支付弹窗
+		const show = ref(false)
+		const loadIng = ref(false)
+		const total_price = ref(0)
 	// 继续支付
 	import {outTradeno} from '@/Acc-config/orde_number.js'
 	import {Public} from '@/Acc-config/public.js'
@@ -267,7 +271,19 @@
 			wx.navigateTo({
 				url:'/pages/Eav-goods/goods?query=' + query
 			})
-		}				
+		}
+	// 监听提交评价后更改当前界面某订单的状态
+		import {eav_index} from '@/Acc-config/answer.js'
+		watch(eav_index,(newVal,oldVal)=>{
+			// 如果tab切换在全部上，就更改状态，否则就移除掉
+			if(re.value == 0){
+				res_order.order_data[newVal].evaluate = true
+			}else{
+				res_order.order_data.splice(newVal,1)
+			}
+			const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
+			db.collection('order_data').where({_openid:user.openid,_id:eav_id.value}).update({data:{evaluate:true}})
+		})					
 </script>
 
 <style>

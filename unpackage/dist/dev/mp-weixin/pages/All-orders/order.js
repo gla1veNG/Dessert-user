@@ -3,6 +3,7 @@ const common_vendor = require("../../common/vendor.js");
 const AccConfig_orde_number = require("../../Acc-config/orde_number.js");
 const AccConfig_public = require("../../Acc-config/public.js");
 require("../../Acc-config/wx-pay.js");
+const AccConfig_answer = require("../../Acc-config/answer.js");
 if (!Math) {
   Loading();
 }
@@ -79,6 +80,9 @@ const _sfc_main = {
       await getOrder(sk, data.tab[re.value].query);
       loading.value = false;
     });
+    const show = common_vendor.ref(false);
+    common_vendor.ref(false);
+    const total_price = common_vendor.ref(0);
     async function goonPay(index, _id, subtotal, item) {
       total_price.value = subtotal;
       common_vendor.wx$1.showLoading({ title: "正在下单", mask: true });
@@ -132,7 +136,25 @@ const _sfc_main = {
         res_order.order_data.splice(index, 1);
       }
     }
-    common_vendor.ref("");
+    let eav_id = common_vendor.ref("");
+    function eavLuate(_id, goods_id, index, evaluate, specs) {
+      if (evaluate)
+        return false;
+      eav_id.value = _id;
+      let query = JSON.stringify({ goods_id, index, specs });
+      common_vendor.wx$1.navigateTo({
+        url: "/pages/Eav-goods/goods?query=" + query
+      });
+    }
+    common_vendor.watch(AccConfig_answer.eav_index, (newVal, oldVal) => {
+      if (re.value == 0) {
+        res_order.order_data[newVal].evaluate = true;
+      } else {
+        res_order.order_data.splice(newVal, 1);
+      }
+      const user = common_vendor.wx$1.getStorageSync("user_infor");
+      db.collection("order_data").where({ _openid: user.openid, _id: eav_id.value }).update({ data: { evaluate: true } });
+    });
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: common_vendor.f(common_vendor.unref(tab), (item, index, i0) => {
@@ -172,18 +194,20 @@ const _sfc_main = {
           } : {}, {
             n: item.deliver === "rece_goods"
           }, item.deliver === "rece_goods" ? {
-            o: common_vendor.o(($event) => refUnd(index, item._id), index)
+            o: common_vendor.t(item.evaluate ? "已评价" : "评价"),
+            p: common_vendor.o(($event) => eavLuate(item._id, item.goods_id, index, item.evaluate, item.specs), index),
+            q: common_vendor.o(($event) => refUnd(index, item._id), index)
           } : {}, {
-            p: item.deliver === "ref_pro"
+            r: item.deliver === "ref_pro"
           }, item.deliver === "ref_pro" ? {} : {}, {
-            q: item.deliver === "ref_succ"
+            s: item.deliver === "ref_succ"
           }, item.deliver === "ref_succ" ? {} : {}) : item.pay_success == "not_pay" ? {
-            s: common_vendor.o(($event) => canOrder(item._id, index), index),
-            t: common_vendor.o(($event) => goonPay(index, item._id, item.subtotal, item), index)
+            v: common_vendor.o(($event) => canOrder(item._id, index), index),
+            w: common_vendor.o(($event) => goonPay(index, item._id, item.subtotal, item), index)
           } : item.pay_success == "can_order" ? {} : {}, {
-            r: item.pay_success == "not_pay",
-            v: item.pay_success == "can_order",
-            w: index
+            t: item.pay_success == "not_pay",
+            x: item.pay_success == "can_order",
+            y: index
           });
         }),
         c: common_vendor.unref(order_data).length == 0

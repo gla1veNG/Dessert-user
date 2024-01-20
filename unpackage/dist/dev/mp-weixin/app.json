@@ -1,7 +1,7 @@
 {
   "pages": [
-    "pages/Eav-goods/goods",
     "pages/All-orders/order",
+    "pages/Eav-goods/goods",
     "pages/Product-details/details",
     "pages/Pay-view/pay",
     "pages/Re-address/address",
