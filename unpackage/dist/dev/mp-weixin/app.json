@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/Eav-goods/goods",
     "pages/All-orders/order",
     "pages/Product-details/details",
     "pages/Pay-view/pay",

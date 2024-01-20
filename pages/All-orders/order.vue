@@ -1,83 +1,83 @@
 <template>
 	<!-- tab切换 -->
 	<view class="order-tab">
-		<view v-for="(item,index) in tab" :key="index">
+		<view v-for="(item,index) in tab" :key="index" @click="swItch(index,item.query)">
 			<text>{{item.name}}</text>
 			<text :class="{order_Select:index === re}"></text>
 		</view>
 	</view>
 	<view style="height: 60rpx;"></view>
 	<!-- 订单数据 -->
-	<view class="order-back">
+	<view class="order-back" v-for="(item,index) in order_data" :key="index">
 		<view class="order-card">
 			<view>
-				<image src="/static/detail/jianshao.png" mode="aspectFill"></image>
+				<image :src="item.goods_image" mode="aspectFill"></image>
 			</view>
 			<view>
-				<text class="order-title-padd">这是标题</text>
-				<text class="order-specs">规格</text>
+				<text class="order-title-padd">{{item.goods_title}}</text>
+				<text class="order-specs" v-if="item.specs.length > 0" v-for="(item_a,index_a) in item.specs" :key="index_a">{{item_a.att_val}}</text>
 			</view>
 			<view>
-				<text class="order-title-padd order-num">1.3</text>
-				<text class="order-num">x3</text>
+				<text class="order-title-padd order-num">{{item.goods_price}}</text>
+				<text class="order-num">x{{item.buy_amount}}</text>
 			</view>
 		</view>
 		<!-- 合计 -->
 		<view class="order-total">
 			<text>合计</text>
-			<text>20</text>
+			<text>{{item.subtotal}}</text>
 		</view>
 <!-- 支付的状态 -->
 		<!-- 支付成功的状态 -->
-		<view class="order-button">
+		<view class="order-button" v-if="item.pay_success === 'success'">
 			<!-- 待发货 申请退款 -->
-			<block>
+			<block v-if="item.deliver === 'stay'">
 				<text class="order-button-a">待发货</text>
-				<text class="order-button-b">申请退款</text>
+				<text class="order-button-b"  @click="refUnd(index,item._id)">申请退款</text>
 			</block>
 			<!-- 确认收货 查看物流 申请退款 -->
-			<!-- block>
-				<text class="order-button-a">确认收货</text>
+			<block v-if="item.deliver === 'already'">
+				<text class="order-button-a" @click="confRece(index,item._id)">确认收货</text>
 				<text class="order-button-b">查看物流</text>
-				<text class="order-button-b">申请退款</text>
-			</block> -->
+				<text class="order-button-b"  @click="refUnd(index,item._id)">申请退款</text>
+			</block>
 			<!-- 已发货 评价 申请退款 -->
-			<!-- <block>
+			<block v-if="item.deliver === 'rece_goods'">
 				<text class="order-button-a">已发货</text>
 				<text class="order-button-b">评价</text>
-				<text class="order-button-b">申请退款</text>
-			</block> -->
+				<text class="order-button-b" @click="refUnd(index,item._id)">申请退款</text>
+			</block>
 			<!-- 申请退款中 -->
-			<!-- <block>
+			<block v-if="item.deliver === 'ref_pro'">
 				<text class="order-button-b">申请退款中</text>
-			</block> -->
+			</block>
 			<!-- 退款成功 -->
-			<!-- <block >
+			<block v-if="item.deliver === 'ref_succ'">
 				<text class="order-button-b">退款成功</text>
-			</block> -->
+			</block>
 		</view>
 		<!-- 待支付的状态 -->
-		<view class="order-button">
+		<view class="order-button" v-else-if="item.pay_success == 'not_pay'">
 			<!-- 取消订单 -->
 			<!-- 继续支付 -->
-			<!-- <text class="order-button-b">取消订单</text>
-			<text class="order-button-b">继续支付</text> -->
+			<text class="order-button-b" @click="canOrder(item._id,index)">取消订单</text>
+			<text class="order-button-b" @click="goonPay(index,item._id,item.subtotal,item)">继续支付</text>
 		</view>
 		<!-- 已取消订单的状态 -->
-		<view class="order-button">
+		<view class="order-button" v-else-if="item.pay_success == 'can_order'">
 			<!-- 订单已取消 -->
-			<!-- <text class="order-button-a">订单已取消</text> -->
+			<text class="order-button-a">订单已取消</text>
 		</view>
 	</view>
 	<!-- 没有数据的提示 -->
-	<view class="Tips">没有订单数据</view>
+	<view class="Tips" v-if="order_data.length == 0">没有订单数据</view>
 	<!-- 上拉加载提示 -->
 	<view class="loading-hei">
-		<Loading></Loading>
+		<Loading v-if="loading"></Loading>
 	</view>
 	<view style="height: 200rpx;"></view>
 	<!-- 支付弹窗 -->
-	<page-container :show="false" round="true">
+	<!-- <page-container :show="false" round="true">
 		<view class="customStyle">
 		<view class="container-guan"><image src="/static/detail/guanbi.svg" mode="widthFix"></image></view>
 		<view class="container-price">
@@ -92,10 +92,14 @@
 			<button type="primary" loading="loadIng">确认支付</button>
 		</view>
 		</view>
-	</page-container>
+	</page-container> -->
 </template>
 <script setup>
 	import {reactive,toRefs,ref} from 'vue'
+	import {onLoad,onReachBottom} from '@dcloudio/uni-app'
+	import Loading from '@/pages/public-view/loading.vue'
+
+	const db = wx.cloud.database()
 	const re = ref(0)
 	const data = reactive({
 		tab: [{
@@ -133,6 +137,137 @@
 		]
 	})
 	const {tab} = toRefs(data)
+		onLoad((event)=>{
+			console.log(event)
+			let LE = Object.keys(event).length// 判断是否传值
+			let index = LE === 0 ? 0 : JSON.parse(event.obj).index
+			let query = LE === 0 ? {} : JSON.parse(event.obj).query
+			// swItch(index,query)
+		})
+	// tab切换
+	function swItch(index,query){
+		re.value = index
+		res_order.order_data = []
+		page_n.value = 0
+		getOrder(0,query)
+	}
+	
+	// 请求数据
+		const res_order = reactive({order_data:[]})
+		const {order_data} = toRefs(res_order)
+		async function getOrder(sk,query){
+			const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
+			query['_openid'] = user.openid
+			const res = await db.collection('order_data').where(query).limit(10).skip(sk).orderBy('order_time','desc').get()
+			console.log(res)
+			res_order.order_data = [...res_order.order_data,...res.data]
+		}
+	// 上拉加载
+	let loading = ref(false)
+	let page_n = ref(0)
+	onReachBottom(async()=>{//onReachBottom只能在父组件才能触底
+		loading.value = true
+		page_n.value++
+		let sk = page_n.value * 10
+		await getOrder(sk,data.tab[re.value].query)
+		loading.value = false
+	})
+	// 继续支付
+	import {outTradeno} from '@/Acc-config/orde_number.js'
+	import {Public} from '@/Acc-config/public.js'
+	import {Wxpay} from '@/Acc-config/wx-pay.js'
+	async function goonPay(index,_id,subtotal,item){
+			total_price.value = subtotal
+			wx.showLoading({title: '正在下单',mask:true})
+			try{
+				let out_trade_no = outTradeno()
+				result._id = _id
+				result.order_item = item
+				result.index = index
+				result.out_trade_no = out_trade_no
+				// 弹出支付弹窗
+				wx.hideLoading()
+				show.value = true
+			}catch(err){
+				// 支付发生错误
+				new Public().toast('支付发生错误')
+			}
+		}
+	// 确认支付
+		let result = reactive({_id:'',payment:{},order_item:[],index:-1,out_trade_no:''})
+		async function confirmPayment(){
+			loadIng.value = true
+			const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
+			// 更新该条数据的某些字段
+			await db.collection('order_data').where({_openid:user.openid,_id:result._id}).update({
+				data:{pay_success: 'success',payment:result.payment,
+				out_trade_no:result.out_trade_no
+				}
+			})
+			// 2.支付成功：库存自减，售出自增
+			await new Wxpay().resTock([result.order_item])
+			// 如果tab切换在全部上，就更改状态，否则就移除掉
+			if(re.value == 0){
+				res_order.order_data[result.index].pay_success = 'success'
+			}else{
+				res_order.order_data.splice(result.index,1)
+			}
+			loadIng.value = false
+			show.value = false
+		}	
+	// 取消订单
+		async function canOrder(_id,index){
+			const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
+			await db.collection('order_data').where({_openid:user.openid,_id}).update({data:{pay_success:'can_order'}})
+			// 如果tab切换在全部上，就更改状态，否则就移除掉
+			if(re.value == 0){
+				res_order.order_data[index].pay_success = 'can_order'
+			}else{
+				res_order.order_data.splice(index,1)
+			}
+		}
+	// 退款
+		const itemList = ref(['七天无理由退换货','商品信息描述不符','质量问题','包装/商品破损/污渍'])
+		function refUnd(index,_id){
+			wx.showActionSheet({
+				alertText:'退款原因',
+				itemList: itemList.value,
+				success: async(res)=> {
+					const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
+					await db.collection('order_data').where({_openid:user.openid,_id}).update({data:{deliver:'ref_pro',Re_reason:itemList.value[res.tapIndex]}})
+					// 如果tab切换在全部上，就更改状态，否则就移除掉
+					if(re.value == 0){
+						res_order.order_data[index].deliver = 'ref_pro'
+					}else{
+						res_order.order_data.splice(index,1)
+					}
+				},
+				fail (res) {
+					console.log(res.errMsg)
+				}
+			})
+		}
+	// 确认收货
+		async function confRece(index,_id){
+			const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
+			await db.collection('order_data').where({_openid:user.openid,_id}).update({data:{deliver:'rece_goods'}})
+			// 如果tab切换在全部上，就更改状态，否则就移除掉
+			if(re.value == 0){
+				res_order.order_data[index].deliver = 'rece_goods'
+			}else{
+				res_order.order_data.splice(index,1)
+			}
+		}
+	// 去评价
+		let eav_id = ref('')
+		function eavLuate(_id,goods_id,index,evaluate,specs){
+			if(evaluate)return false
+			eav_id.value = _id
+			let query = JSON.stringify({goods_id,index,specs})
+			wx.navigateTo({
+				url:'/pages/Eav-goods/goods?query=' + query
+			})
+		}				
 </script>
 
 <style>
