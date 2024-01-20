@@ -1,0 +1,167 @@
+<template>
+	<view class="tracking-page">
+		<view class="tr-goods">
+			<view><image src="/static/detail/jianshao.png" mode="aspectFill"></image></view>
+			<view class="tr-text">
+				<text class="overflow">标题</text>
+				<text>10件</text>
+			</view>
+		</view>
+		<view class="fast-mail">
+			<image src="/static/detail/jianshao.png" mode="aspectFill"></image>
+			<text class="fast-mail-Zh">顺丰快递</text>
+			<text>23232132</text>
+		</view>
+		<!-- 步骤条 -->
+		<view class="tracking-view">
+			<!-- 左边 -->
+			<view class="tracking-left">
+				<view class="active">签</view>
+				<view></view>
+				<view></view>
+			</view>
+			<!-- 右边 -->
+			<view class="tracking-right">
+				<view>文本文本</view>
+				<view>2024.01.20</view>
+			</view>
+		</view>
+		<!-- 没有物流轨迹 -->
+		<view class="Tips">暂无物流动态</view>
+	</view>
+</template>
+
+<script setup>
+	import {URL,KEY,CUSTOMER,KUAIDI} from '../../Acc-config/kuaidi.js'
+	import {ref,reactive,toRefs} from 'vue'
+	import {onLoad} from '@dcloudio/uni-app'
+	import md5 from 'js-md5'
+
+	
+	onLoad((event)=>{
+			// let res_v = JSON.parse(event.value)
+			// data_goods.waybill_No = res_v.waybill_No
+			// data_goods.goods_image = res_v.goods_image
+			// data_goods.goods_title = res_v.goods_title
+			// data_goods.buy_amount = res_v.buy_amount
+			post()
+		})
+	// body要请求的参数
+		function getParams(){
+			let param = {com:'',num:'78761109176510',}
+			// 加密
+			let md = md5(JSON.stringify(param) + KEY + CUSTOMER).toUpperCase()
+			let obj = {customer:CUSTOMER,sign:md,param:JSON.stringify(param)}
+			return obj
+		}
+		function post(){
+				uni.request({
+					url:URL,
+					method:'POST',
+					header:{'Content-Type':'application/x-www-form-urlencoded'},
+					data:getParams()
+				})
+				.then(res=>{
+						console.log(res)
+						// if(res.data.message == "ok"){
+						// 	data.nu = res.data.nu
+						// 	data.state = res.data.state
+						// 	const K_name = KUAIDI.filter(item=>item.com == res.data.com)
+						// 	data.kuaidi = K_name[0].name
+						// 	data.logo = K_name[0].logo
+						// 	data.progress = res.data.data
+						// }else{
+						// 	data.message = 1
+						// }
+					})
+					.catch(err=>{
+						console.log(err)
+					})	
+		}			
+</script>
+
+<style scoped>
+.tracking-page{
+	margin: 20rpx 20rpx 40rpx 20rpx;
+}
+.tr-goods{
+	display: flex;
+	margin-bottom: 40rpx;
+	border-bottom: 1rpx solid #f2f2f2;
+	padding-bottom: 10rpx;
+}
+.tr-goods image{
+	display: block;
+	width: 150rpx;
+	height: 150rpx;
+}
+
+.tr-goods view:nth-child(2){
+	flex: 1;
+	padding-left: 20rpx;
+}
+.tr-text text:nth-child(2){
+	font-size: 26rpx;
+	color: #f42c37;
+	padding-top: 20rpx;
+}
+.fast-mail image{
+	width: 50rpx;
+	height: 50rpx;
+	border-radius: 50%;
+	display: block;
+}
+.fast-mail{
+	display: flex;
+	align-items: center;
+	padding-bottom: 40rpx;
+}
+.fast-mail-Zh{
+	padding: 0 30rpx 0 20rpx;
+}
+.tracking-view{
+	display: flex;
+}
+.tracking-left{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 40rpx;
+}
+.tracking-left view:nth-child(2){
+	background-color: #cccccc;
+	width: 4rpx;
+	height: 100%;
+}
+.tracking-left view:nth-child(1){
+	background-color: #cccccc;
+	width: 20rpx;
+	height: 20rpx;
+	border-radius: 50%;
+}
+.tracking-right{
+	padding: 0 0 40rpx 20rpx;
+	width: 100%;
+}
+.tracking-right view:nth-child(1){
+	line-height: 1.5;
+	padding-bottom: 10rpx;
+}
+.tracking-right view:nth-child(2){
+	color: #c0c0c0;
+	font-size: 26rpx;
+}
+.active{
+	width: 35rpx !important;
+	height: 35rpx !important;
+	font-size: 22rpx;
+	color: #FFFFFF;
+	background-color: #f42c37 !important;
+	text-align: center;
+	line-height: 35rpx;
+}
+.active-text{
+	color: #f42c37;
+}
+</style>

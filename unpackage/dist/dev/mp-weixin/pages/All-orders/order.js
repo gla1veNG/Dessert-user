@@ -53,8 +53,9 @@ const _sfc_main = {
     common_vendor.onLoad((event) => {
       console.log(event);
       let LE = Object.keys(event).length;
-      LE === 0 ? 0 : JSON.parse(event.obj).index;
-      LE === 0 ? {} : JSON.parse(event.obj).query;
+      let index = LE === 0 ? 0 : JSON.parse(event.obj).index;
+      let query = LE === 0 ? {} : JSON.parse(event.obj).query;
+      swItch(index, query);
     });
     function swItch(index, query) {
       re.value = index;

@@ -142,7 +142,7 @@
 			let LE = Object.keys(event).length// 判断是否传值
 			let index = LE === 0 ? 0 : JSON.parse(event.obj).index
 			let query = LE === 0 ? {} : JSON.parse(event.obj).query
-			// swItch(index,query)
+			swItch(index,query)
 		})
 	// tab切换
 	function swItch(index,query){
@@ -173,9 +173,9 @@
 		loading.value = false
 	})
 	// 支付弹窗
-		const show = ref(false)
-		const loadIng = ref(false)
-		const total_price = ref(0)
+	const show = ref(false)
+	const loadIng = ref(false)
+	const total_price = ref(0)
 	// 继续支付
 	import {outTradeno} from '@/Acc-config/orde_number.js'
 	import {Public} from '@/Acc-config/public.js'
