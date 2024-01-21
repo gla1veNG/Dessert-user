@@ -11420,6 +11420,7 @@ hooks.HTML5_FMT = {
   // <input type="month" />
 };
 exports._export_sfc = _export_sfc;
+exports.computed = computed;
 exports.createSSRApp = createSSRApp;
 exports.e = e;
 exports.f = f;

@@ -2,8 +2,8 @@
 	<view class="Manage" @click="manAge">{{manage}}</view>
 	<view class="SH-view" v-for="(item,index) in cart_data" :key="index">
 		<view class="SH-icon">
-			<icon type="success" color="#ea445a" v-if="item.select"></icon>
-			<icon type="circle" v-else></icon>
+			<icon type="success" color="#ea445a" v-if="item.select" @click="seLect(index,item.select)"></icon>
+			<icon type="circle" v-else @click="seLect(index,item.select)"></icon>
 		</view>
 		<view class="SH-img">
 			<image :src="item.goods_image" mode="aspectFill"></image>
@@ -30,19 +30,19 @@
 	<!-- 底部 -->
 	<view class="SH-bottom">
 		<!-- 取消全选 -->
-		<block>
+		<block v-if="totalPrice.sele">
 			<icon type="success" color="#ea445a" ></icon>
 			<text class="space">全选</text>
 		</block>
 		<!-- 全选 -->
-	<!-- 	<block >
+		<block v-else>
 			<icon type="circle" color="#ea445a" ></icon>
 			<text class="space" >全选</text>
-		</block> -->
+		</block>
 		<text class="cut-apart"></text>
 		<text class="space">合计: </text>
-		<text class="SH-total">9.9¥</text>
-		<text class="SH-settle">{{manage === '管理' ? '结算' : '删除'}}</text>
+		<text class="SH-total" >{{totalPrice.price}}¥</text>
+		<text class="SH-settle" :class="[totalPrice.price <= 0 ? 'prevent_btn' : '']">{{manage === '管理' ? '结算' : '删除'}}</text>
 	</view>
 </template>
 
@@ -77,7 +77,26 @@
 		data.cart_data[index].buy_amount++
 		data.cart_data[index].subtotal = parseFloat((data.cart_data[index].goods_price * data.cart_data[index].buy_amount).toFixed(10))
 		db.collection('sh_cart').doc(_id).update({data:{buy_amount:data.cart_data[index].buy_amount,subtotal:data.cart_data[index].subtotal}})
-	}			
+	}
+	// 单个商品的选中或者取消选中
+	function seLect(index,select){
+		data.cart_data[index].select = data.cart_data[index].select ? false : true
+	}
+	// 监听全选或者取消全选
+	const totalPrice = computed(()=>{
+		let sum = 0
+		let all = []
+		data.cart_data.forEach(item=>{
+			if(item.select){
+				sum += item.subtotal
+				all.push(item.select)
+			}
+		})
+		return {
+			price:parseFloat((sum).toFixed(10)),
+			sele:all.length === data.cart_data.length ? true : false
+		}
+	})					
 </script>
 
 <style>
