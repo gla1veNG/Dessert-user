@@ -26,7 +26,7 @@
 			<image src="/static/detail/video-bofang.svg" mode="aspectFit"></image>
 		</view>
 		<!-- 底部操作按钮 -->
-		<view class="advert-left">
+		<view class="advert-left" @click="deTail">
 			<view class="goods-det">
 				<image :src="video_data.goods_cover" mode="aspectFill"></image>
 				<view class="goods-price">
@@ -197,6 +197,12 @@
 		wx.navigateBack({
 			delta:1
 		});
+	}
+	//跳转商品详情页
+	function deTail(){
+		wx.navigateTo({
+			url:`/pages/Product-details/details?goods_id=${result.goods_id}`
+		})
 	}
 </script>
 

@@ -31,18 +31,21 @@
 	<view class="SH-bottom">
 		<!-- 取消全选 -->
 		<block v-if="totalPrice.sele">
-			<icon type="success" color="#ea445a" ></icon>
-			<text class="space">全选</text>
+			<icon type="success" color="#ea445a" @click="cancelSelect"></icon>
+			<text class="space" @click="cancelSelect">全选</text>
 		</block>
 		<!-- 全选 -->
 		<block v-else>
-			<icon type="circle" color="#ea445a" ></icon>
-			<text class="space" >全选</text>
+			<icon type="circle" color="#ea445a" @click="selectAll"></icon>
+			<text class="space" @click="selectAll">全选</text>
 		</block>
 		<text class="cut-apart"></text>
 		<text class="space">合计: </text>
 		<text class="SH-total" >{{totalPrice.price}}¥</text>
-		<text class="SH-settle" :class="[totalPrice.price <= 0 ? 'prevent_btn' : '']">{{manage === '管理' ? '结算' : '删除'}}</text>
+		<text class="SH-settle" 
+		:class="[totalPrice.price <= 0 ? 'prevent_btn' : '']"
+		@click="getInfo(manage)"
+		>{{manage === '管理' ? '结算' : '删除'}}</text>
 	</view>
 </template>
 
@@ -96,7 +99,33 @@
 			price:parseFloat((sum).toFixed(10)),
 			sele:all.length === data.cart_data.length ? true : false
 		}
-	})					
+	})
+	// 取消全选
+	function cancelSelect(){
+		data.cart_data.forEach(item=>item.select = false)
+	}
+	// 全选
+	function selectAll(){
+		data.cart_data.forEach(item=>item.select = true)
+	}
+	// 结算和删除
+	function getInfo(val){
+		if(val == '管理'){//结算
+			const res = data.cart_data.filter(item=>item.select)
+			const STR = JSON.stringify(res)
+			wx.navigateTo({//direct单个商品下单
+				url:`/pages/Pay-view/pay?order=${STR}&type=cart`
+			})
+		}else{//删除
+			data.cart_data.forEach(async(item,index)=>{
+				if(item.select){
+					await db.collection('sh_cart').doc(item._id).remove()
+					data.cart_data.splice(data.cart_data.findIndex(item_a => item_a._id === item._id),1)
+				}
+			})
+		}
+	}
+								
 </script>
 
 <style>

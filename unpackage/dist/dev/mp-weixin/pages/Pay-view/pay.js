@@ -3,6 +3,7 @@ const common_vendor = require("../../common/vendor.js");
 const AccConfig_answer = require("../../Acc-config/answer.js");
 const AccConfig_orde_number = require("../../Acc-config/orde_number.js");
 const AccConfig_wxPay = require("../../Acc-config/wx-pay.js");
+const AccConfig_public = require("../../Acc-config/public.js");
 const _sfc_main = {
   __name: "pay",
   setup(__props) {
@@ -59,9 +60,27 @@ const _sfc_main = {
         common_vendor.wx$1.hideLoading();
         show.value = true;
       } catch (err) {
-        new Plublic().toast("支付发生错误");
+        new AccConfig_public.Public().toast("支付发生错误");
         await db.collection("order_data").where({ out_trade_no }).remove();
       }
+    }
+    async function confirmPayment() {
+      loadIng.value = true;
+      await new AccConfig_wxPay.Wxpay().staTe("success", result.out_trade_no);
+      await new AccConfig_wxPay.Wxpay().resTock(result.or_data);
+      if (or_data.type == "cart") {
+        await new AccConfig_wxPay.Wxpay().deleteCart(result.or_data);
+      }
+      loadIng.value = false;
+      show.value = false;
+      common_vendor.wx$1.redirectTo({ url: "/pages/All-orders/order" });
+    }
+    async function cancelPayment() {
+      if (or_data.type == "cart") {
+        await new AccConfig_wxPay.Wxpay().deleteCart(or_data.order);
+      }
+      show.value = false;
+      common_vendor.wx$1.redirectTo({ url: "/pages/All-orders/order" });
     }
     common_vendor.onBeforeUnmount(() => {
       show.value = false;
@@ -104,7 +123,13 @@ const _sfc_main = {
         }),
         c: common_vendor.unref(type) != "direct",
         d: common_vendor.t(common_vendor.unref(total_price)),
-        e: common_vendor.o(subMit)
+        e: common_vendor.o(subMit),
+        f: common_vendor.o(cancelPayment),
+        g: common_vendor.t(common_vendor.unref(total_price)),
+        h: _ctx.loadIng,
+        i: common_vendor.o(confirmPayment),
+        j: _ctx.show,
+        k: common_vendor.o(cancelPayment)
       };
     };
   }

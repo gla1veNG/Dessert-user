@@ -119,6 +119,11 @@ const _sfc_main = {
         delta: 1
       });
     }
+    function deTail() {
+      common_vendor.wx$1.navigateTo({
+        url: `/pages/Product-details/details?goods_id=${result.goods_id}`
+      });
+    }
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: common_vendor.s("height:" + common_vendor.unref(S_top) + "px;"),
@@ -133,16 +138,17 @@ const _sfc_main = {
         j: common_vendor.unref(video_data).goods_cover,
         k: common_vendor.t(common_vendor.unref(video_data).goods_price),
         l: common_vendor.t(common_vendor.unref(video_data).goods_title),
-        m: common_vendor.t(common_vendor.unref(total) === 0 ? "评论" : common_vendor.unref(total)),
-        n: common_vendor.o(pull),
-        o: common_vendor.unref(collection) <= 0
+        m: common_vendor.o(deTail),
+        n: common_vendor.t(common_vendor.unref(total) === 0 ? "评论" : common_vendor.unref(total)),
+        o: common_vendor.o(pull),
+        p: common_vendor.unref(collection) <= 0
       }, common_vendor.unref(collection) <= 0 ? {
-        p: common_vendor.o(toCollect)
+        q: common_vendor.o(toCollect)
       } : {
-        q: common_vendor.o(canCollect)
+        r: common_vendor.o(canCollect)
       }, {
-        r: common_vendor.t(common_vendor.unref(collection) > 0 ? "已收藏" : "收藏"),
-        s: common_vendor.s("height:" + common_vendor.unref(winheight) + "px;")
+        s: common_vendor.t(common_vendor.unref(collection) > 0 ? "已收藏" : "收藏"),
+        t: common_vendor.s("height:" + common_vendor.unref(winheight) + "px;")
       });
     };
   }

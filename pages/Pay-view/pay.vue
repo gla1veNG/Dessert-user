@@ -40,6 +40,23 @@
 		<view>{{total_price}}￥</view>
 		<view @click="subMit">提交订单</view>
 	</view>
+	<!-- 支付弹窗 -->
+	<page-container :show="show" round="true" @clickoverlay="cancelPayment">
+		<view class="customStyle">
+		<view class="container-guan"><image src="/static/detail/guanbi.svg" mode="widthFix" @click="cancelPayment"></image></view>
+		<view class="container-price">
+			<text>零食商城平台</text>
+			<text>¥ {{total_price}}</text>
+		</view>
+		<view class="Payment-Methods">
+			<text>支付方式</text>
+			<text>零钱通</text>
+		</view>
+		<view class="Confirm-payment">
+			<button type="primary" :loading="loadIng" @click="confirmPayment">确认支付</button>
+		</view>
+		</view>
+	</page-container>
 </template>
 
 <script setup>
@@ -92,6 +109,7 @@
 	//提交订单
 	import {outTradeno,coDe} from '@/Acc-config/orde_number.js'
 	import {Wxpay} from '@/Acc-config/wx-pay.js'
+	import {Public} from '@/Acc-config/public.js'
 	async function subMit(){
 			if(re_data.address.length === 0){
 				new Plublic().toast('请选择收货地址')
@@ -115,7 +133,7 @@
 				show.value = true
 			}catch(err){
 				// 支付发生错误
-				new Plublic().toast('支付发生错误')
+				new Public().toast('支付发生错误')
 				await db.collection('order_data').where({out_trade_no}).remove()
 			}
 		}

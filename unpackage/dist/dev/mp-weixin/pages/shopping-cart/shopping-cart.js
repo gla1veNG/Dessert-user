@@ -45,6 +45,29 @@ const _sfc_main = {
         sele: all.length === data.cart_data.length ? true : false
       };
     });
+    function cancelSelect() {
+      data.cart_data.forEach((item) => item.select = false);
+    }
+    function selectAll() {
+      data.cart_data.forEach((item) => item.select = true);
+    }
+    function getInfo(val) {
+      if (val == "管理") {
+        const res = data.cart_data.filter((item) => item.select);
+        const STR = JSON.stringify(res);
+        common_vendor.wx$1.navigateTo({
+          //direct单个商品下单
+          url: `/pages/Pay-view/pay?order=${STR}&type=cart`
+        });
+      } else {
+        data.cart_data.forEach(async (item, index) => {
+          if (item.select) {
+            await db.collection("sh_cart").doc(item._id).remove();
+            data.cart_data.splice(data.cart_data.findIndex((item_a) => item_a._id === item._id), 1);
+          }
+        });
+      }
+    }
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: common_vendor.t(manage.value),
@@ -79,10 +102,17 @@ const _sfc_main = {
         d: common_vendor.unref(cart_data).length == 0
       }, common_vendor.unref(cart_data).length == 0 ? {} : {}, {
         e: common_vendor.unref(totalPrice).sele
-      }, common_vendor.unref(totalPrice).sele ? {} : {}, {
-        f: common_vendor.t(common_vendor.unref(totalPrice).price),
-        g: common_vendor.t(manage.value === "管理" ? "结算" : "删除"),
-        h: common_vendor.n(common_vendor.unref(totalPrice).price <= 0 ? "prevent_btn" : "")
+      }, common_vendor.unref(totalPrice).sele ? {
+        f: common_vendor.o(cancelSelect),
+        g: common_vendor.o(cancelSelect)
+      } : {
+        h: common_vendor.o(selectAll),
+        i: common_vendor.o(selectAll)
+      }, {
+        j: common_vendor.t(common_vendor.unref(totalPrice).price),
+        k: common_vendor.t(manage.value === "管理" ? "结算" : "删除"),
+        l: common_vendor.n(common_vendor.unref(totalPrice).price <= 0 ? "prevent_btn" : ""),
+        m: common_vendor.o(($event) => getInfo(manage.value))
       });
     };
   }
