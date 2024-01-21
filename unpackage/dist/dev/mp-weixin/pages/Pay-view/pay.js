@@ -43,9 +43,12 @@ const _sfc_main = {
       or_data.order[0].subtotal = parseFloat((or_data.order[0].goods_price * or_data.order[0].buy_amount).toFixed(10));
       or_data.total_price = or_data.order[0].subtotal;
     }
+    const show = common_vendor.ref(false);
+    const loadIng = common_vendor.ref(false);
+    let result = common_vendor.reactive({ out_trade_no: "", or_data: [] });
     async function subMit() {
       if (re_data.address.length === 0) {
-        new Plublic().toast("请选择收货地址");
+        new AccConfig_public.Public().toast("请选择收货地址");
         return false;
       }
       common_vendor.wx$1.showLoading({ title: "正在下单", mask: true });
@@ -126,9 +129,9 @@ const _sfc_main = {
         e: common_vendor.o(subMit),
         f: common_vendor.o(cancelPayment),
         g: common_vendor.t(common_vendor.unref(total_price)),
-        h: _ctx.loadIng,
+        h: loadIng.value,
         i: common_vendor.o(confirmPayment),
-        j: _ctx.show,
+        j: show.value,
         k: common_vendor.o(cancelPayment)
       };
     };

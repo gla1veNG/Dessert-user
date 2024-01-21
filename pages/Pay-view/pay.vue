@@ -46,7 +46,7 @@
 		<view class="container-guan"><image src="/static/detail/guanbi.svg" mode="widthFix" @click="cancelPayment"></image></view>
 		<view class="container-price">
 			<text>零食商城平台</text>
-			<text>¥ {{total_price}}</text>
+			<text>{{total_price}}¥</text>
 		</view>
 		<view class="Payment-Methods">
 			<text>支付方式</text>
@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-	import {onMounted,reactive,toRefs,watch,onBeforeUnmount} from 'vue'
+	import {onMounted,reactive,toRefs,watch,onBeforeUnmount,ref} from 'vue'
 	import moment from 'moment'
 	moment.locale('zh-cn');
 	const db = wx.cloud.database();
@@ -106,13 +106,17 @@
 		or_data.order[0].subtotal = parseFloat((or_data.order[0].goods_price * or_data.order[0].buy_amount).toFixed(10));
 		or_data.total_price = or_data.order[0].subtotal;
 	}
+	// 支付弹窗
+	const show = ref(false)
+	const loadIng = ref(false)
 	//提交订单
+	let result = reactive({out_trade_no:'',or_data:[]})
 	import {outTradeno,coDe} from '@/Acc-config/orde_number.js'
 	import {Wxpay} from '@/Acc-config/wx-pay.js'
 	import {Public} from '@/Acc-config/public.js'
 	async function subMit(){
 			if(re_data.address.length === 0){
-				new Plublic().toast('请选择收货地址')
+				new Public().toast('请选择收货地址')
 				return false
 			}
 			wx.showLoading({title: '正在下单',mask:true})
