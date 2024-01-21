@@ -6844,6 +6844,7 @@ const createSubpackageApp = initCreateSubpackageApp();
 const createHook = (lifecycle) => (hook, target = getCurrentInstance()) => {
   !isInSSRComponentSetup && injectHook(lifecycle, hook, target);
 };
+const onShow = /* @__PURE__ */ createHook(ON_SHOW);
 const onLoad = /* @__PURE__ */ createHook(ON_LOAD);
 const onPageScroll = /* @__PURE__ */ createHook(ON_PAGE_SCROLL);
 const onReachBottom = /* @__PURE__ */ createHook(ON_REACH_BOTTOM);
@@ -11435,6 +11436,7 @@ exports.onMounted = onMounted;
 exports.onPageScroll = onPageScroll;
 exports.onReachBottom = onReachBottom;
 exports.onShareAppMessage = onShareAppMessage;
+exports.onShow = onShow;
 exports.p = p;
 exports.reactive = reactive;
 exports.ref = ref;
