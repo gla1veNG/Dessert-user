@@ -22,9 +22,9 @@
 	<!-- 没有数据的提示 -->
 	<view class="Tips" v-if="eva_data.length == 0">该商品还没有评价</view>
 	<!-- 上拉加载的提示 -->
-	<!-- <view class="loading-hei">
+	<view class="loading-hei">
 		<Loading></Loading>
-	</view> -->
+	</view>
 </template>
 
 <script setup>

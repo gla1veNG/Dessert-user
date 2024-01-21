@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/sort-view/sort-view",
     "pages/Product-details/details",
     "pages/Eva-details/details",
     "pages/All-orders/order",
@@ -10,7 +11,6 @@
     "pages/index/index",
     "pages/Short-video/video",
     "pages/Search-view/search",
-    "pages/sort-view/sort-view",
     "pages/shopping-cart/shopping-cart",
     "pages/my-page/my-page"
   ],

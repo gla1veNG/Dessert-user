@@ -1,5 +1,9 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
+if (!Math) {
+  Loading();
+}
+const Loading = () => "../public-view/loading.js";
 const _sfc_main = {
   __name: "details",
   setup(__props) {

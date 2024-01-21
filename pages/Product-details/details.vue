@@ -127,7 +127,7 @@
 			//购物车的数据
 			const nu_sh_cart = db.collection('sh_cart').count(); 
 			//评论总条数
-			const eva_num = db.collection('goods_eva').count();
+			const eva_num = db.collection('goods_eva').where({goods_id:event.goods_id}).count();
 			//评论前三条的数据
 			const eva_data = db.collection('goods_eva').where({goods_id:event.goods_id}).limit(3).get();
 			const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
