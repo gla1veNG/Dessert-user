@@ -1,9 +1,10 @@
 {
   "pages": [
+    "pages/Product-details/details",
+    "pages/Eva-details/details",
     "pages/All-orders/order",
     "pages/Order-tracking/tracking",
     "pages/Eav-goods/goods",
-    "pages/Product-details/details",
     "pages/Pay-view/pay",
     "pages/Re-address/address",
     "pages/index/index",

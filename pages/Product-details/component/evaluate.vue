@@ -1,5 +1,5 @@
 <template>
-	<view class="evaluate-view" @click="juMp(eva_data.goods_id)">
+	<view class="evaluate-view" @click="juMp(eva_data)">
 		<view class="evaluate-title">
 			<view>评论（{{eva_num}}）</view>
 			<view>
@@ -27,11 +27,13 @@
 	import {defineProps} from 'vue'
 	defineProps({eva_num:Number,eva_data:Array})
 	
-	//跳转详情页
-	function juMp(goods_id){
-		wx.navigateTo({
-			url:''
-		})
+// 跳转详情页
+	function juMp(eva_data){
+		if(eva_data.length > 0){
+			wx.navigateTo({
+				url:'/pages/Eva-details/details?goods_id=' + eva_data[0].goods_id
+			})
+		}
 	}
 </script>
 

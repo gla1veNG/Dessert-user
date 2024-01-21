@@ -4,10 +4,12 @@ const _sfc_main = {
   __name: "evaluate",
   props: { eva_num: Number, eva_data: Array },
   setup(__props) {
-    function juMp(goods_id) {
-      common_vendor.wx$1.navigateTo({
-        url: ""
-      });
+    function juMp(eva_data) {
+      if (eva_data.length > 0) {
+        common_vendor.wx$1.navigateTo({
+          url: "/pages/Eva-details/details?goods_id=" + eva_data[0].goods_id
+        });
+      }
     }
     return (_ctx, _cache) => {
       return common_vendor.e({
@@ -29,7 +31,7 @@ const _sfc_main = {
           };
         })
       } : {}, {
-        d: common_vendor.o(($event) => juMp(__props.eva_data.goods_id))
+        d: common_vendor.o(($event) => juMp(__props.eva_data))
       });
     };
   }
