@@ -1,7 +1,7 @@
 {
   "pages": [
-    "pages/Order-tracking/tracking",
     "pages/All-orders/order",
+    "pages/Order-tracking/tracking",
     "pages/Eav-goods/goods",
     "pages/Product-details/details",
     "pages/Pay-view/pay",

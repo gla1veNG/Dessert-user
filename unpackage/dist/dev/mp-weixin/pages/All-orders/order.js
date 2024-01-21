@@ -2,7 +2,7 @@
 const common_vendor = require("../../common/vendor.js");
 const AccConfig_orde_number = require("../../Acc-config/orde_number.js");
 const AccConfig_public = require("../../Acc-config/public.js");
-require("../../Acc-config/wx-pay.js");
+const AccConfig_wxPay = require("../../Acc-config/wx-pay.js");
 const AccConfig_answer = require("../../Acc-config/answer.js");
 if (!Math) {
   Loading();
@@ -82,7 +82,7 @@ const _sfc_main = {
       loading.value = false;
     });
     const show = common_vendor.ref(false);
-    common_vendor.ref(false);
+    const loadIng = common_vendor.ref(false);
     const total_price = common_vendor.ref(0);
     async function goonPay(index, _id, subtotal, item) {
       total_price.value = subtotal;
@@ -100,6 +100,25 @@ const _sfc_main = {
       }
     }
     let result = common_vendor.reactive({ _id: "", payment: {}, order_item: [], index: -1, out_trade_no: "" });
+    async function confirmPayment() {
+      loadIng.value = true;
+      const user = common_vendor.wx$1.getStorageSync("user_infor");
+      await db.collection("order_data").where({ _openid: user.openid, _id: result._id }).update({
+        data: {
+          pay_success: "success",
+          payment: result.payment,
+          out_trade_no: result.out_trade_no
+        }
+      });
+      await new AccConfig_wxPay.Wxpay().resTock([result.order_item]);
+      if (re.value == 0) {
+        res_order.order_data[result.index].pay_success = "success";
+      } else {
+        res_order.order_data.splice(result.index, 1);
+      }
+      loadIng.value = false;
+      show.value = false;
+    }
     async function canOrder(_id, index) {
       const user = common_vendor.wx$1.getStorageSync("user_infor");
       await db.collection("order_data").where({ _openid: user.openid, _id }).update({ data: { pay_success: "can_order" } });
@@ -156,6 +175,15 @@ const _sfc_main = {
       const user = common_vendor.wx$1.getStorageSync("user_infor");
       db.collection("order_data").where({ _openid: user.openid, _id: eav_id.value }).update({ data: { evaluate: true } });
     });
+    function loGistics(waybill_No, goods_image, goods_title, buy_amount) {
+      let obj = JSON.stringify({ waybill_No, goods_image, goods_title, buy_amount });
+      common_vendor.wx$1.navigateTo({
+        url: "/pages/Order-tracking/tracking?value=" + obj
+      });
+    }
+    common_vendor.onBeforeUnmount(() => {
+      show.value = false;
+    });
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: common_vendor.f(common_vendor.unref(tab), (item, index, i0) => {
@@ -191,30 +219,38 @@ const _sfc_main = {
             k: item.deliver === "already"
           }, item.deliver === "already" ? {
             l: common_vendor.o(($event) => confRece(index, item._id), index),
-            m: common_vendor.o(($event) => refUnd(index, item._id), index)
+            m: common_vendor.o(($event) => loGistics(item.waybill_No, item.goods_image, item.goods_title, item.buy_amount), index),
+            n: common_vendor.o(($event) => refUnd(index, item._id), index)
           } : {}, {
-            n: item.deliver === "rece_goods"
+            o: item.deliver === "rece_goods"
           }, item.deliver === "rece_goods" ? {
-            o: common_vendor.t(item.evaluate ? "已评价" : "评价"),
-            p: common_vendor.o(($event) => eavLuate(item._id, item.goods_id, index, item.evaluate, item.specs), index),
-            q: common_vendor.o(($event) => refUnd(index, item._id), index)
+            p: common_vendor.t(item.evaluate ? "已评价" : "评价"),
+            q: common_vendor.o(($event) => eavLuate(item._id, item.goods_id, index, item.evaluate, item.specs), index),
+            r: common_vendor.o(($event) => refUnd(index, item._id), index)
           } : {}, {
-            r: item.deliver === "ref_pro"
+            s: item.deliver === "ref_pro"
           }, item.deliver === "ref_pro" ? {} : {}, {
-            s: item.deliver === "ref_succ"
+            t: item.deliver === "ref_succ"
           }, item.deliver === "ref_succ" ? {} : {}) : item.pay_success == "not_pay" ? {
-            v: common_vendor.o(($event) => canOrder(item._id, index), index),
-            w: common_vendor.o(($event) => goonPay(index, item._id, item.subtotal, item), index)
+            w: common_vendor.o(($event) => canOrder(item._id, index), index),
+            x: common_vendor.o(($event) => goonPay(index, item._id, item.subtotal, item), index)
           } : item.pay_success == "can_order" ? {} : {}, {
-            t: item.pay_success == "not_pay",
-            x: item.pay_success == "can_order",
-            y: index
+            v: item.pay_success == "not_pay",
+            y: item.pay_success == "can_order",
+            z: index
           });
         }),
         c: common_vendor.unref(order_data).length == 0
       }, common_vendor.unref(order_data).length == 0 ? {} : {}, {
         d: common_vendor.unref(loading)
-      }, common_vendor.unref(loading) ? {} : {});
+      }, common_vendor.unref(loading) ? {} : {}, {
+        e: common_vendor.o(($event) => show.value = false),
+        f: common_vendor.t(total_price.value),
+        g: loadIng.value,
+        h: common_vendor.o(confirmPayment),
+        i: show.value,
+        j: common_vendor.o(($event) => show.value = false)
+      });
     };
   }
 };

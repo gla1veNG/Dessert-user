@@ -1,33 +1,33 @@
 <template>
 	<view class="tracking-page">
 		<view class="tr-goods">
-			<view><image src="/static/detail/jianshao.png" mode="aspectFill"></image></view>
+			<view><image :src="goods_image" mode="aspectFill"></image></view>
 			<view class="tr-text">
-				<text class="overflow">标题</text>
-				<text>10件</text>
+				<text class="overflow">{{goods_title}}</text>
+				<text>{{buy_amount}}件</text>
 			</view>
 		</view>
-		<view class="fast-mail">
-			<image src="/static/detail/jianshao.png" mode="aspectFill"></image>
-			<text class="fast-mail-Zh">顺丰快递</text>
-			<text>23232132</text>
+		<view class="fast-mail" >
+			<image :src="logo" mode="aspectFill"></image>
+			<text class="fast-mail-Zh">{{kuaidi}}</text>
+			<text>{{nu}}</text>
 		</view>
 		<!-- 步骤条 -->
-		<view class="tracking-view">
+		<view class="tracking-view" v-for="(item,index) in progress" :key="index">
 			<!-- 左边 -->
 			<view class="tracking-left">
-				<view class="active">签</view>
-				<view></view>
+				<view class="active" v-if="index === 0 && state === '3'">签</view>
+				<view v-else></view>
 				<view></view>
 			</view>
 			<!-- 右边 -->
 			<view class="tracking-right">
-				<view>文本文本</view>
-				<view>2024.01.20</view>
+				<view :class="[index === 0 && state === '3' ? 'active-text' : '']">{{item.context}}</view>
+				<view>{{item.time}}</view>
 			</view>
 		</view>
 		<!-- 没有物流轨迹 -->
-		<view class="Tips">暂无物流动态</view>
+		<view class="Tips" v-if="message === 1 ">暂无物流动态</view>
 	</view>
 </template>
 
@@ -37,13 +37,14 @@
 	import {onLoad} from '@dcloudio/uni-app'
 	import md5 from 'js-md5'
 
-	
+	const data_goods = reactive({waybill_No:'',goods_image:'',goods_title:'',buy_amount:0})
+	const {waybill_No,goods_image,goods_title,buy_amount} = toRefs(data_goods)
 	onLoad((event)=>{
-			// let res_v = JSON.parse(event.value)
-			// data_goods.waybill_No = res_v.waybill_No
-			// data_goods.goods_image = res_v.goods_image
-			// data_goods.goods_title = res_v.goods_title
-			// data_goods.buy_amount = res_v.buy_amount
+			let res_v = JSON.parse(event.value)
+			data_goods.waybill_No = res_v.waybill_No
+			data_goods.goods_image = res_v.goods_image
+			data_goods.goods_title = res_v.goods_title
+			data_goods.buy_amount = res_v.buy_amount
 			post()
 		})
 	// body要请求的参数
@@ -54,6 +55,8 @@
 			let obj = {customer:CUSTOMER,sign:md,param:JSON.stringify(param)}
 			return obj
 		}
+		const data = reactive({nu:'',state:0,kuaidi:'',logo:'',progress:[],message:0})
+		const {nu,state,kuaidi,logo,progress,message} = toRefs(data)
 		function post(){
 				uni.request({
 					url:URL,
@@ -63,16 +66,16 @@
 				})
 				.then(res=>{
 						console.log(res)
-						// if(res.data.message == "ok"){
-						// 	data.nu = res.data.nu
-						// 	data.state = res.data.state
-						// 	const K_name = KUAIDI.filter(item=>item.com == res.data.com)
-						// 	data.kuaidi = K_name[0].name
-						// 	data.logo = K_name[0].logo
-						// 	data.progress = res.data.data
-						// }else{
-						// 	data.message = 1
-						// }
+						if(res.data.message == "ok"){
+							data.nu = res.data.nu
+							data.state = res.data.state
+							const K_name = KUAIDI.filter(item=>item.com == res.data.com)
+							data.kuaidi = K_name[0].name
+							data.logo = K_name[0].logo
+							data.progress = res.data.data
+						}else{
+							data.message = 1
+						}
 					})
 					.catch(err=>{
 						console.log(err)

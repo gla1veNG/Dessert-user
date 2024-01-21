@@ -1,19 +1,20 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
-			"path": "pages/Order-tracking/tracking",
-			"style": {
-				"navigationBarTitleText": "订单追踪",
-				"navigationBarBackgroundColor": "#fefefe"
-			}
-		},
-		{
 			"path": "pages/All-orders/order",
 			"style": {
 				"navigationBarTitleText": "订单管理",
 				"navigationBarBackgroundColor": "#fefefe"
 			}
 		},
+		{
+			"path": "pages/Order-tracking/tracking",
+			"style": {
+				"navigationBarTitleText": "订单追踪",
+				"navigationBarBackgroundColor": "#fefefe"
+			}
+		},
+		
 		{
 			"path": "pages/Eav-goods/goods",
 			"style": {

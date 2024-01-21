@@ -38,7 +38,7 @@
 			<!-- 确认收货 查看物流 申请退款 -->
 			<block v-if="item.deliver === 'already'">
 				<text class="order-button-a" @click="confRece(index,item._id)">确认收货</text>
-				<text class="order-button-b">查看物流</text>
+				<text class="order-button-b" @click="loGistics(item.waybill_No,item.goods_image,item.goods_title,item.buy_amount)">查看物流</text>
 				<text class="order-button-b"  @click="refUnd(index,item._id)">申请退款</text>
 			</block>
 			<!-- 已发货 评价 申请退款 -->
@@ -77,25 +77,25 @@
 	</view>
 	<view style="height: 200rpx;"></view>
 	<!-- 支付弹窗 -->
-	<!-- <page-container :show="false" round="true">
+	<page-container :show="show" round="true" @clickoverlay="show = false">
 		<view class="customStyle">
-		<view class="container-guan"><image src="/static/detail/guanbi.svg" mode="widthFix"></image></view>
+		<view class="container-guan"><image src="/static/detail/guanbi.svg" mode="widthFix" @click="show = false"></image></view>
 		<view class="container-price">
 			<text>零食商城平台</text>
-			<text>20¥</text>
+			<text>{{total_price}}¥</text>
 		</view>
 		<view class="Payment-Methods">
 			<text>支付方式</text>
 			<text>零钱通</text>
 		</view>
 		<view class="Confirm-payment">
-			<button type="primary" loading="loadIng">确认支付</button>
+			<button type="primary" :loading="loadIng" @click="confirmPayment">确认支付</button>
 		</view>
 		</view>
-	</page-container> -->
+	</page-container>
 </template>
 <script setup>
-	import {reactive,toRefs,ref,watch} from 'vue'
+	import {reactive,toRefs,ref,watch,onBeforeUnmount} from 'vue'
 	import {onLoad,onReachBottom} from '@dcloudio/uni-app'
 	import Loading from '@/pages/public-view/loading.vue'
 
@@ -283,7 +283,16 @@
 			}
 			const user = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
 			db.collection('order_data').where({_openid:user.openid,_id:eav_id.value}).update({data:{evaluate:true}})
-		})					
+		})	
+	// 查看物流
+		function loGistics(waybill_No,goods_image,goods_title,buy_amount){
+			let obj = JSON.stringify({waybill_No,goods_image,goods_title,buy_amount})
+			wx.navigateTo({
+				url:'/pages/Order-tracking/tracking?value=' + obj
+			})
+		}
+		
+		onBeforeUnmount(()=>{show.value = false})					
 </script>
 
 <style>
