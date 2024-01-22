@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/my-page/my-page",
+    "pages/My-collection/collection",
     "pages/shopping-cart/shopping-cart",
     "pages/sort-view/sort-view",
     "pages/Product-details/details",

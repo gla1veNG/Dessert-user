@@ -8,6 +8,13 @@
 			}
 		},
 		{
+			"path": "pages/My-collection/collection",
+			"style": {
+				"navigationBarTitleText": "我的收藏"
+			}
+		},
+		
+		{
 			"path": "pages/shopping-cart/shopping-cart",
 			"style": {
 				"navigationBarTitleText": "购物车"

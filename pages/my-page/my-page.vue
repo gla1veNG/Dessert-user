@@ -1,16 +1,16 @@
 <template>
 	<view class="my-page">
-		<view class="my-name" >
-			<image src="/static/detail/jianshao.png" mode="aspectFit"></image>
-			<text>昵称</text>
+		<view class="my-name" v-if="exist">
+			<image :src="user_infor.avatarUrl" mode="aspectFit"></image>
+			<text>{{user_infor.nickName}}</text>
 		</view>
-	<!-- 	<view class="my-name">
+		<view class="my-name" v-else="!exist" @click="goLogin">
 			<image src="/static/detail/weidenglu.svg" mode="aspectFit"></image>
 			<text>点击登录</text>
-		</view> -->
+		</view>
 		<image class="shuibo-img" src="https://qita-1252107261.cos.ap-chengdu.myqcloud.com/boliang" mode="scaleToFill"></image>
 	</view>
-	<view class="my-order" v-for="(item,index) in list_data.whole" :key="index">
+	<view class="my-order" v-for="(item,index) in list_data.whole" :key="index" @click="viewOrder(item.index,item.query)">
 		<view class="my-order-title more">
 			<view>我的订单</view>
 			<view class="more">
@@ -19,7 +19,7 @@
 			</view>
 		</view>
 		<view class="order-state">
-			<view v-for="(item,index) in list_data.list" :key="index">
+			<view v-for="(item,index) in list_data.list" :key="index" @click="viewOrder(item.index,item.query)">
 				<image :src="item.icon" mode="aspectFit"></image>
 				<text>{{item.name}}</text>
 			</view>
@@ -27,12 +27,12 @@
 	</view>
 	<!--  -->
 	<view class="my-other">
-		<view>
+		<view @click="myCollect">
 			<image src="/static/detail/wodeshoucang.svg" mode="aspectFit"></image>
 			<text>我的收藏</text>
 			<image src="/static/detail/xiangyou-jiantou.svg" mode="aspectFit" class="my-other-deta"></image>
 		</view>
-		<view>
+		<view  @click="getInfo">
 			<image src="/static/detail/shouhuodizhi.svg" mode="aspectFit" ></image>
 			<text>收货地址</text>
 			<image src="/static/detail/xiangyou-jiantou.svg" mode="aspectFit" class="my-other-deta"></image>
@@ -44,11 +44,13 @@
 		</view>
 	</view>
 	<!-- 登陆弹窗 -->
-	<!-- <Login /> -->
+	<Login />
 </template>
 
 <script setup>
-	import {reactive} from 'vue'
+	import {reactive,toRefs,watch} from 'vue'
+	import {onShow} from '@dcloudio/uni-app'
+	import Login from '../components/login-view.vue'
 	
 	const list_data = reactive({
 		whole:[
@@ -85,7 +87,62 @@
 				query:{pay_success:'success',deliver:'rece_goods',evaluate:false}
 			}
 		]
-	})	
+	})
+	// 查询是否登陆
+	onShow(()=>{
+		staTus()
+	})
+	const user = reactive({user_infor:{},exist:false})
+	const {user_infor,exist} = toRefs(user)
+	function staTus(){
+		const user_data = wx.getStorageSync('user_infor')//取出本地缓存的用户信息
+		if(user_data){
+			user.exist = true
+			user.user_infor = user_data
+		}else{
+			user.exist = false
+		}
+	}
+	import {login_user} from '@/Acc-config/answer.js'
+	// 调用登陆弹窗
+	function goLogin(){
+		login_user.show = true
+	}
+	// 监听登陆是否成功，成功则重新取收藏和购物车的数据
+	watch(()=>login_user.response,(newVal,oldVal)=>{
+		staTus()
+	})
+	// 查看订单
+	function viewOrder(index,query){
+		if(user.exist){
+			let obj = JSON.stringify({index,query})
+			wx.navigateTo({
+				url:`/pages/All-orders/order?obj=${obj}`
+			})
+		}else{
+			login_user.show = true
+		}
+	}
+	// 查看收货地址
+	function getInfo(){
+		if(user.exist){
+			wx.navigateTo({
+				url:'/pages/Re-address/address'
+			})
+		}else{
+			login_user.show = true
+		}
+	}
+	// 我的收藏
+	function myCollect(){
+		if(user.exist){
+			wx.navigateTo({
+				url:'/pages/My-collection/collection'
+			})
+		}else{
+			login_user.show = true
+		}
+	}						
 </script>
 
 <style scoped>

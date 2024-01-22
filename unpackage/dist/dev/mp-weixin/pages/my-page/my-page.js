@@ -1,5 +1,10 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
+const AccConfig_answer = require("../../Acc-config/answer.js");
+if (!Math) {
+  Login();
+}
+const Login = () => "../components/login-view.js";
 const _sfc_main = {
   __name: "my-page",
   setup(__props) {
@@ -39,9 +44,65 @@ const _sfc_main = {
         }
       ]
     });
+    common_vendor.onShow(() => {
+      staTus();
+    });
+    const user = common_vendor.reactive({ user_infor: {}, exist: false });
+    const { user_infor, exist } = common_vendor.toRefs(user);
+    function staTus() {
+      const user_data = common_vendor.wx$1.getStorageSync("user_infor");
+      if (user_data) {
+        user.exist = true;
+        user.user_infor = user_data;
+      } else {
+        user.exist = false;
+      }
+    }
+    function goLogin() {
+      AccConfig_answer.login_user.show = true;
+    }
+    common_vendor.watch(() => AccConfig_answer.login_user.response, (newVal, oldVal) => {
+      staTus();
+    });
+    function viewOrder(index, query) {
+      if (user.exist) {
+        let obj = JSON.stringify({ index, query });
+        common_vendor.wx$1.navigateTo({
+          url: `/pages/All-orders/order?obj=${obj}`
+        });
+      } else {
+        AccConfig_answer.login_user.show = true;
+      }
+    }
+    function getInfo() {
+      if (user.exist) {
+        common_vendor.wx$1.navigateTo({
+          url: "/pages/Re-address/address"
+        });
+      } else {
+        AccConfig_answer.login_user.show = true;
+      }
+    }
+    function myCollect() {
+      if (user.exist) {
+        common_vendor.wx$1.navigateTo({
+          url: "/pages/My-collection/collection"
+        });
+      } else {
+        AccConfig_answer.login_user.show = true;
+      }
+    }
     return (_ctx, _cache) => {
-      return {
-        a: common_vendor.f(list_data.whole, (item, index, i0) => {
+      return common_vendor.e({
+        a: common_vendor.unref(exist)
+      }, common_vendor.unref(exist) ? {
+        b: common_vendor.unref(user_infor).avatarUrl,
+        c: common_vendor.t(common_vendor.unref(user_infor).nickName)
+      } : {
+        e: common_vendor.o(goLogin)
+      }, {
+        d: !common_vendor.unref(exist),
+        f: common_vendor.f(list_data.whole, (item, index, i0) => {
           return {
             a: common_vendor.t(item.name),
             b: item.icon,
@@ -49,13 +110,17 @@ const _sfc_main = {
               return {
                 a: item2.icon,
                 b: common_vendor.t(item2.name),
-                c: index2
+                c: index2,
+                d: common_vendor.o(($event) => viewOrder(item2.index, item2.query), index2)
               };
             }),
-            d: index
+            d: index,
+            e: common_vendor.o(($event) => viewOrder(item.index, item.query), index)
           };
-        })
-      };
+        }),
+        g: common_vendor.o(myCollect),
+        h: common_vendor.o(getInfo)
+      });
     };
   }
 };
