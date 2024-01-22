@@ -148,8 +148,7 @@
 <style scoped>
 .my-page{
 	height: 300rpx;
-	/* background: #4CD964; */
-	background: linear-gradient(to bottom, #e94b37 25%, #e59f95 100%);
+	background: linear-gradient(to bottom, #e98e0f 25%, #ffe0aa 100%);
 	position: relative;
 	padding-top: 100rpx;
 }
